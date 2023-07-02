@@ -41,7 +41,6 @@ dependencies:
   
   dynamic_color: ^1.4.0
   material_color_utilities: ^0.2.0
-  material_design_icons_flutter: ^5.0.6996
 
 dev_dependencies:
   flutter_test:
