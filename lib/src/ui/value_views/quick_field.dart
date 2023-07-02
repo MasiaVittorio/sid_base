@@ -8,12 +8,14 @@ class QuickField extends StatelessWidget {
     required this.label,
     this.isDense,
     this.maxLines = 1,
+    this.suffixIcon,
   }) : super(key: key);
 
   final TextEditingController controller;
   final String label;
   final int? maxLines;
   final bool? isDense;
+  final Widget? suffixIcon;
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +29,7 @@ class QuickField extends StatelessWidget {
           isDense: isDense,
           label: Text(label),
           border: const OutlineInputBorder(),
+          suffixIcon: suffixIcon,
         ),
       ),
     );

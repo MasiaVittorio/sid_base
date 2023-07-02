@@ -47,7 +47,7 @@ class ThemeLogic extends LogicBase {
       
       if(dark){
         if(darkDynamic != null){
-          final b = darkDynamic.background.getTone(07);
+          final b = darkDynamic.background.withTone(07);
           scheme = darkDynamic.copyWith(
             background: b,
             surface: b,
