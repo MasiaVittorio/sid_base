@@ -1,0 +1,1 @@
+export 'splashing_colored_background.dart';

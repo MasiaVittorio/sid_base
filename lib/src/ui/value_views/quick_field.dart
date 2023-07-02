@@ -1,0 +1,34 @@
+import 'package:flutter/material.dart';
+
+
+class QuickField extends StatelessWidget {
+  const QuickField({
+    Key? key,
+    required this.controller,
+    required this.label,
+    this.isDense,
+    this.maxLines = 1,
+  }) : super(key: key);
+
+  final TextEditingController controller;
+  final String label;
+  final int? maxLines;
+  final bool? isDense;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: TextField(
+        controller: controller,
+        maxLines: maxLines,
+        textCapitalization: TextCapitalization.sentences,
+        decoration: InputDecoration(
+          isDense: isDense,
+          label: Text(label),
+          border: const OutlineInputBorder(),
+        ),
+      ),
+    );
+  }
+}
