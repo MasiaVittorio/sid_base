@@ -42,3 +42,6 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+example/macos/Flutter/GeneratedPluginRegistrant.swift
+example/windows/flutter/generated_plugin_registrant.cc
+example/windows/flutter/generated_plugins.cmake
