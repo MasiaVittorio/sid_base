@@ -87,14 +87,16 @@ class _ResponsiveScrollStackState extends State<ResponsiveScrollStack> {
     if (mounted) {
       if (!alreadyScrolled) {
         SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-          if (controller.hasClients) {
-            if (controller.position.maxScrollExtent == 0) {
-              atEndEdge.update(null);
+          if (mounted) {
+            if (controller.hasClients) {
+              if (controller.position.maxScrollExtent == 0) {
+                atEndEdge.update(null);
+              } else {
+                atEndEdge.update(controller.position.pixels >= controller.position.maxScrollExtent);
+              }
             } else {
-              atEndEdge.update(controller.position.pixels >= controller.position.maxScrollExtent);
+              atEndEdge.update(null);
             }
-          } else {
-            atEndEdge.update(null);
           }
         });
       }

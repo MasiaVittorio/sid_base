@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sid_base/sid_base.dart';
+import 'package:flutter/material.dart' as mat;
 
 extension BaseContextExtensions on BuildContext {
   ThemeData get theme => Theme.of(this);
@@ -29,4 +30,8 @@ extension BaseContextExtensions on BuildContext {
           return page;
         },
       ));
+  Future<void> showDialog(Widget dialog) => mat.showDialog(
+        context: this,
+        builder: (_) => dialog,
+      );
 }
