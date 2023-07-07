@@ -2,6 +2,11 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/material.dart';
 import 'package:sid_base/sid_base.dart';
+export 'package:flutter/rendering.dart' show ScrollDirection;
+
+extension ScrollDirectionToExpandFab on ScrollDirection? {
+  bool get shouldExtendFab => {ScrollDirection.forward, null}.contains(this);
+}
 
 class ResponsiveScrollStack extends StatefulWidget {
   const ResponsiveScrollStack({
@@ -40,10 +45,10 @@ class ResponsiveScrollStack extends StatefulWidget {
     ScrollDirection? userDirection,
   )? userDirectionOverlay;
 
-  final double Function(bool overThreshold, bool? atEndEdge, ScrollDirection? userDirection)?
-      topPadding;
-  final double Function(bool overThreshold, bool? atEndEdge, ScrollDirection? userDirection)?
-      bottomPadding;
+  final double Function(bool overThreshold, bool? atEndEdge, ScrollDirection? userDirection,
+      double? initialMaxScrollExtent)? topPadding;
+  final double Function(bool overThreshold, bool? atEndEdge, ScrollDirection? userDirection,
+      double? initialMaxScrollExtent)? bottomPadding;
 
   final Duration duration;
   final Curve curve;
@@ -62,6 +67,7 @@ class _ResponsiveScrollStackState extends State<ResponsiveScrollStack> {
   late ScrollController controller;
   bool alreadyScrolled = false;
   bool notScrollableAtAll = false;
+  double? initialMaxScrollExtent;
 
   @override
   void initState() {
@@ -84,22 +90,32 @@ class _ResponsiveScrollStackState extends State<ResponsiveScrollStack> {
 
   void checkScrollable() async {
     await Future.delayed(const Duration(milliseconds: 150));
-    if (mounted) {
-      if (!alreadyScrolled) {
-        SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-          if (mounted) {
-            if (controller.hasClients) {
-              if (controller.position.maxScrollExtent == 0) {
-                atEndEdge.update(null);
-              } else {
-                atEndEdge.update(controller.position.pixels >= controller.position.maxScrollExtent);
-              }
-            } else {
-              atEndEdge.update(null);
-            }
-          }
-        });
+    _checkScrollable();
+  }
+
+  void _checkScrollable([bool force = false]) {
+    if (!mounted) return;
+    if (alreadyScrolled && !force) return;
+    SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+      if (!mounted) return;
+      if (!controller.hasClients) {
+        atEndEdge.update(null);
+        return;
       }
+      initialMaxScrollExtent = controller.position.maxScrollExtent;
+      if (initialMaxScrollExtent == 0) {
+        atEndEdge.update(null);
+      } else {
+        atEndEdge.update(controller.position.pixels >= controller.position.maxScrollExtent);
+      }
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant ResponsiveScrollStack oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.children.length != widget.children.length) {
+      _checkScrollable(true);
     }
   }
 
@@ -131,7 +147,9 @@ class _ResponsiveScrollStackState extends State<ResponsiveScrollStack> {
     );
   }
 
-  Widget buildPadding(double Function(bool over, bool? end, ScrollDirection? direction) padding) =>
+  Widget buildPadding(
+          double Function(bool over, bool? end, ScrollDirection? direction, double? maxExtent)
+              padding) =>
       Reactive.build3<bool, bool?, ScrollDirection?>(
         overThreshold,
         atEndEdge,
@@ -139,7 +157,7 @@ class _ResponsiveScrollStackState extends State<ResponsiveScrollStack> {
         builder: (_, over, end, direction) => AnimatedContainer(
           duration: widget.duration,
           curve: widget.curve,
-          height: padding(over, end, direction),
+          height: padding(over, end, direction, initialMaxScrollExtent),
           width: double.infinity,
         ),
       );
@@ -160,8 +178,8 @@ class _ResponsiveScrollStackState extends State<ResponsiveScrollStack> {
             children: [
               if (widget.topPadding != null)
                 buildPadding(
-                  (over, end, direction) =>
-                      widget.topPadding!(over, end, direction) + extraRealEstate,
+                  (over, end, direction, maxExtent) =>
+                      widget.topPadding!(over, end, direction, maxExtent) + extraRealEstate,
                 )
               else
                 const Space.vertical(extraRealEstate),
@@ -184,7 +202,8 @@ class _ResponsiveScrollStackState extends State<ResponsiveScrollStack> {
     }
     if (notif is UserScrollNotification) {
       SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-        userDirection.update(notif.direction);
+        final v = notif.direction;
+        if (v != ScrollDirection.idle) userDirection.update(v);
       });
       return !widget.bubbleUpNotifications;
     }

@@ -10,6 +10,7 @@ class QuickField extends StatelessWidget {
     this.maxLines = 1,
     this.suffixIcon,
     this.onSubmitted,
+    this.onEditingComplete,
     this.textInputAction = TextInputAction.done,
     this.textCapitalization = TextCapitalization.sentences,
   }) : super(key: key);
@@ -22,6 +23,7 @@ class QuickField extends StatelessWidget {
   final TextInputAction textInputAction;
   final TextCapitalization textCapitalization;
   final void Function(String text)? onSubmitted;
+  final void Function()? onEditingComplete;
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +35,7 @@ class QuickField extends StatelessWidget {
         textCapitalization: textCapitalization,
         textInputAction: textInputAction,
         onSubmitted: onSubmitted,
+        onEditingComplete: onEditingComplete,
         decoration: InputDecoration(
           isDense: isDense,
           label: Text(label),

@@ -120,9 +120,7 @@ class ExpandableAppBar extends StatelessWidget {
         children: [
           Space.vertical(topSafe),
           collapsed(theme, maybeLeading),
-          Expanded(
-            child: largeTitle(theme),
-          ),
+          Expanded(child: largeTitle(theme)),
         ],
       ),
     );
@@ -219,7 +217,7 @@ class ExpandableAppBar extends StatelessWidget {
       child: AnimatedOpacity(
         duration: duration,
         opacity: scrolled ? 1.0 : 0.0,
-        child: Text(title),
+        child: Text(title, maxLines: 1, overflow: TextOverflow.ellipsis,),
       ),
     );
 

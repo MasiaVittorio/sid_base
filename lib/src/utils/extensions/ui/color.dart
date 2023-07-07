@@ -9,6 +9,16 @@ extension ColorTones on Color {
     return Color(palette.get(tone.clamp(0, 100)));
   }
 
+  double get tone {
+    return Hct.fromInt(value).tone;
+  }
+  double get chroma {
+    return Hct.fromInt(value).chroma;
+  }
+  double get hue {
+    return Hct.fromInt(value).hue;
+  }
+
   Color withChroma(double chroma) {
     Hct h = Hct.fromInt(value);
     h.chroma = chroma;

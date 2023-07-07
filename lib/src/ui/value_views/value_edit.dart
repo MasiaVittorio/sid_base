@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:sid_base/sid_base.dart'; 
+import 'package:sid_base/sid_base.dart';
 
 abstract class ValueEditView<T> extends StatefulWidget {
-
   const ValueEditView({
     required this.onSave,
     this.initial,
@@ -13,17 +12,15 @@ abstract class ValueEditView<T> extends StatefulWidget {
   final T? initial;
   final ValueChanged<T> onSave;
   final bool resizeOnKeyboard;
-
 }
 
 abstract class ValueEditViewState<T, A extends ValueEditView<T>> extends State<A> {
-
   T? get current;
   T? get initial => widget.initial;
 
   String get newTitle;
   String editTitle(T initialValue);
-  
+
   Widget updateSaveButton(WidgetBuilder builder);
   // usually textreactor etc
   static Widget textReactor(
@@ -32,7 +29,7 @@ abstract class ValueEditViewState<T, A extends ValueEditView<T>> extends State<A
     WidgetBuilder builder,
   ) {
     return TextReactor(
-      controller: controller, 
+      controller: controller,
       child: null,
       builder: (_, __, ___) => builder(context),
     );
@@ -46,26 +43,27 @@ abstract class ValueEditViewState<T, A extends ValueEditView<T>> extends State<A
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        if(_tryingToSaveNow) return true;
-        if(current == initial) return true;
-        if(initial == null && isCurrentEmpty) return true;
+        if (_tryingToSaveNow) return true;
+        if (current == initial) return true;
+        if (initial == null && isCurrentEmpty) return true;
         bool confirmPop = false;
         try {
           final bool? response = await showDialog<bool>(
-            context: context, 
+            context: context,
             builder: (context) {
+              // TODO: localize or provide edit capabilitini
               return ConfirmDialog(
-                title: "Scarta modifiche?", 
+                title: "Scarta modifiche?",
                 content: "Se esci ora, le modifiche non saranno salvate.",
                 confirmLabel: "Scarta ed esci",
                 confirmColor: context.theme.colorScheme.error,
-                action: (){},
+                action: () {},
               );
             },
           );
           confirmPop = response ?? false;
         } catch (e) {
-          confirmPop = false;          
+          confirmPop = false;
         }
         return confirmPop;
       },
@@ -80,8 +78,8 @@ abstract class ValueEditViewState<T, A extends ValueEditView<T>> extends State<A
   bool _tryingToSaveNow = false;
   VoidCallback? get getSaveAction {
     final c = current;
-    if(c == null) return null;
-    return (){
+    if (c == null) return null;
+    return () {
       widget.onSave(c);
 
       _tryingToSaveNow = true;
@@ -91,13 +89,13 @@ abstract class ValueEditViewState<T, A extends ValueEditView<T>> extends State<A
     };
   }
 
-  WidgetBuilder get saveButtonBuilder 
-    => (context) {
-      return TextButton(
-        onPressed: getSaveAction, 
-        child: const Text("Salva"),
-      );
-    };
+  WidgetBuilder get saveButtonBuilder => (context) {
+        final loc = MaterialLocalizations.of(context);
+        return TextButton(
+          onPressed: getSaveAction,
+          child: Text(loc.saveButtonLabel),
+        );
+      };
 
   AppBar get appBar {
     final init = initial;
@@ -107,5 +105,4 @@ abstract class ValueEditViewState<T, A extends ValueEditView<T>> extends State<A
       leading: const CloseButton(),
     );
   }
-
 }
