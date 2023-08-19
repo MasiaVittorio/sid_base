@@ -4,14 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:sid_base/src/state/persistence/base/persitence.dart';
 import 'package:sid_base/src/state/persistence/local/hive/hive_persistence.dart';
 
-
 typedef ValueBuilder<T> = Widget Function(
-  BuildContext context, 
-  T val, 
+  BuildContext context,
+  T val,
 );
 typedef ChildValueBuilder<T> = Widget Function(
-  BuildContext context, 
-  T val, 
+  BuildContext context,
+  T val,
   Widget? child,
 );
 
@@ -136,12 +135,18 @@ class PersistentReactive<T> extends Reactive<T> {
 
   @override
   void update(T newValue, {bool distinct = true}) {
-    if(_v) debugPrint("updating with $newValue");
+    if (_v) debugPrint("updating with $newValue");
     if (newValue == value && distinct) {
-      if(_v) debugPrint("already $newValue");
+      if (_v) debugPrint("already $newValue");
       return;
     }
     super.update(newValue, distinct: distinct);
+    _write();
+  }
+
+  @override
+  void refresh() {
+    super.refresh();
     _write();
   }
 
@@ -169,13 +174,13 @@ class PersistentReactive<T> extends Reactive<T> {
   Future<void> __read() async {
     try {
       final String? source = await persistenceProvider.readEncodedObject(key);
-      if(_v) debugPrint('key $key, reading $source');
+      if (_v) debugPrint('key $key, reading $source');
       if (source == null) return;
       final Object? jsonDecodedMap = jsonDecode(source);
-      if(_v) debugPrint('key $key, decodedMap type ${jsonDecodedMap.runtimeType}');
+      if (_v) debugPrint('key $key, decodedMap type ${jsonDecodedMap.runtimeType}');
 
       if (jsonDecodedMap case {'value': final Object? valueJsonDecoded}) {
-        if(_v) debugPrint('key $key, valueJsonDecoded $valueJsonDecoded');
+        if (_v) debugPrint('key $key, valueJsonDecoded $valueJsonDecoded');
 
         T? value;
 
@@ -192,10 +197,10 @@ class PersistentReactive<T> extends Reactive<T> {
         }
 
         if (value is T) {
-          if(_v) debugPrint("after reading updating with value");
+          if (_v) debugPrint("after reading updating with value");
           this.update(value);
         } else {
-          if(_v) debugPrint("after reading updating without value");
+          if (_v) debugPrint("after reading updating without value");
         }
       }
 
@@ -212,10 +217,11 @@ class PersistentReactive<T> extends Reactive<T> {
   void _write() async {
     try {
       final line = jsonEncode(toMap());
-      if(_v) debugPrint('key $key, writing $line');
+      if (_v) debugPrint('key $key, writing $line');
       persistenceProvider.write(key, line);
       // ignore: avoid_catches_without_on_clauses
     } catch (_) {}
   }
 }
+
 bool get _v => false;
