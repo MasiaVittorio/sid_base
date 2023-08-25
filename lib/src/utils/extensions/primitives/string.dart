@@ -36,7 +36,7 @@ class PercentEncode {
 }
 
 extension StringReminder on String {
-  String get todo => "$this";
+  String get todo => this;
   // String get todo => "$this [!]";
 }
 

@@ -13,6 +13,7 @@ class QuickField extends StatelessWidget {
     this.onEditingComplete,
     this.textInputAction = TextInputAction.done,
     this.textCapitalization = TextCapitalization.sentences,
+    this.onChanged,
   }) : super(key: key);
 
   final TextEditingController controller;
@@ -24,6 +25,7 @@ class QuickField extends StatelessWidget {
   final TextCapitalization textCapitalization;
   final void Function(String text)? onSubmitted;
   final void Function()? onEditingComplete;
+  final ValueChanged<String>? onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +44,7 @@ class QuickField extends StatelessWidget {
           border: const OutlineInputBorder(),
           suffixIcon: suffixIcon,
         ),
+        onChanged: onChanged,
       ),
     );
   }
