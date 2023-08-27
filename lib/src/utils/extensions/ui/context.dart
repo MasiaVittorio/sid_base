@@ -19,7 +19,7 @@ extension BaseContextExtensions on BuildContext {
     }
   }
 
-  Future<void> pushPage(Widget page) => navigator.push(MaterialPageRoute<void>(
+  Future<T?> pushPage<T>(Widget page) => navigator.push<T>(MaterialPageRoute<T>(
         builder: (context) {
           return page;
         },

@@ -148,19 +148,20 @@ class _ResponsiveScrollStackState extends State<ResponsiveScrollStack> {
   }
 
   Widget buildPadding(
-          double Function(bool over, bool? end, ScrollDirection? direction, double? maxExtent)
-              padding) =>
-      Reactive.build3<bool, bool?, ScrollDirection?>(
-        overThreshold,
-        atEndEdge,
-        userDirection,
-        builder: (_, over, end, direction) => AnimatedContainer(
-          duration: widget.duration,
-          curve: widget.curve,
-          height: padding(over, end, direction, initialMaxScrollExtent),
-          width: double.infinity,
-        ),
-      );
+    double Function(bool over, bool? end, ScrollDirection? direction, double? maxExtent) padding,
+  ) {
+    return Reactive.build3<bool, bool?, ScrollDirection?>(
+      overThreshold,
+      atEndEdge,
+      userDirection,
+      builder: (_, over, end, direction) => AnimatedContainer(
+        duration: widget.duration,
+        curve: widget.curve,
+        height: padding(over, end, direction, initialMaxScrollExtent),
+        width: double.infinity,
+      ),
+    );
+  }
 
   NotificationListener<Notification> list() {
     return NotificationListener<ScrollNotification>(

@@ -6,6 +6,7 @@ class InsertDialog extends StatefulWidget {
     Key? key,
     required this.title,
     required this.fieldLabel,
+    this.fieldHint,
     required this.onInsert,
     this.confirmLabel = "Confirm",
     this.cancelLabel = "Cancel",
@@ -15,6 +16,7 @@ class InsertDialog extends StatefulWidget {
   final void Function(String) onInsert;
   final String? initial;
   final String fieldLabel;
+  final String? fieldHint;
   final String title;
   final String confirmLabel;
   final String cancelLabel;
@@ -47,6 +49,7 @@ class _InsertDialogState extends State<InsertDialog> {
         controller: controller,
         decoration: InputDecoration(
           label: Text(widget.fieldLabel),
+          hintText: widget.fieldHint,
         ),
       ),
       actions: [
