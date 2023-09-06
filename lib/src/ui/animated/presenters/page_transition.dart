@@ -5,7 +5,7 @@ class RadioPageTransition<A> extends StatefulWidget {
   const RadioPageTransition({
     super.key,
     required this.page,
-    required this.children,
+    required this.builder,
     required this.orderedPages,
     this.backgroundColor,
     this.offset = 100,
@@ -14,7 +14,7 @@ class RadioPageTransition<A> extends StatefulWidget {
   }) : assert(offset > 0);
   final A page;
   final List<A> orderedPages;
-  final Map<A, Widget> children;
+  final Widget Function(BuildContext context, A value) builder;
   final Color? backgroundColor;
   final double offset;
   final Axis axis;
@@ -48,30 +48,31 @@ class _RadioPageTransitionState<A> extends State<RadioPageTransition<A>> {
       child: Stack(
         fit: StackFit.expand,
         children: <Widget>[
-          for (final entry in widget.children.entries)
-            if (widget.staticOffset ?? (entry.key == widget.page // if this is the current page
-                    ? widget.orderedPages.indexOf(entry.key) <
-                            widget.orderedPages
-                                .indexOf(previous) // if this is to the left of the previous one
-                        ? -widget.offset // comes from the left
-                        : widget.offset // comes from the right
-                    : widget.orderedPages.indexOf(entry.key) <
-                            widget.orderedPages
-                                .indexOf(widget.page) // if this is to the left of the current one
-                        ? -widget.offset // goes to the left
-                        : widget.offset) // goes to the right
+          for (final p in widget.orderedPages)
+            if (widget.staticOffset ??
+                    (p == widget.page // if this is the current page
+                        ? widget.orderedPages.indexOf(p) <
+                                widget.orderedPages
+                                    .indexOf(previous) // if this is to the left of the previous one
+                            ? -widget.offset // comes from the left
+                            : widget.offset // comes from the right
+                        : widget.orderedPages.indexOf(p) <
+                                widget.orderedPages.indexOf(
+                                    widget.page) // if this is to the left of the current one
+                            ? -widget.offset // goes to the left
+                            : widget.offset) // goes to the right
                 case double ffst)
               AnimatedPresented(
                 slideOffset: switch (widget.axis) {
                   Axis.horizontal => Offset(ffst, 0),
                   Axis.vertical => Offset(0, ffst),
                 },
-                presented: widget.page == entry.key,
+                presented: widget.page == p,
                 presentMode: PresentMode.slide,
                 curve: Curves.easeOut,
                 fadeFirstFraction: 0.55,
                 duration: const Duration(milliseconds: 250),
-                child: entry.value,
+                child: widget.builder(context, p),
               ),
         ],
       ),
