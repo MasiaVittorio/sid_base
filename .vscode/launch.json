@@ -5,9 +5,16 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Flutter",
+            "type": "dart",
+            "request": "launch",
+            "program": "example/lib/main.dart"
+        },
+        {
             "name": "sid_base",
             "request": "launch",
-            "type": "dart"
+            "type": "dart",
+            "program": "example/lib/main.dart"
         },
         {
             "name": "sid_base (profile mode)",
@@ -25,7 +32,8 @@
             "name": "example",
             "cwd": "example",
             "request": "launch",
-            "type": "dart"
+            "type": "dart",
+            "program": "example/lib/main.dart"
         },
         {
             "name": "example (profile mode)",
