@@ -28,10 +28,11 @@ class Reactive<T> extends ChangeNotifier {
   Reactive(this.value);
 
   @mustCallSuper
-  void update(T newValue, {bool distinct = true}) {
-    if (newValue == value && distinct) return;
+  bool update(T newValue, {bool distinct = true}) {
+    if (newValue == value && distinct) false;
     value = newValue;
     notifyListeners();
+    return true;
   }
 
   void refresh() {
@@ -134,14 +135,15 @@ class PersistentReactive<T> extends Reactive<T> {
   final PersistenceProvider persistenceProvider;
 
   @override
-  void update(T newValue, {bool distinct = true}) {
+  bool update(T newValue, {bool distinct = true}) {
     if (_v) debugPrint("updating with $newValue");
     if (newValue == value && distinct) {
       if (_v) debugPrint("already $newValue");
-      return;
+      return false;
     }
-    super.update(newValue, distinct: distinct);
+    final bool result = super.update(newValue, distinct: distinct);
     _write();
+    return result;
   }
 
   @override
