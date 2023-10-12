@@ -49,22 +49,28 @@ class MD3NavBar extends StatelessWidget {
     final theme = Theme.of(context);
     return Material(
       color: theme.elevatedSurface(elevation),
-      child: SizedBox(
-        height: height,
-        child: Row(
-          children: [
-            for (int i = 0; i < items.length; i++)
-              Expanded(
-                child: _Tab(
-                  icon: items[i].icon,
-                  activeIcon: items[i].iconActive,
-                  active: i == currentIndex,
-                  label: items[i].label,
-                  onTap: () => onTap(i),
-                  chipRestElevation: elevation,
+      child: SafeArea(
+        bottom: true,
+        top: false,
+        right: false,
+        left: false,
+        child: SizedBox(
+          height: height,
+          child: Row(
+            children: [
+              for (int i = 0; i < items.length; i++)
+                Expanded(
+                  child: _Tab(
+                    icon: items[i].icon,
+                    activeIcon: items[i].iconActive,
+                    active: i == currentIndex,
+                    label: items[i].label,
+                    onTap: () => onTap(i),
+                    chipRestElevation: elevation,
+                  ),
                 ),
-              ),
-          ],
+            ],
+          ),
         ),
       ),
     );
