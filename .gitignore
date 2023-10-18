@@ -47,3 +47,9 @@ example/windows/flutter/generated_plugin_registrant.cc
 example/windows/flutter/generated_plugins.cmake
 windows/flutter/generated_plugin_registrant.cc
 .gitignore
+example/windows/flutter/generated_plugin_registrant.cc
+example/windows/flutter/generated_plugins.cmake
+.gitignore
+windows/flutter/generated_plugins.cmake
+example/pubspec.lock
+pubspec.lock
