@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart' hide Easing;
+import 'package:flutter/material.dart';// hide Easing;
 import 'package:sid_base/sid_base.dart';
 
 //only one animated icon, different from animated switching icon that accepts a forward animated icon and a backward one

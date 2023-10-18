@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:flutter/material.dart' hide Easing;
+import 'package:flutter/material.dart';// hide Easing;
 import 'package:sid_base/sid_base.dart';
 import 'package:sid_base/src/ui/specialty_widgets/expandable_circle_card/external_circle_clipper.dart';
 
