@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Easing;
 import 'package:sid_base/sid_base.dart';
 import 'package:sid_base/src/ui/specialty_widgets/expandable_circle_card/external_circle_clipper.dart';
 
@@ -20,7 +20,8 @@ class ExpandableCircleCard extends StatelessWidget {
     required this.titleChild,
     this.oppositeColor,
     this.surfaceColor,
-    this.borderPadding = const EdgeInsets.fromLTRB(_kBorder, _kTopBorder, _kBorder, _kBorder),
+    this.borderPadding =
+        const EdgeInsets.fromLTRB(_kBorder, _kTopBorder, _kBorder, _kBorder),
     this.overrideCircleBorderWidth,
     this.collapsedCircleRadius = 18,
     this.circleHorizontalPadding = _kSmallH,
@@ -42,29 +43,38 @@ class ExpandableCircleCard extends StatelessWidget {
   final ValueChanged<bool> onExpandedChanged;
 
   final Color? surfaceColor;
-  Color _surfaceColor(ThemeData theme) => surfaceColor ?? theme.colorScheme.inverseSurface;
+  Color _surfaceColor(ThemeData theme) =>
+      surfaceColor ?? theme.colorScheme.inverseSurface;
   final Color? oppositeColor;
-  Color _oppositeColor(ThemeData theme) => oppositeColor ?? _surfaceColor(theme).contrast;
+  Color _oppositeColor(ThemeData theme) =>
+      oppositeColor ?? _surfaceColor(theme).contrast;
 
   final double collapsedCircleRadius;
   double get _collapsedCircleDiameter => collapsedCircleRadius * 2;
-  double get _expandedCircleRadius => collapsedCircleRadius + _circleBorderWidth;
-  double get _expandedCircleExtraSpaceComparedToTitle => _expandedCircleRadius + (borderPadding.top / 2);
-  double get _circleRadius => expanded ? _expandedCircleRadius : collapsedCircleRadius;
+  double get _expandedCircleRadius =>
+      collapsedCircleRadius + _circleBorderWidth;
+  double get _expandedCircleExtraSpaceComparedToTitle =>
+      _expandedCircleRadius + (borderPadding.top / 2);
+  double get _circleRadius =>
+      expanded ? _expandedCircleRadius : collapsedCircleRadius;
   double get _circleDiameter => _circleRadius * 2;
 
   final EdgeInsets borderPadding;
   final double? overrideCircleBorderWidth;
-  double get _circleBorderWidth => overrideCircleBorderWidth ?? borderPadding.top;
+  double get _circleBorderWidth =>
+      overrideCircleBorderWidth ?? borderPadding.top;
   final double circleHorizontalPadding;
   double get circleBoxWidth =>
-      _collapsedCircleDiameter + (max(circleHorizontalPadding, _circleBorderWidth)) * 2;
+      _collapsedCircleDiameter +
+      (max(circleHorizontalPadding, _circleBorderWidth)) * 2;
 
   TextStyle _titleStyle(ThemeData theme) => (theme.textTheme.titleMedium ??
-          const TextStyle(fontSize: 16, height: 24 / 16, fontWeight: FontWeight.w500))
+          const TextStyle(
+              fontSize: 16, height: 24 / 16, fontWeight: FontWeight.w500))
       .copyWith(color: _oppositeColor(theme), height: 1);
   TextStyle _bodyStyle(ThemeData theme) => (theme.textTheme.bodyMedium ??
-          const TextStyle(fontSize: 14, height: 20 / 14, fontWeight: FontWeight.w400))
+          const TextStyle(
+              fontSize: 14, height: 20 / 14, fontWeight: FontWeight.w400))
       .copyWith(color: _oppositeColor(theme));
 
   final bool showDivider;
@@ -126,8 +136,10 @@ class ExpandableCircleCard extends StatelessWidget {
             value: expanded ? 1.0 : 0.0,
             builder: (context, value, child) {
               const double f = 0.5;
-              final double h = value.mapToRange(0, dividerWidth, fromMin: 0.0, fromMax: f);
-              final double wf = value.mapToRange(0.0, 1.0, fromMin: f, fromMax: 1.0);
+              final double h =
+                  value.mapToRange(0, dividerWidth, fromMin: 0.0, fromMax: f);
+              final double wf =
+                  value.mapToRange(0.0, 1.0, fromMin: f, fromMax: 1.0);
               return Pad(
                 horizontal: horizontalContentPadding,
                 child: Al.centerLeft(
@@ -175,8 +187,8 @@ class ExpandableCircleCard extends StatelessWidget {
           Positioned(
             right: 0,
             width: circleBoxWidth,
-            top: - _expandedCircleExtraSpaceComparedToTitle,
-            bottom: - _expandedCircleExtraSpaceComparedToTitle,
+            top: -_expandedCircleExtraSpaceComparedToTitle,
+            bottom: -_expandedCircleExtraSpaceComparedToTitle,
             child: AnimatedAlign(
               alignment: expanded ? Alignment.topCenter : Alignment.center,
               duration: Motion.long1,
@@ -215,12 +227,15 @@ class ExpandableCircleCard extends StatelessWidget {
         children: [
           Positioned.fill(
             child: Center(
-                child: suggestColor(color: _surfaceColor(theme), child: collapsedCircleChild)),
+                child: suggestColor(
+                    color: _surfaceColor(theme), child: collapsedCircleChild)),
           ),
           Center(
             child: GenericAnimatedBuilder(
                 duration: expanded ? Motion.short4 : Motion.long3,
-                curve: expanded ? Easing.emphasizedDecelerate : Easing.emphasizedDecelerate,
+                curve: expanded
+                    ? Easing.emphasizedDecelerate
+                    : Easing.emphasizedDecelerate,
                 value: expanded ? 1.0 : 0.0,
                 child: _expandedCircle(theme),
                 builder: (context, value, child) {

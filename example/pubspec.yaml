@@ -39,8 +39,8 @@ dependencies:
   sid_base:
     path: ../
   
-  dynamic_color: ^1.4.0
-  material_color_utilities: ^0.5.0
+  dynamic_color: ^1.6.7
+  material_color_utilities: ^0.8.0
 
 dev_dependencies:
   flutter_test:

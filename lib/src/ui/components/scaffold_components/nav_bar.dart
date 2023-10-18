@@ -15,13 +15,16 @@ class NavBarItem {
   }) : iconActive = activeIcon ?? icon;
 
   @override
-  String toString() => 'NavBarItem(label: $label, icon: $icon, iconActive: $iconActive)';
+  String toString() =>
+      'NavBarItem(label: $label, icon: $icon, iconActive: $iconActive)';
 
   @override
   bool operator ==(covariant NavBarItem other) {
     if (identical(this, other)) return true;
 
-    return other.label == label && other.icon == icon && other.iconActive == iconActive;
+    return other.label == label &&
+        other.icon == icon &&
+        other.iconActive == iconActive;
   }
 
   @override
@@ -34,6 +37,7 @@ class MD3NavBar extends StatelessWidget {
     required this.items,
     required this.currentIndex,
     required this.onTap,
+    this.overrideBackgroundColor,
     this.elevation = 2,
   }) : super(key: key);
 
@@ -41,6 +45,7 @@ class MD3NavBar extends StatelessWidget {
   final int currentIndex;
   final void Function(int) onTap;
   final double elevation;
+  final Color? overrideBackgroundColor;
 
   static const double height = 76;
 
@@ -48,7 +53,7 @@ class MD3NavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Material(
-      color: theme.elevatedSurface(elevation),
+      color: overrideBackgroundColor ?? theme.elevatedSurface(elevation),
       child: SafeArea(
         bottom: true,
         top: false,
@@ -100,9 +105,12 @@ class _Tab extends StatelessWidget {
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
     final colorScheme = theme.colorScheme;
-    final Color labelColor = active ? colorScheme.onSurface : colorScheme.onSurfaceVariant;
+    final Color labelColor =
+        active ? colorScheme.onSurface : colorScheme.onSurfaceVariant;
     final labelStyle = textTheme.labelLarge!.copyWith(
-      fontWeight: active ? textTheme.labelLarge!.fontWeight : textTheme.labelMedium!.fontWeight,
+      fontWeight: active
+          ? textTheme.labelLarge!.fontWeight
+          : textTheme.labelMedium!.fontWeight,
       color: labelColor,
     );
     return InkResponse(
@@ -153,7 +161,9 @@ class _NavChip extends StatelessWidget {
       height: 32,
       width: expanded ? 64 : 32,
       decoration: BoxDecoration(
-        color: expanded ? theme.colorScheme.secondaryContainer : theme.elevatedSurface(elevation),
+        color: expanded
+            ? theme.colorScheme.secondaryContainer
+            : theme.elevatedSurface(elevation),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Center(

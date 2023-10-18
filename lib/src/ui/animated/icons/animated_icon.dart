@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Easing;
 import 'package:sid_base/sid_base.dart';
 
 //only one animated icon, different from animated switching icon that accepts a forward animated icon and a backward one
@@ -19,16 +19,18 @@ class ImplicitlyAnimatedIcon extends ImplicitlyAnimatedWidget {
   final Color? color;
   final double? size;
   @override
-  AnimatedWidgetBaseState<ImplicitlyAnimatedIcon> createState() => _ImplicitlyAnimatedIconState();
+  AnimatedWidgetBaseState<ImplicitlyAnimatedIcon> createState() =>
+      _ImplicitlyAnimatedIconState();
 }
 
-class _ImplicitlyAnimatedIconState extends AnimatedWidgetBaseState<ImplicitlyAnimatedIcon> {
+class _ImplicitlyAnimatedIconState
+    extends AnimatedWidgetBaseState<ImplicitlyAnimatedIcon> {
   Tween<double>? _tween;
 
   @override
   void forEachTween(TweenVisitor<dynamic> visitor) {
-    _tween = visitor(_tween, widget.progress, (dynamic value) => Tween<double>(begin: value))
-        as Tween<double>;
+    _tween = visitor(_tween, widget.progress,
+        (dynamic value) => Tween<double>(begin: value)) as Tween<double>;
   }
 
   @override
