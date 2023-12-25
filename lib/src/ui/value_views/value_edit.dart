@@ -56,7 +56,7 @@ abstract class ValueEditViewState<T, A extends ValueEditView<T>> extends State<A
                 title: "Scarta modifiche?",
                 content: "Se esci ora, le modifiche non saranno salvate.",
                 confirmLabel: "Scarta ed esci",
-                confirmColor: context.theme.colorScheme.error,
+                dangerous: true,
                 action: () {},
               );
             },

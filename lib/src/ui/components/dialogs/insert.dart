@@ -11,6 +11,7 @@ class InsertDialog extends StatefulWidget {
     this.confirmLabel = "Confirm",
     this.cancelLabel = "Cancel",
     this.initial,
+    this.icon,
   }) : super(key: key);
 
   final void Function(String) onInsert;
@@ -18,6 +19,7 @@ class InsertDialog extends StatefulWidget {
   final String fieldLabel;
   final String? fieldHint;
   final String title;
+  final Widget? icon;
   final String confirmLabel;
   final String cancelLabel;
 
@@ -43,6 +45,7 @@ class _InsertDialogState extends State<InsertDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      icon: widget.icon,
       title: Text(widget.title),
       content: TextField(
         autofocus: true,

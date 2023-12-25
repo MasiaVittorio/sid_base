@@ -12,6 +12,7 @@ class ExpandableAppBarList extends StatelessWidget {
     this.automaticallyImplyLeading = true,
     this.threshold = 12,
     this.actions = const [],
+    this.transparentExpanded = false,
   });
 
   final Widget Function(
@@ -26,6 +27,7 @@ class ExpandableAppBarList extends StatelessWidget {
   final Widget? leading;
   final double threshold;
   final List<Widget> actions;
+  final bool transparentExpanded;
 
   bool get _verbose => false;
 
@@ -43,8 +45,7 @@ class ExpandableAppBarList extends StatelessWidget {
     double topPadding(bool overThreshold, bool? atEnd, _, __) {
       if (atEnd == null) {
         if (_verbose) {
-          debugPrint(
-              "top 1.1: at end null (equal to not scrollable): topExpanded");
+          debugPrint("top 1.1: at end null (equal to not scrollable): topExpanded");
         }
         return topExpanded;
       }
@@ -74,8 +75,7 @@ class ExpandableAppBarList extends StatelessWidget {
       }
     }
 
-    double bottomPadding(
-        bool overThreshold, bool? atEnd, _, double? initialMaxScrollExtent) {
+    double bottomPadding(bool overThreshold, bool? atEnd, _, double? initialMaxScrollExtent) {
       if (atEnd == null) {
         if (_verbose) {
           debugPrint("bottom 2: at end null (not scrollable): bottomExpanded");
@@ -96,8 +96,7 @@ class ExpandableAppBarList extends StatelessWidget {
         return 0;
       }
       if (_verbose) {
-        debugPrint(
-            "bottom 5: initial max scroll extent $initialMaxScrollExtent");
+        debugPrint("bottom 5: initial max scroll extent $initialMaxScrollExtent");
       }
       if (upBy > initialMaxScrollExtent) {
         if (_verbose) {
@@ -127,7 +126,10 @@ class ExpandableAppBarList extends StatelessWidget {
           leading: leading,
           centered: true,
           actions: actions,
-          expandedColor: context.theme.scaffoldBackgroundColor,
+          expandedColor: switch (transparentExpanded) {
+            false => context.theme.scaffoldBackgroundColor,
+            true => context.theme.scaffoldBackgroundColor.withOpacity(0.0),
+          } 
         ),
       ),
       children: children,

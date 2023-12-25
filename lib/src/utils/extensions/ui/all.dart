@@ -1,5 +1,6 @@
-export 'color.dart';
 export 'brightness.dart';
-export 'theme_data.dart';
+export 'color.dart';
 export 'context.dart';
 export 'text_style.dart';
+export 'text_theme.dart';
+export 'theme_data.dart';
