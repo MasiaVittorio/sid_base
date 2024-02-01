@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:flutter/material.dart';// hide Easing;
+import 'package:flutter/material.dart';
 import 'package:sid_base/sid_base.dart';
 import 'package:sid_base/src/ui/specialty_widgets/expandable_circle_card/external_circle_clipper.dart';
 
@@ -106,7 +106,7 @@ class ExpandableCircleCard extends StatelessWidget {
       padding: borderPadding,
       child: AnimatedContainer(
         duration: Motion.extraLong4,
-        curve: Easing.emphasized,
+        curve: Easings.emphasized,
         decoration: BoxDecoration(
           color: _surfaceColor(theme),
           borderRadius: BorderRadius.vertical(
@@ -132,7 +132,7 @@ class ExpandableCircleCard extends StatelessWidget {
           _title(context, theme),
           GenericAnimatedBuilder(
             duration: Motion.medium3,
-            curve: Easing.emphasized,
+            curve: Easings.emphasized,
             value: expanded ? 1.0 : 0.0,
             builder: (context, value, child) {
               const double f = 0.5;
@@ -159,7 +159,7 @@ class ExpandableCircleCard extends StatelessWidget {
             overlapSizeAndOpacity: 1,
             listed: expanded,
             duration: Motion.long4,
-            curve: Easing.emphasizedDecelerate,
+            curve: Easings.emphasizedDecelerate,
             child: _body(context, theme),
           ),
         ],
@@ -181,7 +181,7 @@ class ExpandableCircleCard extends StatelessWidget {
               bottom: expanded ? bottomTitlePadding : topTitlePadding,
             ),
             duration: Motion.short4,
-            curve: Easing.standard,
+            curve: Easings.standard,
             child: titleChild,
           ),
           Positioned(
@@ -192,7 +192,7 @@ class ExpandableCircleCard extends StatelessWidget {
             child: AnimatedAlign(
               alignment: expanded ? Alignment.topCenter : Alignment.center,
               duration: Motion.long1,
-              curve: Easing.emphasized,
+              curve: Easings.emphasized,
               child: _circle(context, theme),
             ),
           ),
@@ -216,7 +216,7 @@ class ExpandableCircleCard extends StatelessWidget {
   Widget _circle(BuildContext context, ThemeData theme) {
     return AnimatedContainer(
       duration: Motion.short3,
-      curve: Easing.standard,
+      curve: Easings.standard,
       width: _circleDiameter,
       height: _circleDiameter,
       decoration: BoxDecoration(
@@ -234,8 +234,8 @@ class ExpandableCircleCard extends StatelessWidget {
             child: GenericAnimatedBuilder(
                 duration: expanded ? Motion.short4 : Motion.long3,
                 curve: expanded
-                    ? Easing.emphasizedDecelerate
-                    : Easing.emphasizedDecelerate,
+                    ? Easings.emphasizedDecelerate
+                    : Easings.emphasizedDecelerate,
                 value: expanded ? 1.0 : 0.0,
                 child: _expandedCircle(theme),
                 builder: (context, value, child) {

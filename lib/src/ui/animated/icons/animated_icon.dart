@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';// hide Easing;
+import 'package:flutter/material.dart';
 import 'package:sid_base/sid_base.dart';
 
 //only one animated icon, different from animated switching icon that accepts a forward animated icon and a backward one
@@ -10,7 +10,7 @@ class ImplicitlyAnimatedIcon extends ImplicitlyAnimatedWidget {
     required this.progress,
     this.color,
     this.size,
-    super.curve = Easing.standard,
+    super.curve = Easings.standard,
     super.duration = Motion.short4,
   });
 

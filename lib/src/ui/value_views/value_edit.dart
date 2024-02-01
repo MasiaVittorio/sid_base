@@ -38,34 +38,43 @@ abstract class ValueEditViewState<T, A extends ValueEditView<T>> extends State<A
   Widget body(BuildContext context);
 
   bool get isCurrentEmpty => false;
+  bool _isConfirmingPop = false;
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        if (_tryingToSaveNow) return true;
-        if (current == initial) return true;
-        if (initial == null && isCurrentEmpty) return true;
-        bool confirmPop = false;
-        try {
-          final bool? response = await showDialog<bool>(
-            context: context,
-            builder: (context) {
-              // TODO: localize or provide edit capabilitini
-              return ConfirmDialog(
-                title: "Scarta modifiche?",
-                content: "Se esci ora, le modifiche non saranno salvate.",
-                confirmLabel: "Scarta ed esci",
-                dangerous: true,
-                action: () {},
-              );
-            },
-          );
-          confirmPop = response ?? false;
-        } catch (e) {
-          confirmPop = false;
+    return PopScope(
+      canPop: _isConfirmingPop ||
+          _tryingToSaveNow ||
+          current == initial ||
+          initial == null && isCurrentEmpty,
+      onPopInvoked: (didPop) async {
+        if (!didPop) {
+          bool confirmPop = false;
+          try {
+            final bool? response = await showDialog<bool>(
+              context: context,
+              builder: (context) {
+                // TODO: localize or provide edit capabilitini
+                return ConfirmDialog(
+                  title: "Scarta modifiche?",
+                  content: "Se esci ora, le modifiche non saranno salvate.",
+                  confirmLabel: "Scarta ed esci",
+                  dangerous: true,
+                  action: () {},
+                );
+              },
+            );
+            confirmPop = response ?? false;
+          } catch (e) {
+            confirmPop = false;
+          }
+          if (confirmPop) {
+            _isConfirmingPop = true;
+            if(context.mounted) {
+              Navigator.of(context).pop();
+            }
+          }
         }
-        return confirmPop;
       },
       child: Scaffold(
         appBar: appBar,
