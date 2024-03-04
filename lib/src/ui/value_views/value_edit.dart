@@ -50,27 +50,33 @@ abstract class ValueEditViewState<T, A extends ValueEditView<T>> extends State<A
       onPopInvoked: (didPop) async {
         if (!didPop) {
           bool confirmPop = false;
-          try {
-            final bool? response = await showDialog<bool>(
-              context: context,
-              builder: (context) {
-                // TODO: localize or provide edit capabilitini
-                return ConfirmDialog(
-                  title: "Scarta modifiche?",
-                  content: "Se esci ora, le modifiche non saranno salvate.",
-                  confirmLabel: "Scarta ed esci",
-                  dangerous: true,
-                  action: () {},
-                );
-              },
-            );
-            confirmPop = response ?? false;
-          } catch (e) {
-            confirmPop = false;
+          if (_isConfirmingPop || _tryingToSaveNow) {
+            confirmPop = true;
+          } else {
+            try {
+              final bool? response = await showDialog<bool>(
+                context: context,
+                builder: (context) {
+                  // TODO: localize or provide edit capabilitini
+                  return ConfirmDialog(
+                    title: "Scarta modifiche?",
+                    content: "Se esci ora, le modifiche non saranno salvate.",
+                    confirmLabel: "Scarta ed esci",
+                    dangerous: true,
+                    action: () {},
+                  );
+                },
+              );
+              confirmPop = response ?? false;
+            } catch (e) {
+              confirmPop = false;
+            }
           }
           if (confirmPop) {
-            _isConfirmingPop = true;
-            if(context.mounted) {
+            setState(() {
+              _isConfirmingPop = true;
+            });
+            if (context.mounted) {
               Navigator.of(context).pop();
             }
           }
@@ -91,7 +97,9 @@ abstract class ValueEditViewState<T, A extends ValueEditView<T>> extends State<A
     return () {
       widget.onSave(c);
 
-      _tryingToSaveNow = true;
+      setState(() {
+        _tryingToSaveNow = true;
+      });
       // so it skips the onWillPop stuff that asks if you're sure you want to exit
 
       Navigator.of(context).maybePop();
