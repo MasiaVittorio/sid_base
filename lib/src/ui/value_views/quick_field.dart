@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sid_base/sid_base.dart';
 
 
 class QuickField extends StatelessWidget {
@@ -38,6 +39,7 @@ class QuickField extends StatelessWidget {
         textInputAction: textInputAction,
         onSubmitted: onSubmitted,
         onEditingComplete: onEditingComplete,
+        onTapOutside: (_) => context.unfocus(),
         decoration: InputDecoration(
           isDense: isDense,
           label: Text(label),
