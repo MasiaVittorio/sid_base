@@ -77,7 +77,7 @@ class ConfirmDialog extends StatelessWidget {
 
     return AlertDialog(
       title: Text(title),
-      icon: icon == null ? null : Icon(icon),
+      icon: icon == null ? null : Icon(icon, color: dangerous ? theme.colorScheme.error : null),
       content:customContent ?? (content == null ? null : Text(content)),
       actions: [
         if (confirmIcon != null)

@@ -12,6 +12,10 @@ abstract class ValueEditView<T> extends StatefulWidget {
   final T? initial;
   final ValueChanged<T> onSave;
   final bool resizeOnKeyboard;
+
+  String get discardDialogTitle => "Scarta modifiche?";
+  String get discardDialogContent => "Se esci ora, le modifiche non saranno salvate.";
+  String get discardDialogConfirmLabel => "Scarta ed esci";
 }
 
 abstract class ValueEditViewState<T, A extends ValueEditView<T>> extends State<A> {
@@ -59,9 +63,9 @@ abstract class ValueEditViewState<T, A extends ValueEditView<T>> extends State<A
                 builder: (context) {
                   // TODO: localize or provide edit capabilitini
                   return ConfirmDialog(
-                    title: "Scarta modifiche?",
-                    content: "Se esci ora, le modifiche non saranno salvate.",
-                    confirmLabel: "Scarta ed esci",
+                    title: widget.discardDialogTitle,
+                    content: widget.discardDialogContent, 
+                    confirmLabel: widget.discardDialogConfirmLabel,
                     dangerous: true,
                     action: () {},
                   );
