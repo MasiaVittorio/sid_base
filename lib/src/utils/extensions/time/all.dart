@@ -1,3 +1,4 @@
 
-export 'int.dart';
 export 'datetime.dart';
+export 'duration.dart';
+export 'int.dart';

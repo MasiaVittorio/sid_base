@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:sid_base/sid_base.dart';
 
 class ThemeLogic extends LogicBase {
-  
- @override
+  @override
   void dispose() {
     dark.dispose();
+    super.dispose();
   }
 
   static const int dataOverwrite = 1;
@@ -14,16 +14,16 @@ class ThemeLogic extends LogicBase {
   late final PersistentReactive<bool> dark;
 
   final String keyBase;
-  
+
   ThemeLogic({
     bool initialDark = true,
-    this.keyBase = "theme logic", 
-  }): dark = PersistentReactive<bool>(
-    initialDark,
-    key: "$keyBase $dataOverwrite relable var: dark",
-  );
+    this.keyBase = "theme logic",
+  }) : dark = PersistentReactive<bool>(
+          initialDark,
+          key: "$keyBase $dataOverwrite relable var: dark",
+        );
 
-  ThemeData _baseThemeFromDark(bool dark){
+  ThemeData _baseThemeFromDark(bool dark) {
     final scheme = !dark ? _lightColorScheme : _darkColorScheme;
     final base = ThemeData(
       fontFamily: "PlusJakartaSans",
@@ -33,67 +33,71 @@ class ThemeLogic extends LogicBase {
       colorScheme: scheme,
       useMaterial3: true,
       applyElevationOverlayColor: true,
-      scaffoldBackgroundColor: scheme.surface, 
+      scaffoldBackgroundColor: scheme.surface,
     );
     return base.copyWith(splashFactory: InkSparkle.splashFactory);
   }
 
   Widget buildWithUsableTheme({
     required Widget Function(BuildContext context, ThemeData theme) builder,
-  }) => dark.build((context, dark) => DynamicColorBuilder(
-    builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
-      late final ColorScheme? scheme;
-      final baseTheme = _baseThemeFromDark(dark);
-      
-      if(dark){
-        if(darkDynamic != null){
-          final b = darkDynamic.background.withTone(07);
-          scheme = darkDynamic.copyWith(
-            background: b,
-            surface: b,
-          );
-        } else {
-          scheme = null;
-        }
-      } else {
-        scheme = lightDynamic;
-      }
+  }) =>
+      dark.build(
+        (context, dark) => DynamicColorBuilder(
+          builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
+            late final ColorScheme? scheme;
+            final baseTheme = _baseThemeFromDark(dark);
 
-      late ThemeData usable; 
-      if(scheme == null){
-        usable = baseTheme.copyWith(
-          colorScheme: baseTheme.colorScheme.copyWith(
-            background: baseTheme.brightness.isDark 
-              ? ThemeLogic._customDarkBackground
-              : Colors.white,
-          ),
-          dividerTheme: baseTheme.dividerTheme.copyWith(
-            indent: 16, endIndent: 16, thickness: 0.8, 
-            color: baseTheme.colorScheme.onSurface.withOpacity(0.35), 
-          ),
-        );
-      } else {
-        usable = baseTheme.copyWith(
-          colorScheme: scheme,
-          canvasColor: scheme.background,
-          dividerTheme: baseTheme.dividerTheme.copyWith(
-            indent: 16, endIndent: 16, thickness: 0.8, 
-            color: scheme.onSurface.withOpacity(0.35), 
-          ),
-        );
-      }
+            if (dark) {
+              if (darkDynamic != null) {
+                final b = darkDynamic.background.withTone(07);
+                scheme = darkDynamic.copyWith(
+                  background: b,
+                  surface: b,
+                );
+              } else {
+                scheme = null;
+              }
+            } else {
+              scheme = lightDynamic;
+            }
 
-      usable = usable.copyWith(
-        scaffoldBackgroundColor: usable.colorScheme.surface
+            late ThemeData usable;
+            if (scheme == null) {
+              usable = baseTheme.copyWith(
+                colorScheme: baseTheme.colorScheme.copyWith(
+                  background:
+                      baseTheme.brightness.isDark ? ThemeLogic._customDarkBackground : Colors.white,
+                ),
+                dividerTheme: baseTheme.dividerTheme.copyWith(
+                  indent: 16,
+                  endIndent: 16,
+                  thickness: 0.8,
+                  color: baseTheme.colorScheme.onSurface.withOpacity(0.35),
+                ),
+              );
+            } else {
+              usable = baseTheme.copyWith(
+                colorScheme: scheme,
+                canvasColor: scheme.background,
+                dividerTheme: baseTheme.dividerTheme.copyWith(
+                  indent: 16,
+                  endIndent: 16,
+                  thickness: 0.8,
+                  color: scheme.onSurface.withOpacity(0.35),
+                ),
+              );
+            }
+
+            usable = usable.copyWith(scaffoldBackgroundColor: usable.colorScheme.surface);
+
+            return Builder(
+              builder: (context) => builder(context, usable),
+            );
+          },
+        ),
       );
 
-      return Builder(builder: (context) => builder(context, usable),);
-    },
-  ),);
-
   void toggleBrightness() => dark.update(!dark.value);
-
-
 
   static const _lightColorScheme = ColorScheme(
     brightness: Brightness.light,
@@ -158,6 +162,6 @@ class ThemeLogic extends LogicBase {
     shadow: Color(0xFF000000),
     surfaceTint: Color(0xFFAAD559),
   );
-  
+
   static const _customDarkBackground = Color(0xff171717);
 }

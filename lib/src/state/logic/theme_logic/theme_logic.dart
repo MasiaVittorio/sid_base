@@ -8,6 +8,7 @@ abstract class ThemeLogicBase extends LogicBase {
   void dispose() {
     themeMode.dispose();
     useDynamic.dispose();
+    super.dispose();
   }
 
   final String keyBase;
