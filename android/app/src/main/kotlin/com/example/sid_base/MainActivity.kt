@@ -1,4 +1,4 @@
-package com.example.sid_base
+package com.mvsidereusart.sid_base
 
 import io.flutter.embedding.android.FlutterActivity
 
