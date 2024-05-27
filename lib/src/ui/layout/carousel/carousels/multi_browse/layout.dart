@@ -253,13 +253,13 @@ class MultiBrowseLayouter extends M3CarouselLayouter {
       start: start,
       end: end,
       state: LargeItem(
-        value <= -1 + thinFrac
+        value >= 1 - tF
             ? 1
             : value.mapToRange(
                 0,
                 1,
                 fromMin: 0,
-                fromMax: -1 + thinFrac,
+                fromMax: 1 - tF,
               ),
       ),
     );
