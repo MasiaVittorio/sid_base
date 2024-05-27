@@ -5,7 +5,7 @@ extension ElevatedSurface on ThemeData {
   
   Color elevatedSurface([double elevation = 2]) 
     => ElevationOverlay.applySurfaceTint(
-      colorScheme.background, 
+      colorScheme.surface, 
       colorScheme.surfaceTint, 
       elevation * 2,
     );

@@ -56,21 +56,21 @@ class ConfirmDialog extends StatelessWidget {
 
     final theme = context.theme;
     final cancelStyle = ButtonStyle(
-      foregroundColor: MaterialStatePropertyAll(theme.colorScheme.onSurface),
+      foregroundColor: WidgetStatePropertyAll(theme.colorScheme.onSurface),
     );
     final Color? filledBackground = dangerous ? theme.colorScheme.error : null;
     final Color? filledForeground = dangerous ? theme.colorScheme.onError : null;
     final Color? textForeground = dangerous ? theme.colorScheme.error : null;
     final filledConfirmStyle = ButtonStyle(
-      backgroundColor: MaterialStatePropertyAll(filledBackground),
-      foregroundColor: MaterialStatePropertyAll(filledForeground),
-      iconColor: MaterialStatePropertyAll(filledForeground),
+      backgroundColor: WidgetStatePropertyAll(filledBackground),
+      foregroundColor: WidgetStatePropertyAll(filledForeground),
+      iconColor: WidgetStatePropertyAll(filledForeground),
     );
     final textConfirmStyle = ButtonStyle(
-      foregroundColor: MaterialStatePropertyAll(textForeground),
-      iconColor: MaterialStatePropertyAll(textForeground),
+      foregroundColor: WidgetStatePropertyAll(textForeground),
+      iconColor: WidgetStatePropertyAll(textForeground),
       side: switch(confirmButtonType){
-        ConfirmButtonType.outlined => MaterialStatePropertyAll(BorderSide(color: textForeground ?? theme.colorScheme.primary)),
+        ConfirmButtonType.outlined => WidgetStatePropertyAll(BorderSide(color: textForeground ?? theme.colorScheme.primary)),
         _ => null,
       }
     );

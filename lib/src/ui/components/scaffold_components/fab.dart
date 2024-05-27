@@ -50,8 +50,8 @@ class OpenFab extends StatelessWidget {
             transitionType: ContainerTransitionType.fadeThrough,
             transitionDuration: const Duration(milliseconds: 300),
             closedColor: closedColor,
-            middleColor: theme.colorScheme.background,
-            openColor: theme.colorScheme.background,
+            middleColor: theme.colorScheme.surface,
+            openColor: theme.colorScheme.surface,
             closedShape: const RoundedRectangleBorder(
               borderRadius: borderRadius,
             ),

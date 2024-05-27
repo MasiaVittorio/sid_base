@@ -107,7 +107,7 @@ class ExpandableAppBar extends StatelessWidget {
       height: double.infinity,
       color: scrolled 
         ? collapsedColor ?? theme.elevatedSurface(2)
-        : expandedColor ?? theme.colorScheme.background,
+        : expandedColor ?? theme.colorScheme.surface,
       child: child,
     );
   }

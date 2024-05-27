@@ -83,7 +83,6 @@ abstract class ThemeLogicBase extends LogicBase {
           if (dD != null) {
             final b = customDarkBackground;
             darkScheme = dD.copyWith(
-              background: b,
               surface: b,
             );
           } else {
@@ -149,10 +148,6 @@ abstract class ThemeLogicBase extends LogicBase {
     return switch (scheme) {
       null => baseTheme.copyWith(
           colorScheme: baseTheme.colorScheme.copyWith(
-            background: switch (baseTheme.brightness) {
-              Brightness.dark => customDarkBackground,
-              Brightness.light => Colors.white,
-            },
             surface: switch (baseTheme.brightness) {
               Brightness.dark => customDarkBackground,
               Brightness.light => Colors.white,
@@ -166,7 +161,7 @@ abstract class ThemeLogicBase extends LogicBase {
         ),
       ColorScheme scheme => baseTheme.copyWith(
           colorScheme: scheme,
-          canvasColor: scheme.background,
+          canvasColor: scheme.surface,
           dividerTheme: _dividerTheme(baseTheme, scheme),
         ),
     };
