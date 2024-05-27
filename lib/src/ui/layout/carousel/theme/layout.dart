@@ -25,6 +25,7 @@ abstract class CarouselLayouter {
   (int min, int max) visibleRange(double x);
 
   double get viewPortFraction;
+  double get largeWidth;
 }
 
 typedef Positioner = Positioned Function(Widget child);
@@ -109,10 +110,13 @@ class M3CarouselLayouter extends CarouselLayouter {
   final Axis axis;
 
   @override
-  double get viewPortFraction => ((m + L) / 2) / D;
+  double get viewPortFraction => ((m * 0.8 + 0.2 * L)) / D;
 
   @override
   (int, int) visibleRange(double x) => (x.round() - 2, x.round() + n + 2 + 2);
+
+  @override
+  double get largeWidth => L;
 
   @override
   (Positioner, CarouselItemState)? position(

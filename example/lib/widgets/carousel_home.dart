@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:example/logic/theme_logic.dart';
 import 'package:flutter/material.dart';
 import 'package:sid_base/sid_base.dart';
+import 'package:sid_ui/interactive/all.dart';
 
 class CarouselHome extends StatelessWidget {
   const CarouselHome({super.key});
@@ -55,19 +56,103 @@ class _SlidableCarouselState extends State<SlidableCarousel> {
     });
   }
 
+  Axis direction = Axis.horizontal;
+
+  void onChangedDirection(Axis d) {
+    setState(() {
+      direction = d;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        RadioSlider(
+          items: const [
+            RadioSliderItem(title: Text("Vertical"), icon: Icon(Icons.vertical_distribute_sharp)),
+            RadioSliderItem(title: Text("Horizontal"), icon: Icon(Icons.horizontal_distribute))
+          ],
+          selectedIndex: direction == Axis.vertical ? 0 : 1,
+          onTap: (int index) {
+            onChangedDirection(index == 0 ? Axis.vertical : Axis.horizontal);
+          },
+        ),
         SizedBox(
-          height: 200,
+          height: direction.fold(
+            ifVertifcal: () => 400,
+            ifHorizontal: () => 250,
+          ),
           child: M3Carousel(
-            theme: CustomM3CarouselTheme(targetLarge: targetLarge),
+            theme: CustomM3CarouselTheme(
+              targetLarge: targetLarge,
+              direction: direction,
+            ),
             itemBuilder: (i) => CarouselItem(
-              background: CachedNetworkImageProvider('https://picsum.photos/250?image=${i + 10}'),
-              content: (context, state) => Center(child: Text("$i\n$state")),
+              background: CachedNetworkImageProvider('https://picsum.photos/1000?image=${i + 10}'),
+              contentBuilder: (context, CarouselItemState state, largeWidth) => Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.black.withOpacity(0.4),
+                      Colors.black.withOpacity(0.1),
+                      Colors.black.withOpacity(0.0),
+                    ],
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.topCenter,
+                  ),
+                ),
+                child: Material(
+                  type: MaterialType.transparency,
+                  child: InkWell(
+                    onTap: () {
+                      print("tapped $i");
+                    },
+                    child: Stack(
+                      children: [
+                        Positioned(
+                          bottom: 0,
+                          left: 0,
+                          width: direction.fold(
+                            ifVertifcal: () => null,
+                            ifHorizontal: () => largeWidth,
+                          ),
+                          right: direction.fold(
+                            ifVertifcal: () => 0,
+                            ifHorizontal: () => null,
+                          ),
+                          child: Pad(
+                            bottom: 12,
+                            horizontal: 12,
+                            child: Opacity(
+                              opacity: switch (state) {
+                                ThinItem(thinToSmall: double _) => 0.0,
+                                SmallItem(smallToMedium: double v) =>
+                                  v.mapToRange(0, 0.5, fromMin: 0.7),
+                                MediumItem(mediumToLarge: double v) => v.mapToRange(0.5, 1),
+                                LargeItem(largeToThin: double v) =>
+                                  v.mapToRange(1, 0, fromMin: 0.1, fromMax: 0.7),
+                              },
+                              child: Text.rich(
+                                TextSpan(children: [
+                                  TextSpan(text: "$i\n"),
+                                  TextSpan(
+                                    text: "Titolo",
+                                    style: context.theme.textTheme.bodyMedium,
+                                  ),
+                                ]),
+                                style: context.theme.textTheme.titleLarge,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
             ),
             itemCount: 5,
             loop: true,
@@ -94,8 +179,11 @@ class _SlidableCarouselState extends State<SlidableCarousel> {
 
 class CustomM3CarouselTheme extends M3CarouselTheme {
   final double targetLarge;
+  @override
+  final Axis direction;
   CustomM3CarouselTheme({
     required this.targetLarge,
+    this.direction = Axis.horizontal,
   });
 
   @override
