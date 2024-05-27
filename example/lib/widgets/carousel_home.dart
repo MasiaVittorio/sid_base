@@ -3,7 +3,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:example/logic/theme_logic.dart';
 import 'package:flutter/material.dart';
 import 'package:sid_base/sid_base.dart';
-import 'package:sid_ui/interactive/all.dart';
 
 class CarouselHome extends StatelessWidget {
   const CarouselHome({super.key});
@@ -139,10 +138,12 @@ class _SlidableCarouselState extends State<SlidableCarousel> {
                                   TextSpan(text: "$i\n"),
                                   TextSpan(
                                     text: "Titolo",
-                                    style: context.theme.textTheme.bodyMedium,
+                                    style: context.theme.textTheme.bodyMedium!
+                                        .copyWith(color: Colors.white),
                                   ),
                                 ]),
-                                style: context.theme.textTheme.titleLarge,
+                                style: context.theme.textTheme.titleLarge!
+                                    .copyWith(color: Colors.white),
                               ),
                             ),
                           ),

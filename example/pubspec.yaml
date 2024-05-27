@@ -34,8 +34,6 @@ dependencies:
 
   sid_base:
     path: ../
-  sid_ui:
-    path: ../../sid_ui/
   
   dynamic_color: ^1.6.7
   material_color_utilities: ^0.8.0

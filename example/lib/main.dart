@@ -1,5 +1,5 @@
 import 'package:example/logic/theme_logic.dart';
-import 'package:example/widgets/carousel_home.dart';
+import 'package:example/widgets/home.dart';
 import 'package:flutter/material.dart';
 import 'package:sid_base/sid_base.dart';
 
@@ -39,7 +39,7 @@ class _AppExampleState extends State<AppExample> {
           return MaterialApp(
             title: 'Example',
             theme: theme,
-            home: const CarouselHome(),
+            home: const HomeExample(),
           );
         },
       ),
