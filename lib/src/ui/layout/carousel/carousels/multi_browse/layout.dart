@@ -164,27 +164,25 @@ class MultiBrowseLayouter extends M3CarouselLayouter {
   }
 
   (Positioner, CarouselItemState) _futureToSmall(double value) {
-    final double start = value <= thinFrac
+    final tF = thinFrac;
+    final clippedStart = _smallToMediumEnd(value) + b;
+    final lastThinStart = _smallToMediumEnd(tF) + b;
+    final double start = value <= tF
         ? value.mapToRange(
             D,
-            rightThinStart,
-            fromMax: thinFrac,
+            lastThinStart,
+            fromMax: tF,
           )
-        : value.mapToRange(
-            rightThinStart,
-            smallStart,
-            fromMin: thinFrac,
-          );
+        : clippedStart;
     final double end = value <= thinFrac
         ? start + t
         : value.mapToRange(
-            rightThinStart + t,
-            smallStart + s,
+            lastThinStart + t,
+            D - Z,
             fromMin: thinFrac,
           );
-    final maxStart = _smallToMediumEnd(value) + b;
     return _position(
-      start: max(maxStart, start),
+      start: start,
       end: end,
       state: ThinItem(value <= thinFrac ? 0 : value.mapToRange(0, 1, fromMin: thinFrac)),
     );
