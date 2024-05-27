@@ -90,9 +90,6 @@ class M3CarouselLayouter extends CarouselLayouter {
         n = ((D - A - Z - s) / Lb).floor();
       }
     }
-
-    print(
-        "layouter done: n = ${n.toStringAsFixed(4)}, s = ${s.toStringAsFixed(4)}, m = ${m.toStringAsFixed(4)}, D = ${D.toStringAsFixed(4)}");
   }
 
   final double D; // display size

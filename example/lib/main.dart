@@ -37,7 +37,7 @@ class _AppExampleState extends State<AppExample> {
       child: themeLogic.buildWithUsableTheme(
         builder: (BuildContext context, ThemeData theme) {
           return MaterialApp(
-            title: 'London',
+            title: 'Example',
             theme: theme,
             home: const CarouselHome(),
           );

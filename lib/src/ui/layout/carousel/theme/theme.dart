@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sid_base/sid_base.dart';
 import 'package:sid_base/src/ui/layout/carousel/theme/decoration.dart';
-import 'package:sid_base/src/ui/layout/carousel/theme/layout.dart';
 
 class M3CarouselTheme {
   const M3CarouselTheme();

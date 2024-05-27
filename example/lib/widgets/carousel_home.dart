@@ -80,6 +80,7 @@ class _SlidableCarouselState extends State<SlidableCarousel> {
             onChangedDirection(index == 0 ? Axis.vertical : Axis.horizontal);
           },
         ),
+        const Space.vertical(8),
         SizedBox(
           height: direction.fold(
             ifVertifcal: () => 400,
@@ -92,7 +93,7 @@ class _SlidableCarouselState extends State<SlidableCarousel> {
             ),
             itemBuilder: (i) => CarouselItem(
               background: CachedNetworkImageProvider('https://picsum.photos/1000?image=${i + 10}'),
-              contentBuilder: (context, CarouselItemState state, largeWidth) => Container(
+              contentBuilder: (context, CarouselItemState state, double largeWidth) => Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
@@ -107,9 +108,7 @@ class _SlidableCarouselState extends State<SlidableCarousel> {
                 child: Material(
                   type: MaterialType.transparency,
                   child: InkWell(
-                    onTap: () {
-                      print("tapped $i");
-                    },
+                    onTap: () {},
                     child: Stack(
                       children: [
                         Positioned(
