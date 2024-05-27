@@ -3,11 +3,11 @@ import 'package:sid_base/sid_base.dart';
 
 class ThemeLogicProvider<T extends ThemeLogicBase> extends StatefulWidget {
   const ThemeLogicProvider({
-    Key? key,
+    super.key,
     required this.createThemeLogic,
     this.child,
     required this.builder,
-  }) : super(key: key);
+  });
 
   final T Function() createThemeLogic;
   final Widget? child;

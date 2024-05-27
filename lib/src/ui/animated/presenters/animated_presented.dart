@@ -9,13 +9,12 @@ class AnimatedPresented extends ImplicitlyAnimatedWidget {
     this.child,
     this.offScale = 0.8,
     Curve? curve,
-    required Duration duration,
+    required super.duration,
     this.presentMode = PresentMode.scale,
     this.slideOffset = const Offset(0,200),
     this.fadeFirstFraction = 0.0,
   }) : super(
-    curve: curve ?? Curves.linear, 
-    duration: duration,
+    curve: curve ?? Curves.linear,
   );
 
   final double offScale;

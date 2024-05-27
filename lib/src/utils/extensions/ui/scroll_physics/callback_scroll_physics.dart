@@ -55,7 +55,7 @@ class CallbackScrollPhysics extends ScrollPhysics {
 
   /// {OC} Creates scroll physics that can bounce back from the edge and trigger callbacks.
   const CallbackScrollPhysics({ 
-    ScrollPhysics? parent, 
+    super.parent, 
     this.topBounce, 
     this.callbackCondition,
     this.bottomBounce,
@@ -63,7 +63,7 @@ class CallbackScrollPhysics extends ScrollPhysics {
     this.topBounceCallback,
     this.alwaysScrollable,
     this.neverScrollable,
-  }): super(parent: parent);
+  });
 
   /// {OC} you can customize the behavior of the scrollable object to 
   /// always accept scroll gestures by setting [alwaysScrollable] to true

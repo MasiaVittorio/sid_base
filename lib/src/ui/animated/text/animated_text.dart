@@ -17,8 +17,8 @@ class AnimatedText extends StatefulWidget {
     this.curve = Curves.easeIn,
     this.maxLines,
     this.overflow,
-    Key? key,
-  }): super(key: key);
+    super.key,
+  });
 
   @override
   State createState() => AnimatedTextState();

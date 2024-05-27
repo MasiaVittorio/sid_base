@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 
 class CleanProvider<T> extends StatefulWidget {
   const CleanProvider({
-    Key? key,
+    super.key,
     required this.child,
     required this.data,
-  }): super(key: key);
+  });
 
   final Widget child;
   final T data;
@@ -35,10 +35,10 @@ class _CleanProviderState<T> extends State<CleanProvider<T>>{
 
 class _ProviderInherited<T> extends InheritedWidget {
   const _ProviderInherited({
-    Key? key,
-    required Widget child,
+    super.key,
+    required super.child,
     required this.data,
-  }) : super(key: key, child: child);
+  });
 
   final T data;
 

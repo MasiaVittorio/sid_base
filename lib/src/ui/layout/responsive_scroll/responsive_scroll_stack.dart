@@ -10,7 +10,7 @@ extension ScrollDirectionToExpandFab on ScrollDirection? {
 
 class ResponsiveScrollStack extends StatefulWidget {
   const ResponsiveScrollStack({
-    Key? key,
+    super.key,
     required this.children,
     this.threshold = 0,
     this.thresholdOverlay,
@@ -23,7 +23,7 @@ class ResponsiveScrollStack extends StatefulWidget {
     this.physics = const BouncingScrollPhysics(),
     this.initialAtEnd,
     this.bubbleUpNotifications = false,
-  }) : super(key: key);
+  });
 
   final bool bubbleUpNotifications;
 

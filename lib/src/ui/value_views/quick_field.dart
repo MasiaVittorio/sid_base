@@ -4,7 +4,7 @@ import 'package:sid_base/sid_base.dart';
 
 class QuickField extends StatelessWidget {
   const QuickField({
-    Key? key,
+    super.key,
     required this.controller,
     required this.label,
     this.isDense,
@@ -15,7 +15,7 @@ class QuickField extends StatelessWidget {
     this.textInputAction = TextInputAction.done,
     this.textCapitalization = TextCapitalization.sentences,
     this.onChanged,
-  }) : super(key: key);
+  });
 
   final TextEditingController controller;
   final String label;

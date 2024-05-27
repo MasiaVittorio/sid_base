@@ -14,11 +14,11 @@ extension PageControllerSafe on PageController {
 
 class SmoothPageReactor extends StatelessWidget {
   const SmoothPageReactor({
-    Key? key,
+    super.key,
     required this.controller,
     this.child,
     required this.builder,
-  }) : super(key: key);
+  });
 
   final PageController controller;
   final Widget? child;
@@ -42,11 +42,11 @@ class SmoothPageReactor extends StatelessWidget {
 
 class IntegerPageReactor extends StatefulWidget {
   const IntegerPageReactor({
-    Key? key,
+    super.key,
     required this.controller,
     this.child,
     required this.builder,
-  }) : super(key: key);
+  });
 
   final PageController controller;
   final Widget? child;

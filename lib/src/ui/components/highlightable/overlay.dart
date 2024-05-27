@@ -8,8 +8,8 @@ class HighlightOverlay extends StatefulWidget {
     required this.remove,
     required this.circleRadius,
     required this.childSize,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   final Offset center;
   final OverlayShape shape;

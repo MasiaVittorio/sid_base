@@ -8,11 +8,10 @@ class AnimatedListed extends ImplicitlyAnimatedWidget {
     this.axisAlignment = -1,
     this.child,
     Curve? curve,
-    Duration duration = const Duration(milliseconds: 250),
+    super.duration = const Duration(milliseconds: 250),
     this.overlapSizeAndOpacity = 0.0,
   })  : super(
-    curve: curve ?? Curves.ease, 
-    duration: duration,
+    curve: curve ?? Curves.ease,
   );
 
   final double axisAlignment;

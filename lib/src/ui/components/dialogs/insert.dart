@@ -3,7 +3,7 @@ import 'package:sid_base/sid_base.dart';
 
 class InsertDialog extends StatefulWidget {
   const InsertDialog({
-    Key? key,
+    super.key,
     required this.title,
     required this.fieldLabel,
     this.fieldHint,
@@ -12,7 +12,7 @@ class InsertDialog extends StatefulWidget {
     this.cancelLabel = "Cancel",
     this.initial,
     this.icon,
-  }) : super(key: key);
+  });
 
   final void Function(String) onInsert;
   final String? initial;

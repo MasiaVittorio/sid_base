@@ -17,12 +17,14 @@ class HomeExample extends StatelessWidget {
           Expanded(
             child: ListView(
               children: [
-                themeLogic.dark.build((context, value) => SwitchListTile(
-                      value: value,
-                      onChanged: (_) => themeLogic.toggleBrightness(),
-                      title: const Text("Dark mode:"),
-                      secondary: Icon(MdiIcons.weatherNight),
-                    )),
+                themeLogic.dark.build(
+                  (context, value) => SwitchListTile(
+                    value: value,
+                    onChanged: (_) => themeLogic.toggleBrightness(),
+                    title: const Text("Dark mode:"),
+                    secondary: Icon(MdiIcons.weatherNight),
+                  ),
+                ),
               ],
             ),
           ),

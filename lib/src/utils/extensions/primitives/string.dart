@@ -55,6 +55,16 @@ extension StringConverter on String {
         word.capitalizeFirst,
     ].join(" ");
   }
+
+  String get capitalizeFirstOfEachWord {
+    if(isEmpty) return "";
+    final list = split(" ");
+    if(list.isEmpty) return "";
+    return [
+      for(final word in list)
+        word.capitalizeFirst,
+    ].join(" ");
+  }
   
   String get capitalizeFirst {
     if(isEmpty) return this;
