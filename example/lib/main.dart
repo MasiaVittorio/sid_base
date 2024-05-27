@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:example/logic/theme_logic.dart';
 import 'package:example/widgets/carousel_home.dart';
 import 'package:flutter/material.dart';
@@ -37,6 +39,14 @@ class _AppExampleState extends State<AppExample> {
       child: themeLogic.buildWithUsableTheme(
         builder: (BuildContext context, ThemeData theme) {
           return MaterialApp(
+            scrollBehavior: const MaterialScrollBehavior().copyWith(
+              dragDevices: {
+                PointerDeviceKind.mouse,
+                PointerDeviceKind.touch,
+                PointerDeviceKind.stylus,
+                PointerDeviceKind.unknown,
+              },
+            ),
             title: 'Example',
             theme: theme,
             home: Scaffold(

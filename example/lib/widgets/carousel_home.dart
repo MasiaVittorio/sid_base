@@ -90,7 +90,7 @@ class _SlidableCarouselState extends State<SlidableCarousel> {
               targetLarge: targetLarge,
               direction: direction,
             ),
-            itemBuilder: (i) => CarouselItem(
+            itemBuilder: (i, pi) => CarouselItem(
               background: CachedNetworkImageProvider('https://picsum.photos/1000?image=${i + 10}'),
               contentBuilder: (context, CarouselItemState state, double largeWidth) => Container(
                 decoration: BoxDecoration(
@@ -125,25 +125,49 @@ class _SlidableCarouselState extends State<SlidableCarousel> {
                             bottom: 12,
                             horizontal: 12,
                             child: Opacity(
-                              opacity: switch (state) {
-                                ThinItem(thinToSmall: double _) => 0.0,
-                                SmallItem(smallToMedium: double v) =>
-                                  v.mapToRange(0, 0.5, fromMin: 0.7),
-                                MediumItem(mediumToLarge: double v) => v.mapToRange(0.5, 1),
-                                LargeItem(largeToThin: double v) =>
-                                  v.mapToRange(1, 0, fromMin: 0.1, fromMax: 0.7),
-                              },
-                              child: Text.rich(
-                                TextSpan(children: [
-                                  TextSpan(text: "$i\n"),
-                                  TextSpan(
-                                    text: "Title",
-                                    style: context.theme.textTheme.bodyMedium!
+                              opacity: keepText
+                                  ? 1.0
+                                  : switch (state) {
+                                      ThinItem(thinToSmall: double _) => 0.0,
+                                      SmallItem(smallToMedium: double v) =>
+                                        v.mapToRange(0, 0.5, fromMin: 0.7),
+                                      MediumItem(mediumToLarge: double v) => v.mapToRange(0.5, 1),
+                                      LargeItem(largeToThin: double v) =>
+                                        v.mapToRange(1, 0, fromMin: 0.1, fromMax: 0.7),
+                                    },
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  Text(
+                                    "$i",
+                                    textAlign: TextAlign.start,
+                                    style: context.theme.textTheme.titleLarge!
                                         .copyWith(color: Colors.white),
                                   ),
-                                ]),
-                                style: context.theme.textTheme.titleLarge!
-                                    .copyWith(color: Colors.white),
+                                  AnimatedListed(
+                                    key: ValueKey("Carousel item $pi"),
+                                    listed: keepText
+                                        ? true
+                                        : switch (state) {
+                                            MediumItem(mediumToLarge: double v) => v > 0.99,
+                                            LargeItem _ => true,
+                                            _ => false,
+                                          },
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            "Title",
+                                            textAlign: TextAlign.start,
+                                            style: context.theme.textTheme.bodyMedium!
+                                                .copyWith(color: Colors.white),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
@@ -175,6 +199,8 @@ class _SlidableCarouselState extends State<SlidableCarousel> {
       ],
     );
   }
+
+  bool get keepText => false;
 }
 
 class CustomM3CarouselTheme extends MultiBrowseCarouselTheme {

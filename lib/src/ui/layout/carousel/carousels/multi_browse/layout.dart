@@ -351,19 +351,28 @@ sealed class CarouselItemState {
 class ThinItem extends CarouselItemState {
   const ThinItem(this.thinToSmall);
   final double thinToSmall;
+  @override
+  String toString() => "Thin";
 }
 
 class SmallItem extends CarouselItemState {
   SmallItem(this.smallToMedium);
   final double smallToMedium;
+  @override
+  String toString() => "Small (to medium ${smallToMedium.toStringAsFixed(3)})";
 }
 
 class MediumItem extends CarouselItemState {
   final double mediumToLarge;
   MediumItem(this.mediumToLarge);
+  @override
+  String toString() => "Medium (to large ${mediumToLarge.toStringAsFixed(3)})";
 }
 
 class LargeItem extends CarouselItemState {
   final double largeToThin;
   LargeItem(this.largeToThin);
+
+  @override
+  String toString() => "Large (to thin ${largeToThin.toStringAsFixed(3)})";
 }

@@ -28,7 +28,7 @@ class MultiBrowseCarouselTheme extends M3CarouselTheme {
   double get widthSmallMin => 40;
 
   @override
-  double get widthSmallMax => 48;
+  double get widthSmallMax => 40;
 
   @override
   double get widthLarge => 180;

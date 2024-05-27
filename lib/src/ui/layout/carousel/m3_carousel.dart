@@ -35,7 +35,10 @@ class M3Carousel extends StatelessWidget {
 
   final int initialIndex;
   final M3CarouselTheme? theme;
-  final CarouselItem Function(int i) itemBuilder;
+
+  // if loop = true and itemCount finite, page index can be more than item index
+  final CarouselItem Function(int itemIndex, int pageIndex) itemBuilder;
+
   final int? itemCount;
   final bool loop;
 
@@ -81,7 +84,7 @@ class _M3CarouselBody extends StatefulWidget {
   });
 
   final int initialIndex;
-  final CarouselItem Function(int i) itemBuilder;
+  final CarouselItem Function(int itemIndex, int pageIndex) itemBuilder;
   final int? itemCount;
   final bool loop;
   final M3CarouselTheme theme;
@@ -99,13 +102,28 @@ class _M3CarouselBodyState extends State<_M3CarouselBody> {
   @override
   void initState() {
     super.initState();
-    // final mq = MediaQuery.of(context);
-    // final mq = context.getInheritedWidgetOfExactType<MediaQuery>()?.data;
+    initController(widget.initialIndex, widget.layouter.viewPortFraction);
+  }
+
+  double? lastViewPortFraction;
+  void initController(int initialPage, double viewPortFraction) {
+    lastViewPortFraction = viewPortFraction;
     controller = PageController(
-      initialPage: widget.initialIndex,
-      viewportFraction: widget.layouter.viewPortFraction,
+      initialPage: initialPage,
+      viewportFraction: viewPortFraction,
       keepPage: true,
     );
+  }
+
+  @override
+  void didUpdateWidget(covariant _M3CarouselBody oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final newViewPortFraction = widget.layouter.viewPortFraction;
+    if (lastViewPortFraction != newViewPortFraction) {
+      final int page = controller.safePage.round();
+      controller.dispose();
+      initController(page, newViewPortFraction);
+    }
   }
 
   @override
@@ -149,7 +167,7 @@ class _M3CarouselBodyState extends State<_M3CarouselBody> {
                     children: [
                       for (int pi = range.$1; pi < range.$2; pi++)
                         if (getIndex(pi) case int itemIndex)
-                          if (widget.itemBuilder(itemIndex) case CarouselItem item)
+                          if (widget.itemBuilder(itemIndex, pi) case CarouselItem item)
                             if (widget.layouter.position(pi, page)
                                 case (Positioner, CarouselItemState) result)
                               if (widget.decorator.build(
