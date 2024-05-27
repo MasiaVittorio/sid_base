@@ -1,13 +1,19 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
+library m3_carousel;
+
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:sid_base/sid_base.dart';
-import 'package:sid_base/src/ui/layout/carousel/theme/decoration.dart';
 import 'package:sid_base/src/ui/layout/flist/theme.dart';
 
-export 'theme/layout.dart';
+part 'carousels/multi_browse/decorator.dart';
+part 'carousels/multi_browse/layout.dart';
+part 'carousels/multi_browse/theme.dart';
+part 'theme/decoration.dart';
+part 'theme/layout.dart';
+part 'theme/theme.dart';
 
 class CarouselItem {
   final ImageProvider background;
@@ -37,8 +43,9 @@ class M3Carousel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final M3CarouselTheme theme =
-        this.theme ?? CleanProvider.of<M3CarouselTheme>(context) ?? const M3CarouselTheme();
+    final M3CarouselTheme theme = this.theme ??
+        CleanProvider.of<M3CarouselTheme>(context) ??
+        const MultiBrowseCarouselTheme();
     return CleanProvider(
       data: theme,
       child: LayoutBuilder(builder: (context, constraints) {
@@ -81,8 +88,8 @@ class _M3CarouselBody extends StatefulWidget {
   final bool loop;
   final M3CarouselTheme theme;
   final BoxConstraints constraints;
-  final CarouselLayouter layouter;
-  final CarouselItemDecorator decorator;
+  final M3CarouselLayouter layouter;
+  final M3CarouselItemDecorator decorator;
 
   @override
   State<_M3CarouselBody> createState() => _M3CarouselBodyState();

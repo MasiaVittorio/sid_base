@@ -137,7 +137,7 @@ class _SlidableCarouselState extends State<SlidableCarousel> {
                                 TextSpan(children: [
                                   TextSpan(text: "$i\n"),
                                   TextSpan(
-                                    text: "Titolo",
+                                    text: "Title",
                                     style: context.theme.textTheme.bodyMedium!
                                         .copyWith(color: Colors.white),
                                   ),
@@ -177,7 +177,7 @@ class _SlidableCarouselState extends State<SlidableCarousel> {
   }
 }
 
-class CustomM3CarouselTheme extends M3CarouselTheme {
+class CustomM3CarouselTheme extends MultiBrowseCarouselTheme {
   final double targetLarge;
   @override
   final Axis direction;

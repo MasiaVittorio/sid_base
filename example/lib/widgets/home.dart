@@ -1,4 +1,5 @@
 import 'package:example/logic/theme_logic.dart';
+import 'package:example/widgets/carousel_home.dart';
 import 'package:flutter/material.dart';
 import 'package:sid_base/sid_base.dart';
 
@@ -24,6 +25,10 @@ class HomeExample extends StatelessWidget {
                     title: const Text("Dark mode:"),
                     secondary: Icon(MdiIcons.weatherNight),
                   ),
+                ),
+                ListTile(
+                  title: const Text("Carousel example"),
+                  onTap: () => context.pushPage(const CarouselHome()),
                 ),
               ],
             ),
