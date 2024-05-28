@@ -1,15 +1,35 @@
 extension DoubleSidMapToRange on num {
-
-  double mapToRange(double toMin, double toMax, {
+  double mapToRangeFrom(
+    (double toMin, double toMax) to, [
+    (double fromMin, double fromMax) from = (0, 1),
+  ]) =>
+      to.$1 + ((this - from.$1) / (from.$2 - from.$1)).clamp(0.0, 1.0) * (to.$2 - to.$1);
+  double mapFromRangeTo(
+    (double fromMin, double fromMax) from, [
+    (double toMin, double toMax) to = (0, 1),
+  ]) =>
+      to.$1 + ((this - from.$1) / (from.$2 - from.$1)).clamp(0.0, 1.0) * (to.$2 - to.$1);
+  double mapToRange(
+    double toMin,
+    double toMax, {
     num fromMin = 0.0,
     num fromMax = 1.0,
-  }) => toMin + ((this - fromMin) / (fromMax - fromMin)).clamp(0.0, 1.0) * (toMax - toMin);
-  
+  }) =>
+      toMin + ((this - fromMin) / (fromMax - fromMin)).clamp(0.0, 1.0) * (toMax - toMin);
+  double mapFromRange(
+    double fromMin,
+    double fromMax, {
+    num toMin = 0.0,
+    num toMax = 1.0,
+  }) =>
+      toMin + ((this - fromMin) / (fromMax - fromMin)).clamp(0.0, 1.0) * (toMax - toMin);
 
   //Much much faster, but you can get numbers out of the range of [toMin,toMax];
-  double mapToRangeLoose(double toMin, double toMax, {
+  double mapToRangeLoose(
+    double toMin,
+    double toMax, {
     num fromMin = 0.0,
     num fromMax = 1.0,
-  }) => toMin + ((this - fromMin) / (fromMax - fromMin)) * (toMax - toMin);
-
+  }) =>
+      toMin + ((this - fromMin) / (fromMax - fromMin)) * (toMax - toMin);
 }

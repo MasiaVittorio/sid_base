@@ -1,29 +1,25 @@
 library m3_carousel;
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:sid_base/sid_base.dart';
+import 'package:sid_base/src/all.dart';
 import 'package:sid_base/src/ui/layout/flist/theme.dart';
 
+import 'transparent_pointer.dart';
+
 part 'carousels/multi_browse/decorator.dart';
+part 'carousels/multi_browse/item_state.dart';
 part 'carousels/multi_browse/layout.dart';
 part 'carousels/multi_browse/theme.dart';
+part 'item.dart';
+part 'item_state.dart';
 part 'theme/decoration.dart';
 part 'theme/layout.dart';
 part 'theme/theme.dart';
 
-class CarouselItem {
-  final ImageProvider background;
-  final Widget Function(BuildContext context, CarouselItemState state, double largeWidth)
-      contentBuilder;
-  CarouselItem({
-    required this.background,
-    required this.contentBuilder,
-  });
-}
-
-class M3Carousel extends StatelessWidget {
+class M3Carousel<T extends CarouselItemState> extends StatelessWidget {
   const M3Carousel({
     super.key,
     this.initialIndex = 0,
@@ -37,7 +33,7 @@ class M3Carousel extends StatelessWidget {
   final M3CarouselTheme? theme;
 
   // if loop = true and itemCount finite, page index can be more than item index
-  final CarouselItem Function(int itemIndex, int pageIndex) itemBuilder;
+  final CarouselItem<T> Function(int itemIndex, int pageIndex) itemBuilder;
 
   final int? itemCount;
   final bool loop;
@@ -52,7 +48,7 @@ class M3Carousel extends StatelessWidget {
       child: LayoutBuilder(builder: (context, constraints) {
         return ConstrainedBox(
           constraints: constraints,
-          child: _M3CarouselBody(
+          child: _M3CarouselBody<T>(
             constraints: constraints,
             itemBuilder: itemBuilder,
             itemCount: itemCount,
@@ -71,7 +67,7 @@ class M3Carousel extends StatelessWidget {
   }
 }
 
-class _M3CarouselBody extends StatefulWidget {
+class _M3CarouselBody<T extends CarouselItemState> extends StatefulWidget {
   const _M3CarouselBody({
     required this.initialIndex,
     required this.itemBuilder,
@@ -93,10 +89,10 @@ class _M3CarouselBody extends StatefulWidget {
   final M3CarouselItemDecorator decorator;
 
   @override
-  State<_M3CarouselBody> createState() => _M3CarouselBodyState();
+  State<_M3CarouselBody<T>> createState() => _M3CarouselBodyState<T>();
 }
 
-class _M3CarouselBodyState extends State<_M3CarouselBody> {
+class _M3CarouselBodyState<T extends CarouselItemState> extends State<_M3CarouselBody<T>> {
   late PageController controller;
 
   @override
@@ -116,7 +112,7 @@ class _M3CarouselBodyState extends State<_M3CarouselBody> {
   }
 
   @override
-  void didUpdateWidget(covariant _M3CarouselBody oldWidget) {
+  void didUpdateWidget(covariant _M3CarouselBody<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
     final newViewPortFraction = widget.layouter.viewPortFraction;
     if (lastViewPortFraction != newViewPortFraction) {
@@ -167,9 +163,8 @@ class _M3CarouselBodyState extends State<_M3CarouselBody> {
                     children: [
                       for (int pi = range.$1; pi < range.$2; pi++)
                         if (getIndex(pi) case int itemIndex)
-                          if (widget.itemBuilder(itemIndex, pi) case CarouselItem item)
-                            if (widget.layouter.position(pi, page)
-                                case (Positioner, CarouselItemState) result)
+                          if (widget.itemBuilder(itemIndex, pi) case CarouselItem<T> item)
+                            if (widget.layouter.position(pi, page) case (Positioner, T) result)
                               if (widget.decorator.build(
                                 context,
                                 (pi - page),
@@ -187,108 +182,5 @@ class _M3CarouselBodyState extends State<_M3CarouselBody> {
         ],
       ),
     );
-  }
-}
-
-/// This widget is invisible for its parent to hit testing, but still
-/// allows its subtree to receive pointer events.
-///
-/// {@tool snippet}
-///
-/// In this example, a drag can be started anywhere in the widget, including on
-/// top of the text button, even though the button is visually in front of the
-/// background gesture detector. At the same time, the button is tappable.
-///
-/// ```dart
-/// class MyWidget extends StatelessWidget {
-///   @override
-///   Widget build(BuildContext context) {
-///     return Stack(
-///       children: [
-///         GestureDetector(
-///           behavior: HitTestBehavior.opaque,
-///           onVerticalDragStart: (_) => print("Background drag started"),
-///         ),
-///         Positioned(
-///           top: 60,
-///           left: 60,
-///           height: 60,
-///           width: 60,
-///           child: TransparentPointer(
-///             child: TextButton(
-///               child: Text("Tap me"),
-///               onPressed: () => print("You tapped me"),
-///             ),
-///           ),
-///         ),
-///       ],
-///     );
-///   }
-/// }
-/// ```
-/// {@end-tool}
-///
-/// See also:
-///
-///  * [IgnorePointer], which is also invisible for its parent during hit testing, but
-///    does not allow its subtree to receive pointer events.
-///  * [AbsorbPointer], which is visible during hit testing, but prevents its subtree
-///    from receiving pointer event. The opposite of this widget.
-class TransparentPointer extends SingleChildRenderObjectWidget {
-  /// Creates a widget that is invisible for its parent to hit testing, but still
-  /// allows its subtree to receive pointer events.
-  const TransparentPointer({
-    required super.child,
-    this.transparent = true,
-    super.key,
-  });
-
-  /// Whether this widget is invisible to its parent during hit testing.
-  final bool transparent;
-
-  @override
-  RenderTransparentPointer createRenderObject(BuildContext context) {
-    return RenderTransparentPointer(
-      transparent: transparent,
-    );
-  }
-
-  @override
-  void updateRenderObject(BuildContext context, RenderTransparentPointer renderObject) {
-    renderObject.transparent = transparent;
-  }
-
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty<bool>('transparent', transparent));
-  }
-}
-
-class RenderTransparentPointer extends RenderProxyBox {
-  RenderTransparentPointer({
-    RenderBox? child,
-    bool transparent = true,
-  })  : _transparent = transparent,
-        super(child);
-
-  bool get transparent => _transparent;
-  bool _transparent;
-
-  set transparent(bool value) {
-    if (value == _transparent) return;
-    _transparent = value;
-  }
-
-  @override
-  bool hitTest(BoxHitTestResult result, {required Offset position}) {
-    final hit = super.hitTest(result, position: position);
-    return !transparent && hit;
-  }
-
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty<bool>('transparent', transparent));
   }
 }

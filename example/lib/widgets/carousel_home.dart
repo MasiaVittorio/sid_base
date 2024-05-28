@@ -85,14 +85,14 @@ class _SlidableCarouselState extends State<SlidableCarousel> {
             ifVertifcal: () => 400,
             ifHorizontal: () => 250,
           ),
-          child: M3Carousel(
+          child: M3Carousel<MultiBrowseItemState>(
             theme: CustomM3CarouselTheme(
               targetLarge: targetLarge,
               direction: direction,
             ),
             itemBuilder: (i, pi) => CarouselItem(
               background: CachedNetworkImageProvider('https://picsum.photos/1000?image=${i + 10}'),
-              contentBuilder: (context, CarouselItemState state, double largeWidth) => Container(
+              contentBuilder: (context, MultiBrowseItemState state, double largeWidth) => Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
@@ -123,18 +123,21 @@ class _SlidableCarouselState extends State<SlidableCarousel> {
                           ),
                           child: Pad(
                             bottom: 12,
-                            horizontal: 12,
+                            horizontal: 16,
                             child: Opacity(
                               opacity: keepText
                                   ? 1.0
-                                  : switch (state) {
-                                      ThinItem(thinToSmall: double _) => 0.0,
-                                      SmallItem(smallToMedium: double v) =>
-                                        v.mapToRange(0, 0.5, fromMin: 0.7),
-                                      MediumItem(mediumToLarge: double v) => v.mapToRange(0.5, 1),
-                                      LargeItem(largeToThin: double v) =>
-                                        v.mapToRange(1, 0, fromMin: 0.1, fromMax: 0.7),
-                                    },
+                                  : state.fold(
+                                      futureThin: () => 0.0,
+                                      futureThinToSmall: (v) => 0.0,
+                                      small: () => 0.0,
+                                      smallToMedium: (v) => v.mapToRangeFrom((0, 0.5), (0.7, 1.0)),
+                                      medium: () => 0.5,
+                                      mediumToLarge: (v) => v.mapToRange(0.5, 1.0),
+                                      large: () => 1.0,
+                                      largeToThin: (v) => v.mapToRangeFrom((1, 0), (0.1, 0.7)),
+                                      pastThin: () => 0.0,
+                                    ),
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -147,18 +150,17 @@ class _SlidableCarouselState extends State<SlidableCarousel> {
                                   ),
                                   AnimatedListed(
                                     key: ValueKey("Carousel item $pi"),
+                                    duration: Durations.long1,
+                                    overlapSizeAndOpacity: 1.0,
+                                    curve: Easing.emphasizedDecelerate,
                                     listed: keepText
                                         ? true
-                                        : switch (state) {
-                                            MediumItem(mediumToLarge: double v) => v > 0.99,
-                                            LargeItem _ => true,
-                                            _ => false,
-                                          },
+                                        : state.after(const MultiBrowseMediumItem(0.5)),
                                     child: Row(
                                       children: [
                                         Expanded(
                                           child: Text(
-                                            "Title",
+                                            "Title $pi",
                                             textAlign: TextAlign.start,
                                             style: context.theme.textTheme.bodyMedium!
                                                 .copyWith(color: Colors.white),

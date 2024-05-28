@@ -11,8 +11,8 @@ extension AxisFold on Axis {
       };
 }
 
-abstract class M3CarouselLayouter {
-  (Positioner, CarouselItemState)? position(
+abstract class M3CarouselLayouter<T extends CarouselItemState> {
+  (Positioner, T)? position(
     int i,
     double x,
   );
