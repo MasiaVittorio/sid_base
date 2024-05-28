@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sid_base/sid_base.dart';
 
 class FlistTheme {
   const FlistTheme();
@@ -53,24 +54,4 @@ class FlistTheme {
   //   //   fromMax: spaceTakenByLargesBeforeMe
   //   // );
   // }
-}
-
-extension Mod on double {
-  double mod(double n) {
-    double v = this + 0;
-    while (v > n) {
-      v -= n;
-    }
-    return v;
-  }
-}
-
-extension ModN on int {
-  int modLessThan(int n) {
-    int v = this + 0;
-    while (v >= n) {
-      v -= n;
-    }
-    return v;
-  }
 }

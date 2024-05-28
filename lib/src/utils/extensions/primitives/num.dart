@@ -32,4 +32,22 @@ extension DoubleSidMapToRange on num {
     num fromMax = 1.0,
   }) =>
       toMin + ((this - fromMin) / (fromMax - fromMin)) * (toMax - toMin);
+
+  double mod(double n) {
+    double v = this + 0;
+    while (v > n) {
+      v -= n;
+    }
+    return v;
+  }
+}
+
+extension ModN on int {
+  int modLessThan(int n) {
+    int v = this + 0;
+    while (v >= n) {
+      v -= n;
+    }
+    return v;
+  }
 }

@@ -70,20 +70,23 @@ sealed class MultiBrowseItemState extends CarouselItemState {
     return switch (this) {
       MultiBrowseFutureThinItem(thinToSmall: double v) => switch (other) {
           MultiBrowseFutureThinItem(thinToSmall: double ov) => v == ov,
+          MultiBrowseSmallItem(smallToMedium: 0) => v == 1,
           _ => false,
         },
       MultiBrowseSmallItem(smallToMedium: double v) => switch (other) {
           MultiBrowseFutureThinItem(thinToSmall: 1) => v == 0,
           MultiBrowseSmallItem(smallToMedium: double ov) => ov == v,
+          MultiBrowseMediumItem(mediumToLarge: 0) => v == 1,
           _ => false,
         },
       MultiBrowseMediumItem(mediumToLarge: double v) => switch (other) {
           MultiBrowseSmallItem(smallToMedium: 1) => v == 0,
           MultiBrowseMediumItem(mediumToLarge: double ov) => ov == v,
+          // MultiBrowseLargeItem(largeToThin: 0) => v == 1, nope, more than one large
           _ => false,
         },
       MultiBrowseLargeItem(largeToThin: double v) => switch (other) {
-          MultiBrowseMediumItem(mediumToLarge: 1) => v == 0,
+          // MultiBrowseMediumItem(mediumToLarge: 1) => v == 0, // nope, more than one large
           MultiBrowseLargeItem(largeToThin: double ov) => ov == v,
           _ => false,
         },

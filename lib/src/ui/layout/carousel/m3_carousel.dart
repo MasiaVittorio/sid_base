@@ -5,10 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:sid_base/sid_base.dart';
 import 'package:sid_base/src/all.dart';
-import 'package:sid_base/src/ui/layout/flist/theme.dart';
 
 import 'transparent_pointer.dart';
 
+part 'carousels/centered_hero/decorator.dart';
+part 'carousels/centered_hero/item_state.dart';
+part 'carousels/centered_hero/layout.dart';
+part 'carousels/centered_hero/theme.dart';
 part 'carousels/multi_browse/decorator.dart';
 part 'carousels/multi_browse/item_state.dart';
 part 'carousels/multi_browse/layout.dart';
@@ -179,6 +182,20 @@ class _M3CarouselBodyState<T extends CarouselItemState> extends State<_M3Carouse
               ),
             ),
           ),
+          // Positioned(
+          //   right: 0,
+          //   top: 0,
+          //   bottom: 0,
+          //   width: theme.inBetweenPadding,
+          //   child: Container(color: context.theme.colorScheme.surface),
+          // ),
+          // Positioned(
+          //   left: 0,
+          //   top: 0,
+          //   bottom: 0,
+          //   width: theme.inBetweenPadding,
+          //   child: Container(color: context.theme.colorScheme.surface),
+          // ),
         ],
       ),
     );

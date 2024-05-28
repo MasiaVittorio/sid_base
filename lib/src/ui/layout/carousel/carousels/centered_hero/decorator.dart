@@ -1,13 +1,9 @@
 part of "../../m3_carousel.dart";
 
-class MultiBrowseDecorator extends M3CarouselItemDecorator {
-  const MultiBrowseDecorator({
-    required this.axis,
-    required this.maxFuture,
-  });
+class CenteredHeroDecorator extends M3CarouselItemDecorator {
+  const CenteredHeroDecorator({required this.axis});
 
   final Axis axis;
-  final int maxFuture;
 
   @override
   Widget build(
@@ -16,12 +12,7 @@ class MultiBrowseDecorator extends M3CarouselItemDecorator {
     Widget content,
     ImageProvider image,
   ) {
-    final double mainAxisAlignment = -1 *
-        ((switch (future) {
-          >= 0 => future / maxFuture,
-          _ => future,
-        })
-            .clamp(-1, 1));
+    final double mainAxisAlignment = -1 * ((future).clamp(-1, 1));
     final theme = context.provide<M3CarouselTheme>();
     final mTheme = context.theme;
 

@@ -1,7 +1,7 @@
 part of "../../m3_carousel.dart";
 
-class MultiBrowseCarouselTheme extends M3CarouselTheme {
-  const MultiBrowseCarouselTheme();
+class CenteredHeroCarouselTheme extends M3CarouselTheme {
+  const CenteredHeroCarouselTheme();
 
   @override
   TextStyle titleStyle(BuildContext context) => context.theme.textTheme.titleMedium!;
@@ -31,30 +31,27 @@ class MultiBrowseCarouselTheme extends M3CarouselTheme {
   double get widthSmallMax => 40;
 
   @override
-  double get widthLarge => 180;
+  double get widthLarge => 40;
 
   @override
   double get widthMedium => (widthLarge + widthSmallMax) / 2;
 
   @override
-  M3CarouselItemDecorator getDecorator() => MultiBrowseDecorator(
+  M3CarouselItemDecorator getDecorator() => CenteredHeroDecorator(
         axis: direction,
-        maxFuture: 3,
       );
 
   @override
   Axis get direction => Axis.horizontal;
 
   @override
-  M3CarouselLayouter getLayouter(double displaySize) => MultiBrowseLayouter(
+  M3CarouselLayouter getLayouter(double displaySize) => CenteredHeroLayouter(
         D: displaySize,
-        targetLarge: widthLarge,
         A: firstPadding,
         Z: lastPadding,
         t: widthLowerLimit,
         b: inBetweenPadding,
         axis: direction,
-        sMin: widthSmallMin,
-        sMax: widthSmallMax,
+        s: widthSmallMin,
       );
 }

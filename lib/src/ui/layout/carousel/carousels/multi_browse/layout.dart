@@ -86,6 +86,8 @@ class MultiBrowseLayouter extends M3CarouselLayouter<MultiBrowseItemState> {
   double get largeWidth => l;
 
   double get thinFrac => (b + t + b) / l;
+  double get pastThinFrac =>
+      (b + t + b - A) / (D * viewPortFraction); // (b + t + b - A) / (D * viewportFrac) = tF / 1
 
   bool get newThinStrat => true;
   @override
@@ -94,7 +96,8 @@ class MultiBrowseLayouter extends M3CarouselLayouter<MultiBrowseItemState> {
     double x,
   ) {
     final int v = n + 2;
-    final double thinFrac = (b + t + b) / l;
+    final double tF = thinFrac;
+    final double ptF = pastThinFrac;
     return _steps(
       (min: v, positioner: _future),
       [
@@ -107,11 +110,11 @@ class MultiBrowseLayouter extends M3CarouselLayouter<MultiBrowseItemState> {
         else ...[
           (
             max: v,
-            min: v - thinFrac,
+            min: v - tF,
             positioner: _futureToThin,
           ),
           (
-            max: v - thinFrac,
+            max: v - tF,
             min: v - 1,
             positioner: _thinToSmall,
           ),
@@ -140,11 +143,11 @@ class MultiBrowseLayouter extends M3CarouselLayouter<MultiBrowseItemState> {
         else ...[
           (
             max: 0,
-            min: -1 + thinFrac,
+            min: -1 + ptF,
             positioner: _firstToThin,
           ),
           (
-            max: -1 + thinFrac,
+            max: -1 + ptF,
             min: -1,
             positioner: _thinToPast,
           ),
@@ -244,7 +247,8 @@ class MultiBrowseLayouter extends M3CarouselLayouter<MultiBrowseItemState> {
 
   (Positioner, MultiBrowseItemState) _firstToPast(double value) {
     final double straightEnd = value.mapToRange(A + l, A - b);
-    final double tF = thinFrac;
+    // final double tF = thinFrac;
+    final double tF = pastThinFrac;
     final double lastStraightEnd = (1 - tF).mapToRange(A + l, A - b);
     final double end =
         value <= 1 - tF ? straightEnd : value.mapToRange(lastStraightEnd, 0, fromMin: 1 - tF);
