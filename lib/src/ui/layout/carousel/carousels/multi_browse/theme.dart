@@ -39,7 +39,7 @@ class MultiBrowseCarouselTheme extends M3CarouselTheme<MultiBrowseItemState> {
   @override
   M3CarouselItemDecorator<MultiBrowseItemState> getDecorator() => MultiBrowseDecorator(
         axis: direction,
-        borderRadius: borderRadius,
+        targetBorderRadius: borderRadius,
         maxFuture: 3,
       );
 

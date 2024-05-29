@@ -4,10 +4,12 @@ part of "../m3_carousel.dart";
 abstract class M3CarouselItemDecorator<T extends CarouselItemState> {
   const M3CarouselItemDecorator({
     required this.axis,
-    required this.borderRadius,
+    required this.targetBorderRadius,
   });
   final Axis axis;
-  final BorderRadius borderRadius;
+  final BorderRadius targetBorderRadius;
+
+  BorderRadius effectiveBorderRadius(double future) => targetBorderRadius;
 
   Widget build(
     BuildContext context,
@@ -21,7 +23,7 @@ abstract class M3CarouselItemDecorator<T extends CarouselItemState> {
     return Container(
       clipBehavior: round ? Clip.antiAlias : Clip.none,
       decoration: BoxDecoration(
-        borderRadius: round ? borderRadius : null,
+        borderRadius: round ? effectiveBorderRadius(future) : null,
         color: mTheme.colorScheme.secondaryContainer,
         image: DecorationImage(
           image: image,

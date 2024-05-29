@@ -3,7 +3,7 @@ part of "../../m3_carousel.dart";
 class MultiBrowseDecorator extends M3CarouselItemDecorator<MultiBrowseItemState> {
   const MultiBrowseDecorator({
     required super.axis,
-    required super.borderRadius,
+    required super.targetBorderRadius,
     required this.maxFuture,
   });
 

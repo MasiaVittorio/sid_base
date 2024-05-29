@@ -38,7 +38,7 @@ class CenteredHeroCarouselTheme extends M3CarouselTheme<CenteredHeroItemState> {
 
   @override
   M3CarouselItemDecorator<CenteredHeroItemState> getDecorator() =>
-      CenteredHeroDecorator(axis: direction, borderRadius: borderRadius);
+      CenteredHeroDecorator(axis: direction, targetBorderRadius: borderRadius);
 
   @override
   Axis get direction => Axis.horizontal;

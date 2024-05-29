@@ -80,21 +80,11 @@ class _SlidableCarouselState extends State<SlidableCarousel> {
           ),
           child: CenteredHeroCarousel(
             theme: CustomM3CarouselTheme(direction: direction),
-            itemCount: 5,
-            loop: true,
-            itemBuilder: (i) => CarouselItem(
-              background: CachedNetworkImageProvider('https://picsum.photos/1000?image=${i + 10}'),
-              contentBuilder: (context, state, pi) => CarouselItemLabels(
-                title: "$i",
-                label: "Title $pi",
-              ),
-            ),
+            itemBuilder: itemBuilder<CenteredHeroItemState>,
             openBuilder: (context, close, itemIndex, item) => Scaffold(
-              appBar: AppBar(title: Text("Image #$itemIndex")),
-              body: Container(
-                decoration: BoxDecoration(
-                  image: DecorationImage(image: item.background, fit: BoxFit.cover),
-                ),
+              body: FullScreenCarousel(
+                initialIndex: itemIndex,
+                itemBuilder: itemBuilder<FullScreenItemState>,
               ),
             ),
           ),
@@ -103,6 +93,14 @@ class _SlidableCarouselState extends State<SlidableCarousel> {
       ],
     );
   }
+
+  CarouselItem<T> itemBuilder<T extends CarouselItemState>(int i) => CarouselItem(
+        background: CachedNetworkImageProvider('https://picsum.photos/1000?image=${i + 10}'),
+        contentBuilder: (context, state, pi) => CarouselItemLabels(
+          title: "$i",
+          label: "Title $pi",
+        ),
+      );
 }
 
 class CustomM3CarouselTheme extends CenteredHeroCarouselTheme {
