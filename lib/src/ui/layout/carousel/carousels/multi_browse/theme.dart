@@ -1,6 +1,6 @@
 part of "../../m3_carousel.dart";
 
-class MultiBrowseCarouselTheme extends M3CarouselTheme {
+class MultiBrowseCarouselTheme extends M3CarouselTheme<MultiBrowseItemState> {
   const MultiBrowseCarouselTheme();
 
   @override
@@ -37,8 +37,9 @@ class MultiBrowseCarouselTheme extends M3CarouselTheme {
   double get widthMedium => (widthLarge + widthSmallMax) / 2;
 
   @override
-  M3CarouselItemDecorator getDecorator() => MultiBrowseDecorator(
+  M3CarouselItemDecorator<MultiBrowseItemState> getDecorator() => MultiBrowseDecorator(
         axis: direction,
+        borderRadius: borderRadius,
         maxFuture: 3,
       );
 
@@ -46,7 +47,7 @@ class MultiBrowseCarouselTheme extends M3CarouselTheme {
   Axis get direction => Axis.horizontal;
 
   @override
-  M3CarouselLayouter getLayouter(double displaySize) => MultiBrowseLayouter(
+  M3CarouselLayouter<MultiBrowseItemState> getLayouter(double displaySize) => MultiBrowseLayouter(
         D: displaySize,
         targetLarge: widthLarge,
         A: firstPadding,

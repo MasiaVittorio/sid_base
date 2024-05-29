@@ -1,6 +1,6 @@
 part of "../m3_carousel.dart";
 
-abstract class M3CarouselTheme {
+abstract class M3CarouselTheme<T extends CarouselItemState> {
   const M3CarouselTheme();
   TextStyle titleStyle(BuildContext context);
   TextStyle subtitleStyle(BuildContext context);
@@ -13,8 +13,8 @@ abstract class M3CarouselTheme {
   double get widthSmallMax;
   double get widthLarge;
   double get widthMedium;
-  M3CarouselItemDecorator getDecorator();
+  M3CarouselItemDecorator<T> getDecorator();
   Axis get direction;
 
-  M3CarouselLayouter getLayouter(double displaySize);
+  M3CarouselLayouter<T> getLayouter(double displaySize);
 }

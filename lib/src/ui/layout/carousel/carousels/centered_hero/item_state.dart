@@ -3,6 +3,26 @@ part of "../../m3_carousel.dart";
 sealed class CenteredHeroItemState extends CarouselItemState {
   const CenteredHeroItemState();
 
+  @override
+  bool get canBeOpened => switch (this) {
+        CenteredHeroFutureSmallItem(smallToHero: double v) => v > 0.95,
+        CenteredHeroCenterItem(heroToSmall: double v) => v <= 0.05,
+        _ => false,
+      };
+
+  @override
+  double get contentOpacity => fold(
+        futureThin: () => 0.0,
+        futureThinToSmall: (v) => 0.0,
+        futureSmall: () => 0.0,
+        futureSmallToHero: (v) => v.mapToRangeFrom((0, 1), (0.5, 0.95)),
+        hero: () => 1.0,
+        heroToSmall: (v) => v.mapToRangeFrom((1, 0), (0.05, 0.5)),
+        pastSmall: () => 0.0,
+        pastSmallToThin: (v) => 0.0,
+        pastThin: () => 0.0,
+      );
+
   T fold<T>({
     required T Function() futureThin,
     required T Function(double v) futureThinToSmall,

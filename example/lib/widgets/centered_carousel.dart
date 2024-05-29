@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:example/logic/theme_logic.dart';
+import 'package:example/widgets/carousel_item_labels.dart';
 import 'package:flutter/material.dart';
 import 'package:sid_base/sid_base.dart';
 
@@ -77,104 +78,31 @@ class _SlidableCarouselState extends State<SlidableCarousel> {
             ifVertifcal: () => 400,
             ifHorizontal: () => 250,
           ),
-          child: M3Carousel<CenteredHeroItemState>(
-            theme: CustomM3CarouselTheme(
-              direction: direction,
-            ),
-            itemBuilder: (i, pi) => CarouselItem(
+          child: CenteredHeroCarousel(
+            theme: CustomM3CarouselTheme(direction: direction),
+            itemCount: 5,
+            loop: true,
+            itemBuilder: (i) => CarouselItem(
               background: CachedNetworkImageProvider('https://picsum.photos/1000?image=${i + 10}'),
-              contentBuilder: (context, CenteredHeroItemState state, double largeWidth) =>
-                  Container(
+              contentBuilder: (context, state, pi) => CarouselItemLabels(
+                title: "$i",
+                label: "Title $pi",
+              ),
+            ),
+            openBuilder: (context, close, itemIndex, item) => Scaffold(
+              appBar: AppBar(title: Text("Image #$itemIndex")),
+              body: Container(
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Colors.black.withOpacity(0.4),
-                      Colors.black.withOpacity(0.1),
-                      Colors.black.withOpacity(0.0),
-                    ],
-                    begin: Alignment.bottomCenter,
-                    end: Alignment.topCenter,
-                  ),
-                ),
-                child: Material(
-                  type: MaterialType.transparency,
-                  child: InkWell(
-                    onTap: () {},
-                    child: Stack(
-                      children: [
-                        Positioned(
-                          bottom: 0,
-                          left: 0,
-                          width: direction.fold(
-                            ifVertifcal: () => null,
-                            ifHorizontal: () => largeWidth,
-                          ),
-                          right: direction.fold(
-                            ifVertifcal: () => 0,
-                            ifHorizontal: () => null,
-                          ),
-                          child: Pad(
-                            bottom: 12,
-                            horizontal: 16,
-                            child: Opacity(
-                              opacity: keepText
-                                  ? 1.0
-                                  : state.fold(
-                                      futureThin: () => 0.0,
-                                      futureThinToSmall: (v) => 0.0,
-                                      futureSmall: () => 0.0,
-                                      futureSmallToHero: (v) =>
-                                          v.mapToRangeFrom((0, 1), (0.5, 0.95)),
-                                      hero: () => 1.0,
-                                      heroToSmall: (v) => v.mapToRangeFrom((1, 0), (0.05, 0.5)),
-                                      pastSmall: () => 0.0,
-                                      pastSmallToThin: (v) => 0.0,
-                                      pastThin: () => 0.0,
-                                    ),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  Text(
-                                    "$i",
-                                    textAlign: TextAlign.start,
-                                    style: context.theme.textTheme.titleLarge!
-                                        .copyWith(color: Colors.white),
-                                  ),
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: Text(
-                                          // "Title $pi",
-                                          state.toString(),
-                                          textAlign: TextAlign.start,
-                                          style: context.theme.textTheme.bodyMedium!
-                                              .copyWith(color: Colors.white),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  image: DecorationImage(image: item.background, fit: BoxFit.cover),
                 ),
               ),
             ),
-            itemCount: 5,
-            loop: true,
           ),
         ),
         const Space.vertical(12),
       ],
     );
   }
-
-  bool get keepText => false;
 }
 
 class CustomM3CarouselTheme extends CenteredHeroCarouselTheme {

@@ -3,6 +3,25 @@ part of "../../m3_carousel.dart";
 sealed class MultiBrowseItemState extends CarouselItemState {
   const MultiBrowseItemState();
 
+  @override
+  bool get canBeOpened => switch (this) {
+        MultiBrowseMediumItem(mediumToLarge: double v) => v >= 0.95,
+        MultiBrowseLargeItem(largeToThin: double v) => v < 0.05,
+        _ => false,
+      };
+
+  @override
+  double get contentOpacity => fold(
+        futureThin: () => 0.0,
+        futureThinToSmall: (v) => 0.0,
+        small: () => 0.0,
+        smallToMedium: (v) => v.mapToRangeFrom((0, 0.5), (0.7, 1.0)),
+        medium: () => 0.5,
+        mediumToLarge: (v) => v.mapToRange(0.5, 1.0),
+        large: () => 1.0,
+        largeToThin: (v) => v.mapToRangeFrom((1, 0), (0.1, 0.7)),
+        pastThin: () => 0.0,
+      );
   T fold<T>({
     required T Function() futureThin,
     required T Function(double v) futureThinToSmall,

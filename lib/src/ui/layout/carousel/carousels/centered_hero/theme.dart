@@ -1,6 +1,6 @@
 part of "../../m3_carousel.dart";
 
-class CenteredHeroCarouselTheme extends M3CarouselTheme {
+class CenteredHeroCarouselTheme extends M3CarouselTheme<CenteredHeroItemState> {
   const CenteredHeroCarouselTheme();
 
   @override
@@ -37,15 +37,14 @@ class CenteredHeroCarouselTheme extends M3CarouselTheme {
   double get widthMedium => (widthLarge + widthSmallMax) / 2;
 
   @override
-  M3CarouselItemDecorator getDecorator() => CenteredHeroDecorator(
-        axis: direction,
-      );
+  M3CarouselItemDecorator<CenteredHeroItemState> getDecorator() =>
+      CenteredHeroDecorator(axis: direction, borderRadius: borderRadius);
 
   @override
   Axis get direction => Axis.horizontal;
 
   @override
-  M3CarouselLayouter getLayouter(double displaySize) => CenteredHeroLayouter(
+  M3CarouselLayouter<CenteredHeroItemState> getLayouter(double displaySize) => CenteredHeroLayouter(
         D: displaySize,
         A: firstPadding,
         Z: lastPadding,

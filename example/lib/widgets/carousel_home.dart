@@ -4,6 +4,8 @@ import 'package:example/logic/theme_logic.dart';
 import 'package:flutter/material.dart';
 import 'package:sid_base/sid_base.dart';
 
+import 'carousel_item_labels.dart';
+
 class CarouselHome extends StatelessWidget {
   const CarouselHome({super.key});
 
@@ -85,103 +87,25 @@ class _SlidableCarouselState extends State<SlidableCarousel> {
             ifVertifcal: () => 400,
             ifHorizontal: () => 250,
           ),
-          child: M3Carousel<MultiBrowseItemState>(
-            theme: CustomM3CarouselTheme(
-              targetLarge: targetLarge,
-              direction: direction,
-            ),
-            itemBuilder: (i, pi) => CarouselItem(
+          child: MultiBrowseCarousel(
+            theme: CustomM3CarouselTheme(targetLarge: targetLarge, direction: direction),
+            itemCount: 5,
+            loop: true,
+            itemBuilder: (i) => CarouselItem(
               background: CachedNetworkImageProvider('https://picsum.photos/1000?image=${i + 10}'),
-              contentBuilder: (context, MultiBrowseItemState state, double largeWidth) => Container(
+              contentBuilder: (context, state, pi) => CarouselItemLabels(
+                title: "$i",
+                label: "Title $pi",
+              ),
+            ),
+            openBuilder: (context, close, itemIndex, item) => Scaffold(
+              appBar: AppBar(title: Text("Image #$itemIndex")),
+              body: Container(
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Colors.black.withOpacity(0.4),
-                      Colors.black.withOpacity(0.1),
-                      Colors.black.withOpacity(0.0),
-                    ],
-                    begin: Alignment.bottomCenter,
-                    end: Alignment.topCenter,
-                  ),
-                ),
-                child: Material(
-                  type: MaterialType.transparency,
-                  child: InkWell(
-                    onTap: () {},
-                    child: Stack(
-                      children: [
-                        Positioned(
-                          bottom: 0,
-                          left: 0,
-                          width: direction.fold(
-                            ifVertifcal: () => null,
-                            ifHorizontal: () => largeWidth,
-                          ),
-                          right: direction.fold(
-                            ifVertifcal: () => 0,
-                            ifHorizontal: () => null,
-                          ),
-                          child: Pad(
-                            bottom: 12,
-                            horizontal: 16,
-                            child: Opacity(
-                              opacity: keepText
-                                  ? 1.0
-                                  : state.fold(
-                                      futureThin: () => 0.0,
-                                      futureThinToSmall: (v) => 0.0,
-                                      small: () => 0.0,
-                                      smallToMedium: (v) => v.mapToRangeFrom((0, 0.5), (0.7, 1.0)),
-                                      medium: () => 0.5,
-                                      mediumToLarge: (v) => v.mapToRange(0.5, 1.0),
-                                      large: () => 1.0,
-                                      largeToThin: (v) => v.mapToRangeFrom((1, 0), (0.1, 0.7)),
-                                      pastThin: () => 0.0,
-                                    ),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  Text(
-                                    "$i",
-                                    textAlign: TextAlign.start,
-                                    style: context.theme.textTheme.titleLarge!
-                                        .copyWith(color: Colors.white),
-                                  ),
-                                  AnimatedListed(
-                                    key: ValueKey("Carousel item $pi"),
-                                    duration: Durations.long1,
-                                    overlapSizeAndOpacity: 1.0,
-                                    curve: Easing.emphasizedDecelerate,
-                                    listed: keepText
-                                        ? true
-                                        : state.after(const MultiBrowseMediumItem(0.5)),
-                                    child: Row(
-                                      children: [
-                                        Expanded(
-                                          child: Text(
-                                            "Title $pi",
-                                            textAlign: TextAlign.start,
-                                            style: context.theme.textTheme.bodyMedium!
-                                                .copyWith(color: Colors.white),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  image: DecorationImage(image: item.background, fit: BoxFit.cover),
                 ),
               ),
             ),
-            itemCount: 5,
-            loop: true,
           ),
         ),
         const Space.vertical(12),
