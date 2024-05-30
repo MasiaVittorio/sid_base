@@ -163,6 +163,7 @@ class _M3CarouselBodyState<T extends CarouselItemState> extends State<_M3Carouse
   @override
   Widget build(BuildContext context) {
     final theme = widget.theme;
+    final mTheme = context.theme;
 
     return CleanProvider<M3CarouselTheme<T>>(
       data: theme,
@@ -235,6 +236,8 @@ class _M3CarouselBodyState<T extends CarouselItemState> extends State<_M3Carouse
               ),
             ),
           ),
+          sideShade(theme, mTheme, true),
+          sideShade(theme, mTheme, false),
           // Positioned(
           //   right: 0,
           //   top: 0,
@@ -250,6 +253,30 @@ class _M3CarouselBodyState<T extends CarouselItemState> extends State<_M3Carouse
           //   child: Container(color: context.theme.colorScheme.surface),
           // ),
         ],
+      ),
+    );
+  }
+
+  Positioned sideShade(M3CarouselTheme<T> carouselTheme, ThemeData theme, bool right) {
+    final color = theme.colorScheme.surface;
+    return Positioned(
+      right: right ? 0 : null,
+      left: right ? null : 0,
+      top: 0,
+      bottom: 0,
+      width: right ? carouselTheme.lastPadding : carouselTheme.firstPadding,
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: CurvedGradient.build(
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+            from: color.withOpacity(!right ? 1 : 0),
+            to: color.withOpacity(right ? 1 : 0),
+            curve: !right ? Easings.emphasizedDecelerate : Easings.emphasizedAccelerate,
+            padStart: right ? 0.0 : 0.1,
+            padEnd: !right ? 0.0 : 0.1,
+          ),
+        ),
       ),
     );
   }
@@ -376,5 +403,32 @@ class _GesturesDecider<T extends CarouselItemState> extends StatelessWidget {
           openBuilder: openBuilder,
         ),
     };
+  }
+}
+
+class CurvedGradient {
+  static build({
+    required Color from,
+    required Color to,
+    required Curve curve,
+    AlignmentGeometry begin = Alignment.centerLeft,
+    AlignmentGeometry end = Alignment.centerRight,
+    int granularity = 20,
+    double padStart = 0,
+    double padEnd = 0,
+  }) {
+    final stops = [
+      for (int i = 0; i <= granularity; i++) (i / granularity).mapToRange(padStart, 1 - padEnd),
+    ];
+    final colors = [
+      for (int i = 0; i <= granularity; i++)
+        Color.lerp(from, to, curve.transform(i / granularity))!,
+    ];
+    return LinearGradient(
+      colors: colors,
+      stops: stops,
+      begin: begin,
+      end: end,
+    );
   }
 }
