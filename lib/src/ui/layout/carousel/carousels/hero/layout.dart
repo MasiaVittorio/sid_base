@@ -116,7 +116,6 @@ class HeroLayouter extends M3CarouselLayouter<HeroItemState> {
   double _smallToCenterEnd(double value) => value.mapToRange(D - Z, D - Z - s - b);
 
   (Positioner, HeroItemState) _centerToPast(double value) {
-    print("center to past: $value");
     return _position(
       start: value.mapToRange(A, -pastWidth),
       end: value.mapToRange(D - Z - s - b, 0),

@@ -1,7 +1,4 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
-
-import 'package:flutter/material.dart';
-import 'package:sid_base/sid_base.dart';
+part of 'm3_carousel.dart';
 
 class CarouselItemLabels extends StatelessWidget {
   const CarouselItemLabels({

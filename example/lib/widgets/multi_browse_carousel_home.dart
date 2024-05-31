@@ -4,8 +4,6 @@ import 'package:example/logic/theme_logic.dart';
 import 'package:flutter/material.dart';
 import 'package:sid_base/sid_base.dart';
 
-import 'carousel_item_labels.dart';
-
 class MultiBrowseCarouselHome extends StatelessWidget {
   const MultiBrowseCarouselHome({super.key});
 

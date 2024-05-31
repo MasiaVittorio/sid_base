@@ -30,6 +30,7 @@ part 'carousels/multi_browse/layout.dart';
 part 'carousels/multi_browse/theme.dart';
 part 'item.dart';
 part 'item_state.dart';
+part 'labels.dart';
 part 'theme/decoration.dart';
 part 'theme/layout.dart';
 part 'theme/theme.dart';
