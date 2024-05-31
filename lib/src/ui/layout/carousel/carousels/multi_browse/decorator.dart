@@ -10,7 +10,7 @@ class MultiBrowseDecorator extends M3CarouselItemDecorator<MultiBrowseItemState>
   final int maxFuture;
 
   @override
-  double mainAxisAlignment(double future) =>
+  double mainAxisBackgroundAlignment(double future) =>
       -1 *
       ((switch (future) {
         >= 0 => future / maxFuture,

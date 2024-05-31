@@ -44,7 +44,7 @@ class FullScreenLayouter extends M3CarouselLayouter<FullScreenItemState> {
     );
   }
 
-  double get extSize => D * 0.9;
+  double get extSize => D * 0.8;
   double get futureEnd => D + b + extSize;
   (Positioner, FullScreenItemState)? _future() {
     return _position(

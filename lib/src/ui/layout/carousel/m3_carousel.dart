@@ -215,6 +215,7 @@ class _M3CarouselBodyState<T extends CarouselItemState> extends State<_M3Carouse
                               final openBuilder = widget.openBuilder;
                               return positioner(
                                 _GesturesDecider<T>(
+                                  isInFocus: future.round() < widget.layouter.pagesInFocus,
                                   pagesInFocus: widget.layouter.pagesInFocus,
                                   carouselTheme: widget.theme,
                                   borderRadius: theme.borderRadius,
@@ -236,6 +237,7 @@ class _M3CarouselBodyState<T extends CarouselItemState> extends State<_M3Carouse
                                       context,
                                       future,
                                       _LayoutContent(
+                                        contentAlignment: widget.decorator.contentAlignment(future),
                                         content: item.contentBuilder?.call(context, state, pi),
                                         gradient: item.gradient,
                                         direction: theme.direction,
@@ -323,8 +325,10 @@ class _LayoutContent<T extends CarouselItemState> extends StatelessWidget {
     required this.largeWidth,
     required this.contentOpacity,
     required this.onTap,
+    required this.contentAlignment,
   });
 
+  final AlignmentGeometry contentAlignment;
   final Widget? content;
   final Gradient? gradient;
   final Axis direction;
@@ -345,11 +349,14 @@ class _LayoutContent<T extends CarouselItemState> extends StatelessWidget {
           child: content == null
               ? const SizedBox.expand()
               : Stack(
-                  alignment: Alignment.bottomCenter,
+                  alignment: contentAlignment,
                   children: [
                     Positioned(
-                      bottom: 0,
                       left: direction.fold(
+                        ifVertifcal: () => 0,
+                        ifHorizontal: () => null,
+                      ),
+                      right: direction.fold(
                         ifVertifcal: () => 0,
                         ifHorizontal: () => null,
                       ),
@@ -357,9 +364,17 @@ class _LayoutContent<T extends CarouselItemState> extends StatelessWidget {
                         ifVertifcal: () => null,
                         ifHorizontal: () => largeWidth,
                       ),
-                      right: direction.fold(
-                        ifVertifcal: () => 0,
+                      height: direction.fold(
+                        ifVertifcal: () => largeWidth,
                         ifHorizontal: () => null,
+                      ),
+                      bottom: direction.fold(
+                        ifVertifcal: () => null,
+                        ifHorizontal: () => 0,
+                      ),
+                      top: direction.fold(
+                        ifVertifcal: () => null,
+                        ifHorizontal: () => 0,
                       ),
                       child: Opacity(
                         opacity: contentOpacity,
@@ -386,6 +401,7 @@ class _GesturesDecider<T extends CarouselItemState> extends StatelessWidget {
     required this.carouselTheme,
     required this.openBuilder,
     required this.pagesInFocus,
+    required this.isInFocus,
   });
 
   final M3CarouselTheme<T> carouselTheme;
@@ -393,6 +409,7 @@ class _GesturesDecider<T extends CarouselItemState> extends StatelessWidget {
   final int pageIndex;
   final int pagesInFocus;
   final bool autoFocus;
+  final bool isInFocus;
   final bool canBeOpened;
   bool get canBeFocused => !canBeOpened;
   final VoidCallback? overrideOnTap;
@@ -415,7 +432,7 @@ class _GesturesDecider<T extends CarouselItemState> extends StatelessWidget {
       (_, null) => builder(
           context,
           true,
-          canBeFocused && autoFocus ? focus : null,
+          canBeFocused && autoFocus && (!isInFocus) ? focus : null,
         ),
       (_, Widget Function(BuildContext, VoidCallback) openBuilder) => OpenContainer(
           openShape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),

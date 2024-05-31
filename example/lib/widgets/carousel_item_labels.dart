@@ -15,26 +15,28 @@ class CarouselItemLabels extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Pad(
-      bottom: 12,
-      horizontal: 16,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          if (title case String title)
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: context.theme.textTheme.titleLarge!.copyWith(color: Colors.white),
-            ),
-          if (label case String label)
-            Text(
-              label,
-              textAlign: TextAlign.center,
-              style: context.theme.textTheme.bodyMedium!.copyWith(color: Colors.white),
-            ),
-        ],
+    return Al.bottomCenter(
+      child: Pad(
+        bottom: 12,
+        horizontal: 16,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            if (title case String title)
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                style: context.theme.textTheme.titleLarge!.copyWith(color: Colors.white),
+              ),
+            if (label case String label)
+              Text(
+                label,
+                textAlign: TextAlign.center,
+                style: context.theme.textTheme.bodyMedium!.copyWith(color: Colors.white),
+              ),
+          ].separateWith(const Space.vertical(2)),
+        ),
       ),
     );
   }

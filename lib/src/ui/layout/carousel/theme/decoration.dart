@@ -18,7 +18,7 @@ abstract class M3CarouselItemDecorator<T extends CarouselItemState> {
     ImageProvider? image,
     bool round,
   ) {
-    final al = mainAxisAlignment(future);
+    final al = mainAxisBackgroundAlignment(future);
     final mTheme = context.theme;
     return Container(
       clipBehavior: round ? Clip.antiAlias : Clip.none,
@@ -40,7 +40,14 @@ abstract class M3CarouselItemDecorator<T extends CarouselItemState> {
     );
   }
 
-  double mainAxisAlignment(double future) {
+  double mainAxisBackgroundAlignment(double future) {
     return -1 * ((future).clamp(-1, 1));
+  }
+
+  AlignmentGeometry contentAlignment(double future) {
+    return axis.fold(
+      ifVertifcal: () => Alignment(0, (-future).clamp(-1, 1)),
+      ifHorizontal: () => Alignment((-future).clamp(-1, 1), 0),
+    );
   }
 }

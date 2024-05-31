@@ -61,16 +61,7 @@ class _SlidableCarouselState extends State<SlidableCarousel> {
                 ifVertifcal: () => null,
                 ifHorizontal: () => 250,
               ),
-              child: HeroCarousel(
-                theme: HeroCarouselTheme(direction: direction),
-                itemBuilder: itemBuilder<HeroItemState>,
-                openBuilder: (context, close, itemIndex, item) => Scaffold(
-                  body: FullScreenCarousel(
-                    initialIndex: itemIndex,
-                    itemBuilder: itemBuilder<FullScreenItemState>,
-                  ),
-                ),
-              ),
+              child: carousel(),
             ),
           ),
         ),
@@ -89,11 +80,56 @@ class _SlidableCarouselState extends State<SlidableCarousel> {
     );
   }
 
-  CarouselItem<T> itemBuilder<T extends CarouselItemState>(int i) => CarouselItem(
-        background: CachedNetworkImageProvider('https://picsum.photos/1000?image=${i + 10}'),
+  static const ratios = [
+    "/1000/2000",
+    "/2000/1000",
+    "/1000/1000",
+    "/800/3000",
+    "/3000/800",
+    "/1000/1000",
+    "/1000/1200",
+    "/1200/1000",
+  ];
+  String ratio(int i) => ratios[i % ratios.length];
+  HeroCarousel carousel() {
+    return HeroCarousel(
+      theme: HeroCarouselTheme(direction: direction),
+      itemBuilder: (int i) => CarouselItem(
+        background: CachedNetworkImageProvider('https://picsum.photos${ratio(i)}?image=${i + 10}'),
         contentBuilder: (context, state, pi) => CarouselItemLabels(
           title: "$i",
           label: "Title $pi",
         ),
-      );
+      ),
+      openBuilder: (context, close, itemIndex, item) => fullScreenCarousel(itemIndex),
+    );
+  }
+
+  static const fsRatios = [
+    "/2000/4000",
+    "/4000/2000",
+    "/3000/3000",
+    "/1000/5000",
+    "/5000/1000",
+    "/3000/3000",
+    "/2000/2400",
+    "/2400/2000",
+  ];
+  String fsRatio(int i) => fsRatios[i % ratios.length];
+
+  Scaffold fullScreenCarousel(int itemIndex) {
+    return Scaffold(
+      body: FullScreenCarousel(
+        initialIndex: itemIndex,
+        itemBuilder: (int i) => CarouselItem(
+          background:
+              CachedNetworkImageProvider('https://picsum.photos${fsRatio(i)}?image=${i + 10}'),
+          contentBuilder: (context, state, pi) => CarouselItemLabels(
+            title: "$i",
+            label: "Title $pi",
+          ),
+        ),
+      ),
+    );
+  }
 }
