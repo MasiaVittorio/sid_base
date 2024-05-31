@@ -119,6 +119,12 @@ class _SlidableCarouselState extends State<SlidableCarousel> {
   Scaffold fullScreenCarousel(int itemIndex) {
     return Scaffold(
       body: FullScreenCarousel(
+        theme: FullScreenCarouselTheme(
+          direction: direction.fold(
+            ifVertifcal: () => Axis.horizontal,
+            ifHorizontal: () => Axis.vertical,
+          ),
+        ),
         initialIndex: itemIndex,
         itemBuilder: (int i) => CarouselItem(
           background:
