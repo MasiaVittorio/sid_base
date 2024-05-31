@@ -16,21 +16,14 @@ class CarouselHome extends StatelessWidget {
       appBar: AppBar(title: const Text("Carousel example")),
       body: Column(
         children: [
-          const SlidableCarousel(),
+          const Expanded(child: SlidableCarousel()),
           const Space.vertical(8),
-          Expanded(
-            child: ListView(
-              children: [
-                const Space.vertical(8),
-                themeLogic.dark.build(
-                  (context, value) => SwitchListTile(
-                    value: value,
-                    onChanged: (_) => themeLogic.toggleBrightness(),
-                    title: const Text("Dark mode:"),
-                    secondary: Icon(MdiIcons.weatherNight),
-                  ),
-                ),
-              ],
+          themeLogic.dark.build(
+            (context, value) => SwitchListTile(
+              value: value,
+              onChanged: (_) => themeLogic.toggleBrightness(),
+              title: const Text("Dark mode:"),
+              secondary: Icon(MdiIcons.weatherNight),
             ),
           ),
         ],
@@ -68,9 +61,29 @@ class _SlidableCarouselState extends State<SlidableCarousel> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        Expanded(
+          child: Center(
+            child: SizedBox(
+              height: direction.fold(
+                ifVertifcal: () => null,
+                ifHorizontal: () => 250,
+              ),
+              child: MultiBrowseCarousel(
+                theme: CustomM3CarouselTheme(targetLarge: targetLarge, direction: direction),
+                itemBuilder: itemBuilder<MultiBrowseItemState>,
+                openBuilder: (context, close, itemIndex, item) => Scaffold(
+                  body: FullScreenCarousel(
+                    initialIndex: itemIndex,
+                    itemBuilder: itemBuilder<FullScreenItemState>,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+        const Space.vertical(12),
         RadioSlider(
           items: const [
             RadioSliderItem(title: Text("Vertical"), icon: Icon(Icons.vertical_distribute_sharp)),
@@ -82,23 +95,6 @@ class _SlidableCarouselState extends State<SlidableCarousel> {
           },
         ),
         const Space.vertical(8),
-        SizedBox(
-          height: direction.fold(
-            ifVertifcal: () => 400,
-            ifHorizontal: () => 250,
-          ),
-          child: MultiBrowseCarousel(
-            theme: CustomM3CarouselTheme(targetLarge: targetLarge, direction: direction),
-            itemBuilder: itemBuilder<MultiBrowseItemState>,
-            openBuilder: (context, close, itemIndex, item) => Scaffold(
-              body: FullScreenCarousel(
-                initialIndex: itemIndex,
-                itemBuilder: itemBuilder<FullScreenItemState>,
-              ),
-            ),
-          ),
-        ),
-        const Space.vertical(12),
         Pad(
           horizontal: 24,
           child: Text(

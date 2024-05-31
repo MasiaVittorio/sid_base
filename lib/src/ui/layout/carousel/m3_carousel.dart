@@ -319,10 +319,14 @@ class _LayoutContent<T extends CarouselItemState> extends StatelessWidget {
           child: content == null
               ? const SizedBox.expand()
               : Stack(
+                  alignment: Alignment.bottomCenter,
                   children: [
                     Positioned(
                       bottom: 0,
-                      left: 0,
+                      left: direction.fold(
+                        ifVertifcal: () => 0,
+                        ifHorizontal: () => null,
+                      ),
                       width: direction.fold(
                         ifVertifcal: () => null,
                         ifHorizontal: () => largeWidth,
