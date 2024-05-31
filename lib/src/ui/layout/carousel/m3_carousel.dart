@@ -18,6 +18,11 @@ part 'carousels/full_screen/decorator.dart';
 part 'carousels/full_screen/item_state.dart';
 part 'carousels/full_screen/layout.dart';
 part 'carousels/full_screen/theme.dart';
+part 'carousels/hero/carousel.dart';
+part 'carousels/hero/decorator.dart';
+part 'carousels/hero/item_state.dart';
+part 'carousels/hero/layout.dart';
+part 'carousels/hero/theme.dart';
 part 'carousels/multi_browse/carousel.dart';
 part 'carousels/multi_browse/decorator.dart';
 part 'carousels/multi_browse/item_state.dart';
@@ -196,6 +201,7 @@ class _M3CarouselBodyState<T extends CarouselItemState> extends State<_M3Carouse
                               final openBuilder = widget.openBuilder;
                               return positioner(
                                 _GesturesDecider<T>(
+                                  pagesInFocus: widget.layouter.pagesInFocus,
                                   carouselTheme: widget.theme,
                                   borderRadius: theme.borderRadius,
                                   pageIndex: pi,
@@ -349,11 +355,13 @@ class _GesturesDecider<T extends CarouselItemState> extends StatelessWidget {
     required this.controller,
     required this.carouselTheme,
     required this.openBuilder,
+    required this.pagesInFocus,
   });
 
   final M3CarouselTheme<T> carouselTheme;
   final BorderRadius borderRadius;
   final int pageIndex;
+  final int pagesInFocus;
   final bool autoFocus;
   final bool canBeOpened;
   bool get canBeFocused => !canBeOpened;
@@ -364,7 +372,7 @@ class _GesturesDecider<T extends CarouselItemState> extends StatelessWidget {
   final Widget Function(BuildContext context, VoidCallback close)? openBuilder;
 
   void focus() => controller.animateToPage(
-        pageIndex,
+        pageIndex + 1 - pagesInFocus,
         duration: Durations.medium3,
         curve: Easing.emphasizedDecelerate,
       );

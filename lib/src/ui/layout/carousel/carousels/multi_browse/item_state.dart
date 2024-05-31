@@ -22,6 +22,7 @@ sealed class MultiBrowseItemState extends CarouselItemState {
         largeToThin: (v) => v.mapToRangeFrom((1, 0), (0.1, 0.7)),
         pastThin: () => 0.0,
       );
+
   T fold<T>({
     required T Function() futureThin,
     required T Function(double v) futureThinToSmall,
@@ -36,86 +37,34 @@ sealed class MultiBrowseItemState extends CarouselItemState {
       switch (this) {
         MultiBrowseFutureThinItem(thinToSmall: 0) => futureThin(),
         MultiBrowseFutureThinItem(thinToSmall: 1) => small(),
-        MultiBrowseFutureThinItem(thinToSmall: double v) => futureThinToSmall(v),
         MultiBrowseSmallItem(smallToMedium: 0) => small(),
         MultiBrowseSmallItem(smallToMedium: 1) => medium(),
-        MultiBrowseSmallItem(smallToMedium: double v) => smallToMedium(v),
         MultiBrowseMediumItem(mediumToLarge: 0) => medium(),
         MultiBrowseMediumItem(mediumToLarge: 1) => large(),
-        MultiBrowseMediumItem(mediumToLarge: double v) => mediumToLarge(v),
         MultiBrowseLargeItem(largeToThin: 0) => large(),
         MultiBrowseLargeItem(largeToThin: 1) => pastThin(),
-        MultiBrowseLargeItem(largeToThin: double v) => largeToThin(v),
         MultiBrowsePastThinItem() => pastThin(),
+        MultiBrowseFutureThinItem(thinToSmall: double v) => futureThinToSmall(v),
+        MultiBrowseSmallItem(smallToMedium: double v) => smallToMedium(v),
+        MultiBrowseMediumItem(mediumToLarge: double v) => mediumToLarge(v),
+        MultiBrowseLargeItem(largeToThin: double v) => largeToThin(v),
       };
 
-  bool before(MultiBrowseItemState other) {
-    return ((!after(other)) && (!equal(other)));
-  }
-
-  bool after(MultiBrowseItemState other) {
+  double get _v {
     return switch (this) {
-      MultiBrowseFutureThinItem(thinToSmall: double v) => switch (other) {
-          MultiBrowseFutureThinItem(thinToSmall: double ov) => v > ov,
-          _ => false,
-        },
-      MultiBrowseSmallItem(smallToMedium: double v) => switch (other) {
-          MultiBrowseFutureThinItem(thinToSmall: double ov) => ov == 1 && v == 0 ? false : true,
-          MultiBrowseSmallItem(smallToMedium: double ov) => v > ov,
-          _ => false,
-        },
-      MultiBrowseMediumItem(mediumToLarge: double v) => switch (other) {
-          MultiBrowseFutureThinItem() => true,
-          MultiBrowseSmallItem(smallToMedium: double ov) => ov == 1 && v == 0 ? false : true,
-          MultiBrowseMediumItem(mediumToLarge: double ov) => v > ov,
-          _ => false,
-        },
-      MultiBrowseLargeItem(largeToThin: double v) => switch (other) {
-          MultiBrowseFutureThinItem() => true,
-          MultiBrowseSmallItem() => true,
-          MultiBrowseMediumItem(mediumToLarge: double ov) => ov == 1 && v == 0 ? false : true,
-          MultiBrowseLargeItem(largeToThin: double ov) => v > ov,
-          _ => true,
-        },
-      MultiBrowsePastThinItem() => switch (other) {
-          MultiBrowseLargeItem(largeToThin: 1) => false,
-          MultiBrowsePastThinItem() => false,
-          _ => true,
-        },
+      MultiBrowseFutureThinItem(thinToSmall: double v) => 0 + v,
+      MultiBrowseSmallItem(smallToMedium: double v) => 1 + v,
+      MultiBrowseMediumItem(mediumToLarge: double v) => 2 + v,
+      MultiBrowseLargeItem(largeToThin: double v) => 3 + v,
+      MultiBrowsePastThinItem() => 4,
     };
   }
 
-  bool equal(MultiBrowseItemState other) {
-    return switch (this) {
-      MultiBrowseFutureThinItem(thinToSmall: double v) => switch (other) {
-          MultiBrowseFutureThinItem(thinToSmall: double ov) => v == ov,
-          MultiBrowseSmallItem(smallToMedium: 0) => v == 1,
-          _ => false,
-        },
-      MultiBrowseSmallItem(smallToMedium: double v) => switch (other) {
-          MultiBrowseFutureThinItem(thinToSmall: 1) => v == 0,
-          MultiBrowseSmallItem(smallToMedium: double ov) => ov == v,
-          MultiBrowseMediumItem(mediumToLarge: 0) => v == 1,
-          _ => false,
-        },
-      MultiBrowseMediumItem(mediumToLarge: double v) => switch (other) {
-          MultiBrowseSmallItem(smallToMedium: 1) => v == 0,
-          MultiBrowseMediumItem(mediumToLarge: double ov) => ov == v,
-          // MultiBrowseLargeItem(largeToThin: 0) => v == 1, nope, more than one large
-          _ => false,
-        },
-      MultiBrowseLargeItem(largeToThin: double v) => switch (other) {
-          // MultiBrowseMediumItem(mediumToLarge: 1) => v == 0, // nope, more than one large
-          MultiBrowseLargeItem(largeToThin: double ov) => ov == v,
-          _ => false,
-        },
-      MultiBrowsePastThinItem() => switch (other) {
-          MultiBrowseLargeItem(largeToThin: 1) => true,
-          MultiBrowsePastThinItem() => true,
-          _ => false,
-        },
-    };
-  }
+  bool before(MultiBrowseItemState other) => _v < other._v;
+
+  bool after(MultiBrowseItemState other) => _v > other._v;
+
+  bool equal(MultiBrowseItemState other) => _v == other._v;
 }
 
 class MultiBrowseFutureThinItem extends MultiBrowseItemState {

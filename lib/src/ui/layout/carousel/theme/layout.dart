@@ -21,6 +21,8 @@ abstract class M3CarouselLayouter<T extends CarouselItemState> {
 
   double get viewPortFraction;
   double get largeWidth;
+
+  int get pagesInFocus => 1;
 }
 
 typedef Positioner = Positioned Function(Widget child);

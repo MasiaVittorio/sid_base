@@ -4,11 +4,7 @@ sealed class FullScreenItemState extends CarouselItemState {
   const FullScreenItemState();
 
   @override
-  bool get canBeOpened => switch (this) {
-        FullScreenFutureItem(futureToCenter: double v) => v >= 0.95,
-        FullScreenCenterItem(centerToPast: double v) => v <= 0.05,
-        FullScreenPastItem() => false,
-      };
+  bool get canBeOpened => false;
 
   @override
   double get contentOpacity => fold(
@@ -29,53 +25,24 @@ sealed class FullScreenItemState extends CarouselItemState {
       switch (this) {
         FullScreenFutureItem(futureToCenter: 0) => future(),
         FullScreenFutureItem(futureToCenter: 1) => center(),
-        FullScreenFutureItem(futureToCenter: double v) => futureToCenter(v),
-        FullScreenCenterItem(centerToPast: 1) => past(),
         FullScreenCenterItem(centerToPast: 0) => center(),
-        FullScreenCenterItem(centerToPast: double v) => centerToPast(v),
+        FullScreenCenterItem(centerToPast: 1) => past(),
         FullScreenPastItem() => past(),
+        FullScreenFutureItem(futureToCenter: double v) => futureToCenter(v),
+        FullScreenCenterItem(centerToPast: double v) => centerToPast(v),
       };
 
-  bool before(FullScreenItemState other) {
-    return ((!after(other)) && (!equal(other)));
-  }
+  double get _v => switch (this) {
+        FullScreenFutureItem(futureToCenter: double v) => v,
+        FullScreenCenterItem(centerToPast: double v) => 1 + v,
+        FullScreenPastItem() => 2,
+      };
 
-  bool after(FullScreenItemState other) {
-    return switch (this) {
-      FullScreenFutureItem(futureToCenter: double v) => switch (other) {
-          FullScreenFutureItem(futureToCenter: double ov) => v > ov,
-          _ => false,
-        },
-      FullScreenCenterItem(centerToPast: double v) => switch (other) {
-          FullScreenFutureItem(futureToCenter: double ov) => ov == 1 && v == 0 ? false : true,
-          FullScreenCenterItem(centerToPast: double ov) => v > ov,
-          _ => false,
-        },
-      FullScreenPastItem() => switch (other) {
-          FullScreenPastItem() => false,
-          _ => true,
-        },
-    };
-  }
+  bool before(FullScreenItemState other) => _v < other._v;
 
-  bool equal(FullScreenItemState other) {
-    return switch (this) {
-      FullScreenFutureItem(futureToCenter: double v) => switch (other) {
-          FullScreenFutureItem(futureToCenter: double ov) => v == ov,
-          _ => false,
-        },
-      FullScreenCenterItem(centerToPast: double v) => switch (other) {
-          FullScreenFutureItem(futureToCenter: double ov) => ov == 1 && v == 0,
-          FullScreenCenterItem(centerToPast: double ov) => ov == v,
-          FullScreenPastItem() => v == 1,
-        },
-      FullScreenPastItem() => switch (other) {
-          FullScreenCenterItem(centerToPast: double ov) => ov == 1,
-          FullScreenPastItem() => true,
-          _ => false,
-        },
-    };
-  }
+  bool after(FullScreenItemState other) => _v > other._v;
+
+  bool equal(FullScreenItemState other) => _v == other._v;
 }
 
 class FullScreenFutureItem extends FullScreenItemState {

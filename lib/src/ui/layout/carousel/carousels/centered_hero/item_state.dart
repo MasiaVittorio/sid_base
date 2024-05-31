@@ -37,86 +37,34 @@ sealed class CenteredHeroItemState extends CarouselItemState {
       switch (this) {
         CenteredHeroFutureThinItem(thinToSmall: 0) => futureThin(),
         CenteredHeroFutureThinItem(thinToSmall: 1) => futureSmall(),
-        CenteredHeroFutureThinItem(thinToSmall: double v) => futureThinToSmall(v),
-        CenteredHeroFutureSmallItem(smallToHero: 1) => hero(),
         CenteredHeroFutureSmallItem(smallToHero: 0) => futureSmall(),
-        CenteredHeroFutureSmallItem(smallToHero: double v) => futureSmallToHero(v),
-        CenteredHeroCenterItem(heroToSmall: 1) => pastSmall(),
+        CenteredHeroFutureSmallItem(smallToHero: 1) => hero(),
         CenteredHeroCenterItem(heroToSmall: 0) => hero(),
-        CenteredHeroCenterItem(heroToSmall: double v) => heroToSmall(v),
-        CenteredHeroPastSmallItem(smallToThin: 1) => pastThin(),
+        CenteredHeroCenterItem(heroToSmall: 1) => pastSmall(),
         CenteredHeroPastSmallItem(smallToThin: 0) => pastSmall(),
-        CenteredHeroPastSmallItem(smallToThin: double v) => pastSmallToThin(v),
+        CenteredHeroPastSmallItem(smallToThin: 1) => pastThin(),
         CenteredHeroPastThinItem() => pastThin(),
+        CenteredHeroFutureThinItem(thinToSmall: double v) => futureThinToSmall(v),
+        CenteredHeroFutureSmallItem(smallToHero: double v) => futureSmallToHero(v),
+        CenteredHeroCenterItem(heroToSmall: double v) => heroToSmall(v),
+        CenteredHeroPastSmallItem(smallToThin: double v) => pastSmallToThin(v),
       };
 
-  bool before(CenteredHeroItemState other) {
-    return ((!after(other)) && (!equal(other)));
-  }
-
-  bool after(CenteredHeroItemState other) {
+  double get _v {
     return switch (this) {
-      CenteredHeroFutureThinItem(thinToSmall: double v) => switch (other) {
-          CenteredHeroFutureThinItem(thinToSmall: double ov) => v > ov,
-          _ => false,
-        },
-      CenteredHeroFutureSmallItem(smallToHero: double v) => switch (other) {
-          CenteredHeroFutureThinItem() => true,
-          CenteredHeroFutureSmallItem(smallToHero: double ov) => v > ov,
-          _ => false,
-        },
-      CenteredHeroCenterItem(heroToSmall: double v) => switch (other) {
-          CenteredHeroFutureThinItem() || CenteredHeroFutureSmallItem() => true,
-          CenteredHeroCenterItem(heroToSmall: double ov) => v > ov,
-          _ => false,
-        },
-      CenteredHeroPastSmallItem(smallToThin: double v) => switch (other) {
-          CenteredHeroFutureThinItem() ||
-          CenteredHeroFutureSmallItem() ||
-          CenteredHeroCenterItem() =>
-            true,
-          CenteredHeroPastSmallItem(smallToThin: double ov) => v > ov,
-          _ => false,
-        },
-      CenteredHeroPastThinItem() => switch (other) {
-          CenteredHeroPastThinItem() => false,
-          _ => true,
-        },
+      CenteredHeroFutureThinItem(thinToSmall: double v) => v,
+      CenteredHeroFutureSmallItem(smallToHero: double v) => 1 + v,
+      CenteredHeroCenterItem(heroToSmall: double v) => 2 + v,
+      CenteredHeroPastSmallItem(smallToThin: double v) => 3 + v,
+      CenteredHeroPastThinItem() => 4,
     };
   }
 
-  bool equal(CenteredHeroItemState other) {
-    return switch (this) {
-      CenteredHeroFutureThinItem(thinToSmall: double v) => switch (other) {
-          CenteredHeroFutureThinItem(thinToSmall: double ov) => v == ov,
-          CenteredHeroFutureSmallItem(smallToHero: 0) => v == 1,
-          _ => false,
-        },
-      CenteredHeroFutureSmallItem(smallToHero: double v) => switch (other) {
-          CenteredHeroFutureThinItem(thinToSmall: 1) => v == 0,
-          CenteredHeroFutureSmallItem(smallToHero: double ov) => v == ov,
-          CenteredHeroCenterItem(heroToSmall: 0) => v == 1,
-          _ => false,
-        },
-      CenteredHeroCenterItem(heroToSmall: double v) => switch (other) {
-          CenteredHeroFutureSmallItem(smallToHero: 1) => v == 0,
-          CenteredHeroCenterItem(heroToSmall: double ov) => ov == v,
-          CenteredHeroPastSmallItem(smallToThin: 0) => v == 1,
-          _ => false,
-        },
-      CenteredHeroPastSmallItem(smallToThin: double v) => switch (other) {
-          CenteredHeroCenterItem(heroToSmall: 1) => v == 0,
-          CenteredHeroPastSmallItem(smallToThin: double ov) => v == ov,
-          CenteredHeroPastThinItem() => v == 1,
-          _ => false,
-        },
-      CenteredHeroPastThinItem() => switch (other) {
-          CenteredHeroPastSmallItem(smallToThin: 1) => true,
-          CenteredHeroPastThinItem() => true,
-          _ => false,
-        },
-    };
-  }
+  bool before(CenteredHeroItemState other) => _v < other._v;
+
+  bool after(CenteredHeroItemState other) => _v > other._v;
+
+  bool equal(CenteredHeroItemState other) => _v == other._v;
 }
 
 class CenteredHeroFutureThinItem extends CenteredHeroItemState {

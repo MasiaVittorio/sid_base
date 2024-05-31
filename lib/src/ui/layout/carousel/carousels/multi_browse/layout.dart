@@ -77,6 +77,9 @@ class MultiBrowseLayouter extends M3CarouselLayouter<MultiBrowseItemState> {
   final Axis axis;
 
   @override
+  int get pagesInFocus => n;
+
+  @override
   double get viewPortFraction => ((m * 0.8 + 0.2 * l)) / D;
 
   @override
