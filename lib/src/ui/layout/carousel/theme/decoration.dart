@@ -15,7 +15,7 @@ abstract class M3CarouselItemDecorator<T extends CarouselItemState> {
     BuildContext context,
     double future,
     Widget content,
-    ImageProvider image,
+    ImageProvider? image,
     bool round,
   ) {
     final al = mainAxisAlignment(future);
@@ -23,20 +23,24 @@ abstract class M3CarouselItemDecorator<T extends CarouselItemState> {
     return Container(
       clipBehavior: round ? Clip.antiAlias : Clip.none,
       decoration: BoxDecoration(
-        borderRadius: round ? effectiveBorderRadius(future) : null,
-        color: mTheme.colorScheme.secondaryContainer,
-        image: DecorationImage(
-          image: image,
-          fit: BoxFit.cover,
-          alignment: switch (axis) {
-            Axis.horizontal => Alignment(al, 0),
-            Axis.vertical => Alignment(0, al),
-          },
-        ),
-      ),
+          borderRadius: round ? effectiveBorderRadius(future) : null,
+          color: mTheme.colorScheme.secondaryContainer,
+          image: switch (image) {
+            null => null,
+            ImageProvider image => DecorationImage(
+                image: image,
+                fit: BoxFit.cover,
+                alignment: switch (axis) {
+                  Axis.horizontal => Alignment(al, 0),
+                  Axis.vertical => Alignment(0, al),
+                },
+              ),
+          }),
       child: content,
     );
   }
 
-  double mainAxisAlignment(double future);
+  double mainAxisAlignment(double future) {
+    return -1 * ((future).clamp(-1, 1));
+  }
 }

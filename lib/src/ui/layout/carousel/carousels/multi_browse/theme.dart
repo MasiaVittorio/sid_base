@@ -1,7 +1,7 @@
 part of "../../m3_carousel.dart";
 
 class MultiBrowseCarouselTheme extends M3CarouselTheme<MultiBrowseItemState> {
-  const MultiBrowseCarouselTheme();
+  const MultiBrowseCarouselTheme({super.direction = Axis.horizontal});
 
   @override
   TextStyle titleStyle(BuildContext context) => context.theme.textTheme.titleMedium!;
@@ -42,9 +42,6 @@ class MultiBrowseCarouselTheme extends M3CarouselTheme<MultiBrowseItemState> {
         targetBorderRadius: borderRadius,
         maxFuture: 3,
       );
-
-  @override
-  Axis get direction => Axis.horizontal;
 
   @override
   M3CarouselLayouter<MultiBrowseItemState> getLayouter(double displaySize) => MultiBrowseLayouter(

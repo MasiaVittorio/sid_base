@@ -1,5 +1,5 @@
 import 'package:example/logic/theme_logic.dart';
-import 'package:example/widgets/carousel_home.dart';
+import 'package:example/widgets/multi_browse_carousel_home.dart';
 import 'package:flutter/material.dart';
 import 'package:sid_base/sid_base.dart';
 
@@ -28,7 +28,7 @@ class HomeExample extends StatelessWidget {
                 ),
                 ListTile(
                   title: const Text("Carousel example"),
-                  onTap: () => context.pushPage(const CarouselHome()),
+                  onTap: () => context.pushPage(const MultiBrowseCarouselHome()),
                 ),
               ],
             ),

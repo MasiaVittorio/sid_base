@@ -1,8 +1,9 @@
 import 'dart:ui';
 
 import 'package:example/logic/theme_logic.dart';
-import 'package:example/widgets/carousel_home.dart';
 import 'package:example/widgets/centered_carousel.dart';
+import 'package:example/widgets/hero_carousel_home.dart';
+import 'package:example/widgets/multi_browse_carousel_home.dart';
 import 'package:flutter/material.dart';
 import 'package:sid_base/sid_base.dart';
 
@@ -51,19 +52,32 @@ class _AppExampleState extends State<AppExample> {
             title: 'Example',
             theme: theme,
             home: Scaffold(
-              appBar: AppBar(title: const Text("Example")),
+              appBar: AppBar(title: const Text("Carousel examples")),
               body: Builder(builder: (context) {
                 return ListView(
                   children: [
-                    ListTile(
-                      title: const Text("Carousel example"),
-                      trailing: const Icon(Icons.keyboard_arrow_right),
-                      onTap: () => context.pushPage(const CarouselHome()),
+                    themeLogic.dark.build(
+                      (context, value) => SwitchListTile(
+                        value: value,
+                        onChanged: (_) => themeLogic.toggleBrightness(),
+                        title: const Text("Dark mode:"),
+                        secondary: Icon(MdiIcons.weatherNight),
+                      ),
                     ),
                     ListTile(
-                      title: const Text("Centered Carousel example"),
+                      title: const Text("Multi-Browse Carousel"),
+                      trailing: const Icon(Icons.keyboard_arrow_right),
+                      onTap: () => context.pushPage(const MultiBrowseCarouselHome()),
+                    ),
+                    ListTile(
+                      title: const Text("Centered Hero Carousel"),
                       trailing: const Icon(Icons.keyboard_arrow_right),
                       onTap: () => context.pushPage(const CenteredCarouselHome()),
+                    ),
+                    ListTile(
+                      title: const Text("Hero Carousel"),
+                      trailing: const Icon(Icons.keyboard_arrow_right),
+                      onTap: () => context.pushPage(const HeroCarouselHome()),
                     ),
                   ],
                 );

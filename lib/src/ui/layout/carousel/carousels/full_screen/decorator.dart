@@ -11,9 +11,4 @@ class FullScreenDecorator extends M3CarouselItemDecorator<FullScreenItemState> {
       future.abs().clamp(0, 1).mapFromRange(0, 0.05),
     )!;
   }
-
-  @override
-  double mainAxisAlignment(double future) {
-    return -1 * ((future).clamp(-1, 1));
-  }
 }

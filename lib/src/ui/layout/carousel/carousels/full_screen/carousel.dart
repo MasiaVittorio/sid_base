@@ -1,7 +1,7 @@
 part of '../../m3_carousel.dart';
 
 class FullScreenCarousel extends M3Carousel<FullScreenItemState> {
-  const FullScreenCarousel({
+  FullScreenCarousel({
     super.key,
     super.initialIndex = 0,
     super.theme,

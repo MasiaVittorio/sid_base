@@ -1,12 +1,13 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:example/logic/theme_logic.dart';
-import 'package:example/widgets/carousel_item_labels.dart';
 import 'package:flutter/material.dart';
 import 'package:sid_base/sid_base.dart';
 
-class CenteredCarouselHome extends StatelessWidget {
-  const CenteredCarouselHome({super.key});
+import 'carousel_item_labels.dart';
+
+class MultiBrowseCarouselHome extends StatelessWidget {
+  const MultiBrowseCarouselHome({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -41,6 +42,14 @@ class SlidableCarousel extends StatefulWidget {
 }
 
 class _SlidableCarouselState extends State<SlidableCarousel> {
+  double targetLarge = 180;
+
+  void onChanged(double v) {
+    setState(() {
+      targetLarge = v;
+    });
+  }
+
   Axis direction = Axis.horizontal;
 
   void onChangedDirection(Axis d) {
@@ -61,9 +70,9 @@ class _SlidableCarouselState extends State<SlidableCarousel> {
                 ifVertifcal: () => null,
                 ifHorizontal: () => 250,
               ),
-              child: CenteredHeroCarousel(
-                theme: CenteredHeroCarouselTheme(direction: direction),
-                itemBuilder: itemBuilder<CenteredHeroItemState>,
+              child: MultiBrowseCarousel(
+                theme: CustomM3CarouselTheme(targetLarge: targetLarge, direction: direction),
+                itemBuilder: itemBuilder<MultiBrowseItemState>,
                 openBuilder: (context, close, itemIndex, item) => Scaffold(
                   body: FullScreenCarousel(
                     initialIndex: itemIndex,
@@ -74,6 +83,7 @@ class _SlidableCarouselState extends State<SlidableCarousel> {
             ),
           ),
         ),
+        const Space.vertical(12),
         RadioSlider(
           items: const [
             RadioSliderItem(title: Text("Vertical"), icon: Icon(Icons.vertical_distribute_sharp)),
@@ -84,7 +94,20 @@ class _SlidableCarouselState extends State<SlidableCarousel> {
             onChangedDirection(index == 0 ? Axis.vertical : Axis.horizontal);
           },
         ),
-        const Space.vertical(12),
+        const Space.vertical(8),
+        Pad(
+          horizontal: 24,
+          child: Text(
+            "Target large size: ${targetLarge.toStringAsFixed(1)}",
+            style: context.theme.textTheme.titleSmall,
+          ),
+        ),
+        Slider(
+          value: targetLarge,
+          onChanged: onChanged,
+          min: 80,
+          max: 500,
+        ),
       ],
     );
   }
@@ -96,4 +119,15 @@ class _SlidableCarouselState extends State<SlidableCarousel> {
           label: "Title $pi",
         ),
       );
+}
+
+class CustomM3CarouselTheme extends MultiBrowseCarouselTheme {
+  final double targetLarge;
+  CustomM3CarouselTheme({
+    required this.targetLarge,
+    super.direction = Axis.horizontal,
+  });
+
+  @override
+  double get widthLarge => targetLarge;
 }

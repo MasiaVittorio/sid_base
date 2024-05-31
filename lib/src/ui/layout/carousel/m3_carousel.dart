@@ -35,7 +35,8 @@ part 'theme/layout.dart';
 part 'theme/theme.dart';
 
 class M3Carousel<T extends CarouselItemState> extends StatelessWidget {
-  const M3Carousel({
+  // ignore: prefer_const_constructors_in_immutables
+  M3Carousel({
     super.key,
     this.initialIndex = 0,
     this.theme,
@@ -46,13 +47,26 @@ class M3Carousel<T extends CarouselItemState> extends StatelessWidget {
     this.openBuilder,
     required this.defaultTheme,
   });
+  M3Carousel.items({
+    super.key,
+    this.initialIndex = 0,
+    this.theme,
+    required List<CarouselItem<T>> items,
+    this.loop = false,
+    this.autoFocusOnTap = true,
+    this.openBuilder,
+    required this.defaultTheme,
+  }) {
+    itemBuilder = (i) => items[i];
+    itemCount = items.length;
+  }
 
   final int initialIndex;
   final M3CarouselTheme<T>? theme;
 
-  final CarouselItem<T> Function(int itemIndex) itemBuilder;
+  late final CarouselItem<T> Function(int itemIndex) itemBuilder;
 
-  final int? itemCount;
+  late final int? itemCount;
   final bool loop;
 
   final Widget Function(
@@ -244,43 +258,55 @@ class _M3CarouselBodyState<T extends CarouselItemState> extends State<_M3Carouse
           ),
           sideShade(theme, mTheme, true),
           sideShade(theme, mTheme, false),
-          // Positioned(
-          //   right: 0,
-          //   top: 0,
-          //   bottom: 0,
-          //   width: theme.inBetweenPadding,
-          //   child: Container(color: context.theme.colorScheme.surface),
-          // ),
-          // Positioned(
-          //   left: 0,
-          //   top: 0,
-          //   bottom: 0,
-          //   width: theme.inBetweenPadding,
-          //   child: Container(color: context.theme.colorScheme.surface),
-          // ),
         ],
       ),
     );
   }
 
-  Positioned sideShade(M3CarouselTheme<T> carouselTheme, ThemeData theme, bool right) {
+  Positioned sideShade(M3CarouselTheme<T> carouselTheme, ThemeData theme, bool end) {
     final color = theme.colorScheme.surface;
+    final Axis direction = widget.theme.direction;
     return Positioned(
-      right: right ? 0 : null,
-      left: right ? null : 0,
-      top: 0,
-      bottom: 0,
-      width: right ? carouselTheme.lastPadding : carouselTheme.firstPadding,
+      right: direction.fold(
+        ifVertifcal: () => 0,
+        ifHorizontal: () => end ? 0 : null,
+      ),
+      bottom: direction.fold(
+        ifVertifcal: () => end ? 0 : null,
+        ifHorizontal: () => 0,
+      ),
+      left: direction.fold(
+        ifVertifcal: () => 0,
+        ifHorizontal: () => end ? null : 0,
+      ),
+      top: direction.fold(
+        ifVertifcal: () => end ? null : 0,
+        ifHorizontal: () => 0,
+      ),
+      width: direction.fold(
+        ifVertifcal: () => null,
+        ifHorizontal: () => end ? carouselTheme.lastPadding : carouselTheme.firstPadding,
+      ),
+      height: direction.fold(
+        ifHorizontal: () => null,
+        ifVertifcal: () => end ? carouselTheme.lastPadding : carouselTheme.firstPadding,
+      ),
       child: Container(
         decoration: BoxDecoration(
           gradient: CurvedGradient.build(
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
-            from: color.withOpacity(!right ? 1 : 0),
-            to: color.withOpacity(right ? 1 : 0),
-            curve: !right ? Easings.emphasizedDecelerate : Easings.emphasizedAccelerate,
-            padStart: right ? 0.0 : 0.1,
-            padEnd: !right ? 0.0 : 0.1,
+            begin: direction.fold(
+              ifVertifcal: () => Alignment.topCenter,
+              ifHorizontal: () => Alignment.centerLeft,
+            ),
+            end: direction.fold(
+              ifVertifcal: () => Alignment.bottomCenter,
+              ifHorizontal: () => Alignment.centerRight,
+            ),
+            from: color.withOpacity(!end ? 1 : 0),
+            to: color.withOpacity(end ? 1 : 0),
+            curve: !end ? Easings.emphasizedDecelerate : Easings.emphasizedAccelerate,
+            padStart: end ? 0.0 : 0.1,
+            padEnd: !end ? 0.0 : 0.1,
           ),
         ),
       ),
@@ -385,7 +411,7 @@ class _GesturesDecider<T extends CarouselItemState> extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = context.theme;
     return switch ((overrideOnTap, openBuilder)) {
-      (VoidCallback onTap, _) => builder(context, true, onTap),
+      (VoidCallback ot, _) => builder(context, true, ot),
       (_, null) => builder(
           context,
           true,

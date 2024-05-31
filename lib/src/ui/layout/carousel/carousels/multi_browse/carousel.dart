@@ -1,7 +1,7 @@
 part of '../../m3_carousel.dart';
 
 class MultiBrowseCarousel extends M3Carousel<MultiBrowseItemState> {
-  const MultiBrowseCarousel({
+  MultiBrowseCarousel({
     super.key,
     super.initialIndex = 0,
     super.theme,

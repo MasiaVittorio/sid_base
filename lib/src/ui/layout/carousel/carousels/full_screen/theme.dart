@@ -2,7 +2,7 @@ part of "../../m3_carousel.dart";
 
 class FullScreenCarouselTheme extends M3CarouselTheme<FullScreenItemState> {
   const FullScreenCarouselTheme({
-    this.direction = Axis.vertical,
+    super.direction = Axis.vertical,
   });
 
   @override
@@ -41,9 +41,6 @@ class FullScreenCarouselTheme extends M3CarouselTheme<FullScreenItemState> {
   @override
   M3CarouselItemDecorator<FullScreenItemState> getDecorator() =>
       FullScreenDecorator(axis: direction, targetBorderRadius: borderRadius);
-
-  @override
-  final Axis direction;
 
   @override
   M3CarouselLayouter<FullScreenItemState> getLayouter(double displaySize) => FullScreenLayouter(

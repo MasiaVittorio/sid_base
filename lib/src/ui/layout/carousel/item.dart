@@ -1,7 +1,7 @@
 part of 'm3_carousel.dart';
 
 class CarouselItem<T extends CarouselItemState> {
-  final ImageProvider background;
+  final ImageProvider? background;
 
   // page index can be different from item index if there's loop activated
   final Widget? Function(BuildContext context, T state, int pageIndex)? contentBuilder;
