@@ -12,6 +12,8 @@ class InsertDialog extends StatefulWidget {
     this.cancelLabel = "Cancel",
     this.initial,
     this.icon,
+    this.maxLength,
+    this.keyboardType,
   });
 
   final void Function(String) onInsert;
@@ -22,6 +24,8 @@ class InsertDialog extends StatefulWidget {
   final Widget? icon;
   final String confirmLabel;
   final String cancelLabel;
+  final int? maxLength;
+  final TextInputType? keyboardType;
 
   @override
   State<InsertDialog> createState() => _InsertDialogState();
@@ -48,8 +52,10 @@ class _InsertDialogState extends State<InsertDialog> {
       icon: widget.icon,
       title: Text(widget.title),
       content: TextField(
+        keyboardType: widget.keyboardType,
         autofocus: true,
         controller: controller,
+        maxLength: widget.maxLength,
         decoration: InputDecoration(
           label: Text(widget.fieldLabel),
           hintText: widget.fieldHint,

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:sid_base/src/state/persistence/base/persitence.dart';
 import 'package:sid_base/src/state/persistence/local/hive/hive_persistence.dart';
 
@@ -25,11 +26,34 @@ extension QuickReactive<T> on T {
 class Reactive<T> extends ChangeNotifier {
   T value;
 
-  Reactive(this.value);
+  bool get isDisposed => _isDisposed;
+  bool _isDisposed = false;
+
+  final List<VoidCallback> _beforeDisposing = [];
+  final bool Function(T, T)? equality;
+
+  Reactive(
+    this.value, {
+    this.equality,
+  });
+
+  void beforeDisposing(VoidCallback callback) => _beforeDisposing.add(callback);
+
+  @override
+  void dispose() {
+    for (final f in _beforeDisposing) {
+      f.call();
+    }
+    _beforeDisposing.clear();
+    _isDisposed = true;
+    super.dispose();
+  }
 
   @mustCallSuper
   bool update(T newValue, {bool distinct = true}) {
-    if (newValue == value && distinct) false;
+    if (distinct) {
+      if (equality?.call(newValue, value) ?? (newValue == value)) return false;
+    }
     value = newValue;
     notifyListeners();
     return true;
@@ -114,6 +138,33 @@ class Reactive<T> extends ChangeNotifier {
       });
     });
   }
+
+  static Reactive<T> modal<T>({
+    required T initVal,
+    String? key,
+    T Function(dynamic)? fromJsonDecoded,
+    dynamic Function(T)? toJsonEncodable,
+    Reactive<Map<String, bool>>? readCount,
+    void Function(T)? readCallback,
+    bool Function(T, T)? equals,
+    // T Function(T)? copier,
+  }) =>
+      key != null
+          ? PersistentReactive<T>(
+              initVal,
+              key: key,
+              fromJsonDecoded: fromJsonDecoded,
+              toJsonEncodable: toJsonEncodable,
+              afterReading: readCallback,
+              readCount: readCount,
+              // copier: copier,
+              equality: equals,
+            )
+          : Reactive<T>(
+              initVal,
+              // copier: copier,
+              equality: equals,
+            );
 }
 
 class PersistentReactive<T> extends Reactive<T> {
@@ -122,8 +173,22 @@ class PersistentReactive<T> extends Reactive<T> {
     required this.key,
     this.fromJsonDecoded,
     this.toJsonEncodable,
+    super.equality,
+    void Function(T)? afterReading,
     this.persistenceProvider = const HivePersistence(),
+    Reactive<Map<String, bool>>? readCount,
   }) : super() {
+    if (afterReading != null) _afterReading.add(() => afterReading(value));
+
+    if (readCount != null) {
+      readCount.value[this.key] = false;
+      readCount.refresh();
+      _afterReading.add(() {
+        readCount.value[this.key] = true;
+        readCount.refresh();
+      });
+    }
+
     _read();
   }
 
@@ -137,10 +202,6 @@ class PersistentReactive<T> extends Reactive<T> {
   @override
   bool update(T newValue, {bool distinct = true}) {
     if (_v) debugPrint("updating with $newValue");
-    if (newValue == value && distinct) {
-      if (_v) debugPrint("already $newValue");
-      return false;
-    }
     final bool result = super.update(newValue, distinct: distinct);
     _write();
     return result;

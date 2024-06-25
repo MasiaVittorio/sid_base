@@ -12,9 +12,11 @@ extension ColorTones on Color {
   double get tone {
     return Hct.fromInt(value).tone;
   }
+
   double get chroma {
     return Hct.fromInt(value).chroma;
   }
+
   double get hue {
     return Hct.fromInt(value).hue;
   }
@@ -36,4 +38,97 @@ extension ColorSid on Color {
   bool sameBrightnessAs(Color other) => brightness == other.brightness;
   bool notLegibleOn(Color other) => sameBrightnessAs(other);
   bool legibleOn(Color other) => !notLegibleOn(other);
+}
+
+extension RightContrastFromTheme on ThemeData {
+  RightContrast rightContrast({
+    bool fallbackOnTextTheme = false,
+    bool fallbackOnIconTheme = false,
+  }) =>
+      RightContrast(
+        this,
+        fallbackOnIconTheme: fallbackOnIconTheme,
+        fallbackOnTextTheme: fallbackOnTextTheme,
+      );
+}
+
+class RightContrast {
+  final ThemeData theme;
+  final bool fallbackOnTextTheme;
+  final bool fallbackOnIconTheme;
+
+  const RightContrast(
+    this.theme, {
+    this.fallbackOnIconTheme = false,
+    this.fallbackOnTextTheme = false,
+  }) : assert(!(fallbackOnIconTheme && fallbackOnTextTheme));
+
+  Color get onCanvas {
+    final Color accent = theme.colorScheme.secondary;
+    final Color primary = theme.primaryColor;
+    final Color canvas = theme.canvasColor;
+
+    if (primary.legibleOn(canvas)) {
+      return primary;
+    } else if (accent.legibleOn(canvas)) {
+      return accent;
+    }
+
+    if (fallbackOnIconTheme) {
+      Color? res = theme.iconTheme.color;
+      if (res != null) return res;
+    }
+
+    if (fallbackOnTextTheme) {
+      Color? res = theme.textTheme.bodyMedium?.color;
+      if (res != null) return res;
+    }
+
+    return canvas.contrast;
+  }
+
+  Color get onAccent {
+    final Color primary = theme.primaryColor;
+    final Color accent = theme.colorScheme.secondary;
+
+    if (accent.legibleOn(primary)) return primary;
+
+    if (fallbackOnIconTheme || fallbackOnTextTheme) {
+      final Color res = theme.colorScheme.onSecondary;
+      return res;
+    }
+
+    return accent.contrast;
+  }
+
+  Color get onPrimary {
+    final Color accent = theme.colorScheme.secondary;
+    final Color primary = theme.primaryColor;
+
+    if (accent.legibleOn(primary)) return accent;
+
+    if (fallbackOnIconTheme) {
+      final Color? res = theme.primaryIconTheme.color;
+      if (res != null) return res;
+    }
+    if (fallbackOnTextTheme) {
+      final Color? res = theme.primaryTextTheme.bodyMedium?.color;
+      if (res != null) return res;
+    }
+
+    return primary.contrast;
+  }
+
+  Color onColor(Color color) {
+    final Color accent = theme.colorScheme.secondary;
+    final Color primary = theme.primaryColor;
+
+    if (primary.legibleOn(color)) {
+      return primary;
+    } else if (accent.legibleOn(color)) {
+      return accent;
+    }
+
+    return color.contrast;
+  }
 }

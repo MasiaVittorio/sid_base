@@ -4,4 +4,6 @@ export 'carousel/m3_carousel.dart';
 export 'circular_layout.dart';
 export 'padding.dart';
 export 'responsive_scroll/all.dart';
+export 'sections/all.dart';
+export 'shadowed.dart';
 export 'space.dart';
