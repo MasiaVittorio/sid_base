@@ -18,6 +18,17 @@ class PersistentCache<T> {
   bool finishedReading = false;
   final PersistenceProvider persistenceProvider;
 
+  Future<T> readOrGet(
+    String objectKey,
+    Future<T> Function(String objectKey) orGet,
+  ) async {
+    final T? cached = await read(objectKey);
+    if (cached case T value) return value;
+    final T object = await orGet(objectKey);
+    write(objectKey, object);
+    return object;
+  }
+
   Future<T?> read(String objectKey) async {
     try {
       final String key = k(objectKey);
