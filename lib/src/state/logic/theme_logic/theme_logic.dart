@@ -94,7 +94,8 @@ abstract class ThemeLogicBase extends LogicBase {
         final baseLightTheme = _baseThemeFromDark(false);
         final baseDarkTheme = _baseThemeFromDark(true);
 
-        ThemeData usableLight = _applyDynamicSchemeAndBaseCustomizations(baseLightTheme, lightScheme);
+        ThemeData usableLight =
+            _applyDynamicSchemeAndBaseCustomizations(baseLightTheme, lightScheme);
         ThemeData usableDark = _applyDynamicSchemeAndBaseCustomizations(baseDarkTheme, darkScheme);
 
         usableLight = usableLight.copyWith(
@@ -138,7 +139,7 @@ abstract class ThemeLogicBase extends LogicBase {
     });
   }
 
-  /// override this to apply yout theme extensions and such, 
+  /// override this to apply yout theme extensions and such,
   /// this is the last edit that is made to the theme before being passed to the builder
   ThemeData applyAppCustomizations(ThemeData theme) {
     return theme;
