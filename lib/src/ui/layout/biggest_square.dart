@@ -7,10 +7,12 @@ class BiggestSquare extends StatelessWidget {
     super.key,
     required this.builder,
     this.fallbackSize = 50,
+    this.shrink = false,
   });
 
   final Widget Function(BuildContext context, double size) builder;
   final double fallbackSize;
+  final bool shrink;
 
   @override
   Widget build(BuildContext context) {
@@ -18,6 +20,7 @@ class BiggestSquare extends StatelessWidget {
       builder: (BuildContext context, BoxConstraints c) {
         double s = min(c.maxHeight, c.maxWidth);
         if (s.isNaN || s.isInfinite) s = fallbackSize;
+        if (shrink) return builder(context, s);
         return SizedBox.square(
           dimension: s,
           child: builder(context, s),

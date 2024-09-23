@@ -67,18 +67,21 @@ class ConfirmDialog extends StatelessWidget {
       iconColor: WidgetStatePropertyAll(filledForeground),
     );
     final textConfirmStyle = ButtonStyle(
-      foregroundColor: WidgetStatePropertyAll(textForeground),
-      iconColor: WidgetStatePropertyAll(textForeground),
-      side: switch(confirmButtonType){
-        ConfirmButtonType.outlined => WidgetStatePropertyAll(BorderSide(color: textForeground ?? theme.colorScheme.primary)),
-        _ => null,
-      }
-    );
+        foregroundColor: WidgetStatePropertyAll(textForeground),
+        iconColor: WidgetStatePropertyAll(textForeground),
+        side: switch (confirmButtonType) {
+          ConfirmButtonType.outlined =>
+            WidgetStatePropertyAll(BorderSide(color: textForeground ?? theme.colorScheme.primary)),
+          _ => null,
+        });
 
     return AlertDialog(
-      title: Text(title),
+      title: Text(
+        title,
+        style: TextStyle(color: dangerous ? theme.colorScheme.error : null),
+      ),
       icon: icon == null ? null : Icon(icon, color: dangerous ? theme.colorScheme.error : null),
-      content:customContent ?? (content == null ? null : Text(content)),
+      content: customContent ?? (content == null ? null : Text(content)),
       actions: [
         if (confirmIcon != null)
           TextButton.icon(

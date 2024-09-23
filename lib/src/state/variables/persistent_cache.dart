@@ -7,6 +7,7 @@ import 'package:sid_base/src/state/persistence/local/hive/hive_persistence.dart'
 class PersistentCache<T> {
   PersistentCache({
     required this.baseKey,
+    required this.getFunction,
     this.fromJsonDecoded,
     this.toJsonEncodable,
     this.persistenceProvider = const HivePersistence(),
@@ -17,14 +18,14 @@ class PersistentCache<T> {
   final dynamic Function(T)? toJsonEncodable;
   bool finishedReading = false;
   final PersistenceProvider persistenceProvider;
+  final Future<T> Function(String objectKey) getFunction;
 
   Future<T> readOrGet(
     String objectKey,
-    Future<T> Function(String objectKey) orGet,
   ) async {
     final T? cached = await read(objectKey);
     if (cached case T value) return value;
-    final T object = await orGet(objectKey);
+    final T object = await getFunction(objectKey);
     write(objectKey, object);
     return object;
   }
