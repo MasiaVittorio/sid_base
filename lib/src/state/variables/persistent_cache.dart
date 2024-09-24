@@ -18,15 +18,17 @@ class PersistentCache<T> {
   final dynamic Function(T)? toJsonEncodable;
   bool finishedReading = false;
   final PersistenceProvider persistenceProvider;
-  final Future<T> Function(String objectKey) getFunction;
+  final Future<T?> Function(String objectKey) getFunction;
 
-  Future<T> readOrGet(
+  Future<T?> readOrGet(
     String objectKey,
   ) async {
     final T? cached = await read(objectKey);
     if (cached case T value) return value;
-    final T object = await getFunction(objectKey);
-    write(objectKey, object);
+    final T? object = await getFunction(objectKey);
+    if (object case T object) {
+      write(objectKey, object);
+    }
     return object;
   }
 
