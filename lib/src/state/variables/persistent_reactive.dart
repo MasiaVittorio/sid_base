@@ -14,6 +14,7 @@ class PersistentReactive<T> extends Reactive<T> {
     super.equality,
     void Function(T)? afterReading,
     this.persistenceProvider = const HivePersistence(),
+    this.verbose = false,
     Reactive<Map<String, bool>>? readCount,
   }) : super() {
     if (afterReading != null) _afterReading.add(() => afterReading(value));
@@ -30,6 +31,7 @@ class PersistentReactive<T> extends Reactive<T> {
     _read();
   }
 
+  final verbose;
   final String key;
   final T Function(dynamic jsonDecoded)? fromJsonDecoded;
   final dynamic Function(T)? toJsonEncodable;
@@ -39,7 +41,7 @@ class PersistentReactive<T> extends Reactive<T> {
 
   @override
   bool update(T newValue, {bool distinct = true}) {
-    if (_v) debugPrint("updating with $newValue");
+    if (verbose) debugPrint("updating with $newValue");
     final bool result = super.update(newValue, distinct: distinct);
     _write();
     return result;
@@ -75,13 +77,13 @@ class PersistentReactive<T> extends Reactive<T> {
   Future<void> __read() async {
     try {
       final String? source = await persistenceProvider.readEncodedObject(key);
-      if (_v) debugPrint('key $key, reading $source');
+      if (verbose) debugPrint('key $key, reading $source');
       if (source == null) return;
       final Object? jsonDecodedMap = jsonDecode(source);
-      if (_v) debugPrint('key $key, decodedMap type ${jsonDecodedMap.runtimeType}');
+      if (verbose) debugPrint('key $key, decodedMap type ${jsonDecodedMap.runtimeType}');
 
       if (jsonDecodedMap case {'value': final Object? valueJsonDecoded}) {
-        if (_v) debugPrint('key $key, valueJsonDecoded $valueJsonDecoded');
+        if (verbose) debugPrint('key $key, valueJsonDecoded $valueJsonDecoded');
 
         T? value;
 
@@ -98,15 +100,17 @@ class PersistentReactive<T> extends Reactive<T> {
         }
 
         if (value is T) {
-          if (_v) debugPrint("after reading updating with value");
+          if (verbose) debugPrint("after reading updating with value");
           this.update(value);
         } else {
-          if (_v) debugPrint("after reading updating without value");
+          if (verbose) debugPrint("after reading updating without value");
         }
       }
 
       // ignore: avoid_catches_without_on_clauses
-    } catch (_) {}
+    } catch (error) {
+      if (verbose) debugPrint("key $key error: $error");
+    }
   }
 
   Map<String, dynamic> toMap() {
@@ -118,11 +122,9 @@ class PersistentReactive<T> extends Reactive<T> {
   void _write() async {
     try {
       final line = jsonEncode(toMap());
-      if (_v) debugPrint('key $key, writing $line');
+      if (verbose) debugPrint('key $key, writing $line');
       persistenceProvider.write(key, line);
       // ignore: avoid_catches_without_on_clauses
     } catch (_) {}
   }
 }
-
-bool get _v => false;

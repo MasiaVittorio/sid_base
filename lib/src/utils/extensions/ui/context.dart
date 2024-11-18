@@ -10,6 +10,7 @@ extension BaseContextExtensions on BuildContext {
   NavigatorState get navigator => Navigator.of(this);
 
   T provide<T>() => CleanProvider.of<T>(this)!;
+  T? provideMaybe<T>() => CleanProvider.of<T>(this);
 
   void unfocus() {
     final FocusScopeNode currentScope = FocusScope.of(this);

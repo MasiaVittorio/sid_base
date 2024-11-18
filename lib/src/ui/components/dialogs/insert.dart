@@ -56,6 +56,10 @@ class _InsertDialogState extends State<InsertDialog> {
         autofocus: true,
         controller: controller,
         maxLength: widget.maxLength,
+        onSubmitted: (value) {
+          Navigator.pop(context);
+          widget.onInsert(value);
+        },
         decoration: InputDecoration(
           label: Text(widget.fieldLabel),
           hintText: widget.fieldHint,
@@ -77,7 +81,7 @@ class _InsertDialogState extends State<InsertDialog> {
           builder: (_, child, string) => TextButton(
             onPressed: string.isEmpty
                 ? null
-                : () async {
+                : () {
                     final string = controller.text;
                     Navigator.pop(context);
                     widget.onInsert(string);
