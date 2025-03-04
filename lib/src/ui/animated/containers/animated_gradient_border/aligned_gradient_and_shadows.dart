@@ -28,7 +28,7 @@ class AlignedGradientAndShadows extends StatelessWidget {
               borderRadius: borderRadius,
               boxShadow: [
                 BoxShadow(
-                  color: colorA.withOpacity(0.3),
+                  color: colorA.withValues(alpha: 0.3),
                   offset: Offset.zero,
                   blurRadius: 30,
                   spreadRadius: 1,
@@ -48,7 +48,7 @@ class AlignedGradientAndShadows extends StatelessWidget {
                   borderRadius: borderRadius,
                   boxShadow: [
                     BoxShadow(
-                      color: colorB.withOpacity(0.3),
+                      color: colorB.withValues(alpha: 0.3),
                       offset: Offset.zero,
                       blurRadius: 30,
                       spreadRadius: 1,

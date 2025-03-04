@@ -43,9 +43,7 @@ class _InsertDialogState extends State<LegacyInsertDialog> {
   void initState() {
     super.initState();
 
-    _controller = TextEditingController(
-      text: widget.hintText,
-    );
+    _controller = TextEditingController(text: widget.hintText);
 
     _pastable = widget.pasteChecker != null;
 
@@ -74,7 +72,9 @@ class _InsertDialogState extends State<LegacyInsertDialog> {
 
     if (output == null) return null;
 
-    return output.length > widget.maxLenght ? output.substring(0, widget.maxLenght) : output;
+    return output.length > widget.maxLenght
+        ? output.substring(0, widget.maxLenght)
+        : output;
   }
 
   @override
@@ -98,15 +98,15 @@ class _InsertDialogState extends State<LegacyInsertDialog> {
       controller: _controller,
       textCapitalization: TextCapitalization.characters,
       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            fontSize: 18.0,
-            fontWeight: error ? null : FontWeight.w600,
-          ),
+        fontSize: 18.0,
+        fontWeight: error ? null : FontWeight.w600,
+      ),
       onChanged: (String ts) => setState(() {}),
       decoration: InputDecoration(
         prefixText: "#FF ",
         prefixStyle: TextStyle(
           fontSize: 18.0,
-          color: themeTextColor?.withOpacity(0.5),
+          color: themeTextColor?.withValues(alpha: 0.5),
           fontWeight: FontWeight.w600,
         ),
         errorText: error ? errorString : null,
@@ -120,28 +120,34 @@ class _InsertDialogState extends State<LegacyInsertDialog> {
       elevation: 24,
       title: Text(
         widget.title,
-        style: TextStyle(fontWeight: FontWeight.w700, color: themeTextColor?.withOpacity(0.7)),
+        style: TextStyle(
+          fontWeight: FontWeight.w700,
+          color: themeTextColor?.withValues(alpha: 0.7),
+        ),
       ),
       content: Row(
         children: <Widget>[
           IconButton(
-            icon: const Icon(
-              Icons.close,
-            ),
-            onPressed: () => setState(() {
-              _controller!.clear();
-            }),
+            icon: const Icon(Icons.close),
+            onPressed:
+                () => setState(() {
+                  _controller!.clear();
+                }),
           ),
           Expanded(child: expanded),
           IconButton(
-              icon: Icon(Icons.content_paste,
-                  color: _pastable!
+            icon: Icon(
+              Icons.content_paste,
+              color:
+                  _pastable!
                       ? _clipboardString != null
                           ? null
-                          : IconTheme.of(context).color?.withOpacity(0.5)
-                      : Colors.transparent),
-              onPressed: _pastable! && _clipboardString != null
-                  ? () async {
+                          : IconTheme.of(context).color?.withValues(alpha: 0.5)
+                      : Colors.transparent,
+            ),
+            onPressed:
+                _pastable! && _clipboardString != null
+                    ? () async {
                       await _getClipboardAndCheck();
 
                       if (_pastable == false) return;
@@ -151,7 +157,8 @@ class _InsertDialogState extends State<LegacyInsertDialog> {
                         _controller!.text = _clipboardString!;
                       });
                     }
-                  : null),
+                    : null,
+          ),
         ],
       ),
       actions: <Widget>[
@@ -162,14 +169,15 @@ class _InsertDialogState extends State<LegacyInsertDialog> {
           },
         ),
         TextButton(
-          onPressed: error
-              ? null
-              : () {
-                  if (widget.checker(_controller!.text) == '') {
-                    Navigator.pop(context);
-                    widget.onConfirm(_controller!.text);
-                  }
-                },
+          onPressed:
+              error
+                  ? null
+                  : () {
+                    if (widget.checker(_controller!.text) == '') {
+                      Navigator.pop(context);
+                      widget.onConfirm(_controller!.text);
+                    }
+                  },
           child: const Text("Confirm"),
         ),
       ],

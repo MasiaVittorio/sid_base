@@ -11,18 +11,20 @@ extension DurationFormat on Duration {
     String? delimiter,
     String? conjunction,
     bool abbreviated = false,
-    bool first = true,
-  }) =>
-      prettyDuration(
-        this,
-        abbreviated: abbreviated,
-        conjunction: conjunction,
-        delimiter: delimiter,
-        first: first,
-        locale: DurationLocale.fromLanguageCode(Localizations.localeOf(context).languageCode) ??
-            const EnglishDurationLocale(),
-        spacer: spacer,
-        tersity: tersity,
-        upperTersity: upperTersity,
-      );
+    int maxUnits = 0,
+  }) => prettyDuration(
+    this,
+    abbreviated: abbreviated,
+    conjunction: conjunction,
+    delimiter: delimiter,
+    maxUnits: maxUnits,
+    locale:
+        DurationLocale.fromLanguageCode(
+          Localizations.localeOf(context).languageCode,
+        ) ??
+        const EnglishDurationLocale(),
+    spacer: spacer,
+    tersity: tersity,
+    upperTersity: upperTersity,
+  );
 }

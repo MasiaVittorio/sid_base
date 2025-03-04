@@ -15,13 +15,11 @@ class ThemeLogic extends LogicBase {
 
   final String keyBase;
 
-  ThemeLogic({
-    bool initialDark = true,
-    this.keyBase = "theme logic",
-  }) : dark = PersistentReactive<bool>(
-          initialDark,
-          key: "$keyBase $dataOverwrite relable var: dark",
-        );
+  ThemeLogic({bool initialDark = true, this.keyBase = "theme logic"})
+    : dark = PersistentReactive<bool>(
+        initialDark,
+        key: "$keyBase $dataOverwrite relable var: dark",
+      );
 
   ThemeData _baseThemeFromDark(bool dark) {
     final scheme = !dark ? _lightColorScheme : _darkColorScheme;
@@ -40,61 +38,60 @@ class ThemeLogic extends LogicBase {
 
   Widget buildWithUsableTheme({
     required Widget Function(BuildContext context, ThemeData theme) builder,
-  }) =>
-      dark.build(
-        (context, dark) => DynamicColorBuilder(
-          builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
-            late final ColorScheme? scheme;
-            final baseTheme = _baseThemeFromDark(dark);
+  }) => dark.build(
+    (context, dark) => DynamicColorBuilder(
+      builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
+        late final ColorScheme? scheme;
+        final baseTheme = _baseThemeFromDark(dark);
 
-            if (dark) {
-              if (darkDynamic != null) {
-                final b = darkDynamic.surface.withTone(07);
-                scheme = darkDynamic.copyWith(
-                  surface: b,
-                );
-              } else {
-                scheme = null;
-              }
-            } else {
-              scheme = lightDynamic;
-            }
+        if (dark) {
+          if (darkDynamic != null) {
+            final b = darkDynamic.surface.withTone(07);
+            scheme = darkDynamic.copyWith(surface: b);
+          } else {
+            scheme = null;
+          }
+        } else {
+          scheme = lightDynamic;
+        }
 
-            late ThemeData usable;
-            if (scheme == null) {
-              usable = baseTheme.copyWith(
-                colorScheme: baseTheme.colorScheme.copyWith(
-                  surface:
-                      baseTheme.brightness.isDark ? ThemeLogic._customDarkBackground : Colors.white,
-                ),
-                dividerTheme: baseTheme.dividerTheme.copyWith(
-                  indent: 16,
-                  endIndent: 16,
-                  thickness: 0.8,
-                  color: baseTheme.colorScheme.onSurface.withOpacity(0.35),
-                ),
-              );
-            } else {
-              usable = baseTheme.copyWith(
-                colorScheme: scheme,
-                canvasColor: scheme.surface,
-                dividerTheme: baseTheme.dividerTheme.copyWith(
-                  indent: 16,
-                  endIndent: 16,
-                  thickness: 0.8,
-                  color: scheme.onSurface.withOpacity(0.35),
-                ),
-              );
-            }
+        late ThemeData usable;
+        if (scheme == null) {
+          usable = baseTheme.copyWith(
+            colorScheme: baseTheme.colorScheme.copyWith(
+              surface:
+                  baseTheme.brightness.isDark
+                      ? ThemeLogic._customDarkBackground
+                      : Colors.white,
+            ),
+            dividerTheme: baseTheme.dividerTheme.copyWith(
+              indent: 16,
+              endIndent: 16,
+              thickness: 0.8,
+              color: baseTheme.colorScheme.onSurface.withValues(alpha: 0.35),
+            ),
+          );
+        } else {
+          usable = baseTheme.copyWith(
+            colorScheme: scheme,
+            canvasColor: scheme.surface,
+            dividerTheme: baseTheme.dividerTheme.copyWith(
+              indent: 16,
+              endIndent: 16,
+              thickness: 0.8,
+              color: scheme.onSurface.withValues(alpha: 0.35),
+            ),
+          );
+        }
 
-            usable = usable.copyWith(scaffoldBackgroundColor: usable.colorScheme.surface);
+        usable = usable.copyWith(
+          scaffoldBackgroundColor: usable.colorScheme.surface,
+        );
 
-            return Builder(
-              builder: (context) => builder(context, usable),
-            );
-          },
-        ),
-      );
+        return Builder(builder: (context) => builder(context, usable));
+      },
+    ),
+  );
 
   void toggleBrightness() => dark.update(!dark.value);
 

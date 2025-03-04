@@ -1,20 +1,15 @@
-
 import 'package:flutter/material.dart';
 import 'package:sid_base/sid_base.dart';
 
 export 'controller.dart';
 
 class Highlightable extends StatefulWidget {
-
   const Highlightable({
     required this.controller,
     required this.child,
     this.borderRadius = 0,
     this.brightness,
-    this.overlayShape = const OverlayShape(
-      type: OverlayShapeType.circle,
-
-    ),
+    this.overlayShape = const OverlayShape(type: OverlayShapeType.circle),
     this.showOverlay = false,
     super.key,
   });
@@ -30,9 +25,8 @@ class Highlightable extends StatefulWidget {
   State<Highlightable> createState() => _HighlightableState();
 }
 
-class _HighlightableState extends State<Highlightable> 
-with SingleTickerProviderStateMixin {
-
+class _HighlightableState extends State<Highlightable>
+    with SingleTickerProviderStateMixin {
   HighlightController get controller => widget.controller;
 
   late AnimationController animation;
@@ -70,16 +64,17 @@ with SingleTickerProviderStateMixin {
   // Animation
 
   Future<void> launch() async {
-    if(!mounted){
-      debugPrint("///////////////// you tried to launch disposed highlightable!!");
+    if (!mounted) {
+      debugPrint(
+        "///////////////// you tried to launch disposed highlightable!!",
+      );
       return;
     }
     animation.value = 0.0;
 
-    if(widget.showOverlay){
-
+    if (widget.showOverlay) {
       final overlay = Overlay.maybeOf(context);
-      if(overlay == null) return;
+      if (overlay == null) return;
 
       final box = context.findRenderObject() as RenderBox;
       final size = box.size;
@@ -89,30 +84,28 @@ with SingleTickerProviderStateMixin {
       overlayEntry = OverlayEntry(
         maintainState: false,
         opaque: false,
-        builder: (_) => HighlightOverlay(
-          remove: (){
-            if(overlayEntry?.mounted ?? false){
-              overlayEntry?.remove();
-            }
-          },
-          center: box.localToGlobal(Offset.zero) 
-                  + Offset(w / 2, h / 2),
-          shape: widget.overlayShape,
-          circleRadius: widget.overlayShape.calcCircleRadius(size),
-          childSize: size,
-        ),
+        builder:
+            (_) => HighlightOverlay(
+              remove: () {
+                if (overlayEntry?.mounted ?? false) {
+                  overlayEntry?.remove();
+                }
+              },
+              center: box.localToGlobal(Offset.zero) + Offset(w / 2, h / 2),
+              shape: widget.overlayShape,
+              circleRadius: widget.overlayShape.calcCircleRadius(size),
+              childSize: size,
+            ),
       );
 
       overlay.insert(overlayEntry!);
     }
 
     await animation.animateTo(1.0, duration: HighlightAnimations.duration);
-    if(!mounted) return;
+    if (!mounted) return;
 
     animation.value = 0.0;
-
   }
-
 
   // Build
 
@@ -130,14 +123,14 @@ with SingleTickerProviderStateMixin {
   }
 
   Widget background(Color color) => AnimatedBuilder(
-    animation: animation, 
-    builder: (_, child){
+    animation: animation,
+    builder: (_, child) {
       final t = animation.value;
       final b = HighlightAnimations.breath(t);
       final s = HighlightAnimations.slide(t);
       return Container(
         decoration: BoxDecoration(
-          color: color.withOpacity(b.mapToRangeLoose(0, 0.10)),
+          color: color.withValues(alpha: b.mapToRangeLoose(0, 0.10)),
           borderRadius: BorderRadius.circular(widget.borderRadius),
         ),
         child: Padding(
@@ -146,7 +139,7 @@ with SingleTickerProviderStateMixin {
             painter: HighlightPainter(
               radius: widget.borderRadius,
               width: 2,
-              color: color.withOpacity(0.4),
+              color: color.withValues(alpha: 0.4),
               fraction: s,
             ),
           ),
@@ -156,25 +149,15 @@ with SingleTickerProviderStateMixin {
   );
 
   Widget get child => AnimatedBuilder(
-    animation: animation, 
+    animation: animation,
     child: widget.child,
-    builder: (_,child){
+    builder: (_, child) {
       final t = animation.value;
       final b = HighlightAnimations.breath(t);
       return Transform.scale(
         scale: b.mapToRangeLoose(1.0, 0.95),
-        child: Opacity(
-          opacity: b.mapToRangeLoose(1.0, 0.6),
-          child: child!,
-        ),
+        child: Opacity(opacity: b.mapToRangeLoose(1.0, 0.6), child: child!),
       );
     },
   );
-
 }
-
-
-
-
-
-

@@ -11,10 +11,13 @@ class _Background extends StatelessWidget {
     final RadioSliderThemeData? radioTheme = RadioSliderTheme.of(context);
 
     return Material(
-      color: backgroundColor ??
+      color:
+          backgroundColor ??
           radioTheme?.backgroundColor ??
-          theme.scaffoldBackgroundColor.withOpacity(0.7), //like stage's subsections
-      // ?? theme?.colorScheme?.onSurface?.withOpacity(0.08),
+          theme.scaffoldBackgroundColor.withValues(
+            alpha: 0.7,
+          ), //like stage's subsections
+      // ?? theme?.colorScheme?.onSurface?.withValues(alpha: 0.08),
       borderRadius: BorderRadius.circular(_RadioSliderState._radius),
     );
   }

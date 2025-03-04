@@ -10,7 +10,7 @@ class FullSlider extends StatefulWidget {
 
   final Widget? trailing;
   final Widget Function(double)?
-      trailingBuilder; // if there is the builder, the single widget is ignored
+  trailingBuilder; // if there is the builder, the single widget is ignored
 
   final double? defaultValue; //if not null, a reset button will be displayed
   final double value;
@@ -108,28 +108,30 @@ class _FullSliderState extends State<FullSlider>
     }
   }
 
-  double widgetToAnimation(double widgetValue) => widgetValue
-      .mapToRange(0.0, 1.0, fromMin: widget.min, fromMax: widget.max);
+  double widgetToAnimation(double widgetValue) => widgetValue.mapToRange(
+    0.0,
+    1.0,
+    fromMin: widget.min,
+    fromMax: widget.max,
+  );
 
   double animationToWidget(double animationValue) =>
       animationValue.mapToRange(widget.min, widget.max);
 
   EdgeInsets get margin => EdgeInsets.symmetric(
-        horizontal: horizontal ? widget.mainAxisMargin : widget.crossAxisMargin,
-        vertical: vertical ? widget.mainAxisMargin : widget.crossAxisMargin,
-      );
-  Widget get _separator => SizedBox(
-        width: widget.mainAxisMargin,
-        height: widget.mainAxisMargin,
-      );
+    horizontal: horizontal ? widget.mainAxisMargin : widget.crossAxisMargin,
+    vertical: vertical ? widget.mainAxisMargin : widget.crossAxisMargin,
+  );
+  Widget get _separator =>
+      SizedBox(width: widget.mainAxisMargin, height: widget.mainAxisMargin);
 
   bool get horizontal => widget.scrollDirection == Axis.horizontal;
   bool get vertical => widget.scrollDirection == Axis.vertical;
 
   Widget buildAnimated(Widget Function(double)? builder) => AnimatedBuilder(
-        animation: controller!,
-        builder: (_, __) => builder!(animationToWidget(controller!.value)),
-      );
+    animation: controller!,
+    builder: (_, __) => builder!(animationToWidget(controller!.value)),
+  );
 
   bool get withTitle => widget.title != null || widget.titleBuilder != null;
   bool get withLeading =>
@@ -149,20 +151,22 @@ class _FullSliderState extends State<FullSlider>
 
     final ThemeData themeData = Theme.of(context);
     final Color background = Color.alphaBlend(
-      themeData.scaffoldBackgroundColor.withOpacity(0.7),
+      themeData.scaffoldBackgroundColor.withValues(alpha: 0.7),
       themeData
           .canvasColor, // this widget is intended to be put over a material background
     );
     final Color accentColor = Color.alphaBlend(
       widget.accentColor ??
-          themeData.colorScheme.secondary.withOpacity(disabled ? 0.17 : 0.2),
+          themeData.colorScheme.secondary.withValues(
+            alpha: disabled ? 0.17 : 0.2,
+          ),
       background,
     );
-    final Color onBackgroundColor = themeData.colorScheme.onSurface.withOpacity(
-      disabled ? 0.6 : 1.0,
+    final Color onBackgroundColor = themeData.colorScheme.onSurface.withValues(
+      alpha: disabled ? 0.6 : 1.0,
     );
-    final Color onAccentColor = accentColor.contrast.withOpacity(
-      disabled ? 0.6 : 1.0,
+    final Color onAccentColor = accentColor.contrast.withValues(
+      alpha: disabled ? 0.6 : 1.0,
     );
 
     final Widget slider = SizedBox(
@@ -184,21 +188,24 @@ class _FullSliderState extends State<FullSlider>
                     height: widget.crossAxisSize,
                     width: widget.crossAxisSize,
                     alignment: Alignment.center,
-                    child: widget.leadingBuilder != null
-                        ? buildAnimated(widget.leadingBuilder)
-                        : widget.leading,
+                    child:
+                        widget.leadingBuilder != null
+                            ? buildAnimated(widget.leadingBuilder)
+                            : widget.leading,
                   )
                 else
                   Container(),
                 if (withTitle)
                   Expanded(
                     child: Align(
-                      alignment: horizontal
-                          ? Alignment.centerLeft
-                          : Alignment.bottomCenter,
-                      child: widget.titleBuilder != null
-                          ? buildAnimated(widget.titleBuilder)
-                          : widget.title,
+                      alignment:
+                          horizontal
+                              ? Alignment.centerLeft
+                              : Alignment.bottomCenter,
+                      child:
+                          widget.titleBuilder != null
+                              ? buildAnimated(widget.titleBuilder)
+                              : widget.title,
                     ),
                   ),
                 if (withTrailing)
@@ -207,12 +214,13 @@ class _FullSliderState extends State<FullSlider>
                     width:
                         widget.unboundedTrailing ? null : widget.crossAxisSize,
                     alignment: Alignment.center,
-                    child: widget.trailingBuilder != null
-                        ? buildAnimated(widget.trailingBuilder)
-                        : widget.trailing,
+                    child:
+                        widget.trailingBuilder != null
+                            ? buildAnimated(widget.trailingBuilder)
+                            : widget.trailing,
                   )
                 else
-                  Container()
+                  Container(),
               ].separateWith(_separator),
             ),
           );
@@ -220,9 +228,7 @@ class _FullSliderState extends State<FullSlider>
           final Widget topContent = Container(
             color: accentColor,
             child: DefaultTextStyle.merge(
-              style: TextStyle(
-                color: onAccentColor,
-              ),
+              style: TextStyle(color: onAccentColor),
               child: IconTheme.merge(
                 data: IconThemeData(opacity: 1.0, color: onAccentColor),
                 child: content,
@@ -231,9 +237,7 @@ class _FullSliderState extends State<FullSlider>
           );
 
           final Widget bottomContent = DefaultTextStyle.merge(
-            style: TextStyle(
-              color: onBackgroundColor,
-            ),
+            style: TextStyle(color: onBackgroundColor),
             child: IconTheme.merge(
               data: IconThemeData(opacity: 1.0, color: onBackgroundColor),
               child: content,
@@ -242,10 +246,11 @@ class _FullSliderState extends State<FullSlider>
 
           return Container(
             decoration: ShapeDecoration(
-                shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(widget.radius),
-              side: widget.borderSide,
-            )),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(widget.radius),
+                side: widget.borderSide,
+              ),
+            ),
             child: ConstrainedBox(
               constraints: BoxConstraints(
                 maxWidth:
@@ -254,14 +259,16 @@ class _FullSliderState extends State<FullSlider>
                     vertical ? constraints.maxHeight : widget.crossAxisSize,
               ),
               child: GestureDetector(
-                onHorizontalDragUpdate: disabled || vertical
-                    ? null
-                    : (details) =>
-                        dragUpdate(details, delta - widget.crossAxisSize),
-                onVerticalDragUpdate: disabled || horizontal
-                    ? null
-                    : (details) =>
-                        dragUpdate(details, delta - widget.crossAxisSize),
+                onHorizontalDragUpdate:
+                    disabled || vertical
+                        ? null
+                        : (details) =>
+                            dragUpdate(details, delta - widget.crossAxisSize),
+                onVerticalDragUpdate:
+                    disabled || horizontal
+                        ? null
+                        : (details) =>
+                            dragUpdate(details, delta - widget.crossAxisSize),
                 onHorizontalDragEnd:
                     disabled || vertical ? null : (_) => dragEnd(),
                 onVerticalDragEnd:
@@ -274,19 +281,21 @@ class _FullSliderState extends State<FullSlider>
                     disabled || horizontal || widget.divisions != null
                         ? null
                         : dragEnd,
-                onTapUp: disabled || widget.divisions == null
-                    ? null
-                    : (d) => tap(d, constraints),
+                onTapUp:
+                    disabled || widget.divisions == null
+                        ? null
+                        : (d) => tap(d, constraints),
                 child: Stack(
                   children: <Widget>[
                     Positioned.fill(
-                        child: Container(
-                      decoration: BoxDecoration(
-                        color: widget.overrideBackgroundColor ?? background,
-                        borderRadius: BorderRadius.circular(widget.radius),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: widget.overrideBackgroundColor ?? background,
+                          borderRadius: BorderRadius.circular(widget.radius),
+                        ),
+                        child: bottomContent,
                       ),
-                      child: bottomContent,
-                    )),
+                    ),
                     Positioned.fill(
                       child: Align(
                         alignment: aligment,
@@ -298,14 +307,20 @@ class _FullSliderState extends State<FullSlider>
                               final double val = controller!.value;
                               return Align(
                                 alignment: aligment,
-                                widthFactor: horizontal
-                                    ? val.mapToRange(
-                                        widget.crossAxisSize / delta, 1.0)
-                                    : null,
-                                heightFactor: vertical
-                                    ? val.mapToRange(
-                                        widget.crossAxisSize / delta, 1.0)
-                                    : null,
+                                widthFactor:
+                                    horizontal
+                                        ? val.mapToRange(
+                                          widget.crossAxisSize / delta,
+                                          1.0,
+                                        )
+                                        : null,
+                                heightFactor:
+                                    vertical
+                                        ? val.mapToRange(
+                                          widget.crossAxisSize / delta,
+                                          1.0,
+                                        )
+                                        : null,
                                 child: topContent,
                               );
                             },
@@ -323,10 +338,7 @@ class _FullSliderState extends State<FullSlider>
     );
 
     if (widget.defaultValue == null) {
-      return Padding(
-        padding: margin,
-        child: slider,
-      );
+      return Padding(padding: margin, child: slider);
     }
 
     final Widget reset = SizedBox(
@@ -338,14 +350,14 @@ class _FullSliderState extends State<FullSlider>
           _prevTapTarget = null;
           controller!
               .animateTo(
-            widgetToAnimation(widget.defaultValue!),
-            duration: const Duration(milliseconds: 250),
-            curve: Curves.ease,
-          )
+                widgetToAnimation(widget.defaultValue!),
+                duration: const Duration(milliseconds: 250),
+                curve: Curves.ease,
+              )
               .then((_) {
-            widget.onChanged?.call(widget.defaultValue!);
-            widget.onChangeEnd?.call(widget.defaultValue!);
-          });
+                widget.onChanged?.call(widget.defaultValue!);
+                widget.onChangeEnd?.call(widget.defaultValue!);
+              });
         },
       ),
     );

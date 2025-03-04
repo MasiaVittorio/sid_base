@@ -56,7 +56,8 @@ class SubSection extends StatelessWidget {
     this.image,
   }) : crossAxisAlignment = CrossAxisAlignment.stretch;
 
-  static Color getColor(ThemeData theme) => theme.scaffoldBackgroundColor.withOpacity(0.7);
+  static Color getColor(ThemeData theme) =>
+      theme.scaffoldBackgroundColor.withValues(alpha: 0.7);
 
   static const borderRadiusDefault = BorderRadius.all(Radius.circular(10.0));
 

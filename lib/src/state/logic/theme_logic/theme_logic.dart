@@ -48,19 +48,22 @@ abstract class ThemeLogicBase extends LogicBase {
   ThemeData _baseThemeFromDark(bool dark) {
     final scheme = !dark ? defaultLightScheme : defaultDarkScheme;
     final base = ThemeData(
-        fontFamily: defaultFontFamily,
-        highlightColor: Colors.transparent,
-        splashFactory: InkRipple.splashFactory,
-        brightness: dark ? Brightness.dark : Brightness.light,
-        colorScheme: scheme,
-        useMaterial3: true,
-        applyElevationOverlayColor: true,
-        scaffoldBackgroundColor: scheme.surface,
-        pageTransitionsTheme: const PageTransitionsTheme(builders: {
+      fontFamily: defaultFontFamily,
+      highlightColor: Colors.transparent,
+      splashFactory: InkRipple.splashFactory,
+      brightness: dark ? Brightness.dark : Brightness.light,
+      colorScheme: scheme,
+      useMaterial3: true,
+      applyElevationOverlayColor: true,
+      scaffoldBackgroundColor: scheme.surface,
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: {
           TargetPlatform.android: ZoomPageTransitionsBuilder(
             allowEnterRouteSnapshotting: false,
           ),
-        }));
+        },
+      ),
+    );
     return base.copyWith(splashFactory: InkSparkle.splashFactory);
   }
 
@@ -72,71 +75,78 @@ abstract class ThemeLogicBase extends LogicBase {
       ThemeData lightTheme,
       ThemeData darkTheme,
       ThemeMode themeMode,
-    ) builder,
+    )
+    builder,
   }) {
-    return Reactive.build2(themeMode, useDynamic, builder: (_, themeModeValue, useDynamic) {
-      return DynamicColorBuilder(builder: (ColorScheme? lD, ColorScheme? dD) {
-        ColorScheme? lightScheme;
-        ColorScheme? darkScheme;
+    return Reactive.build2(
+      themeMode,
+      useDynamic,
+      builder: (_, themeModeValue, useDynamic) {
+        return DynamicColorBuilder(
+          builder: (ColorScheme? lD, ColorScheme? dD) {
+            ColorScheme? lightScheme;
+            ColorScheme? darkScheme;
 
-        if (useDynamic) {
-          if (dD != null) {
-            final b = customDarkBackground;
-            darkScheme = dD.copyWith(
-              surface: b,
+            if (useDynamic) {
+              if (dD != null) {
+                final b = customDarkBackground;
+                darkScheme = dD.copyWith(surface: b);
+              } else {
+                darkScheme = null;
+              }
+              lightScheme = lD;
+            }
+
+            final baseLightTheme = _baseThemeFromDark(false);
+            final baseDarkTheme = _baseThemeFromDark(true);
+
+            ThemeData usableLight = _applyDynamicSchemeAndBaseCustomizations(
+              baseLightTheme,
+              lightScheme,
             );
-          } else {
-            darkScheme = null;
-          }
-          lightScheme = lD;
-        }
+            ThemeData usableDark = _applyDynamicSchemeAndBaseCustomizations(
+              baseDarkTheme,
+              darkScheme,
+            );
 
-        final baseLightTheme = _baseThemeFromDark(false);
-        final baseDarkTheme = _baseThemeFromDark(true);
+            usableLight = usableLight.copyWith(
+              scaffoldBackgroundColor: usableLight.colorScheme.surface,
+            );
+            usableDark = usableDark.copyWith(
+              scaffoldBackgroundColor: usableDark.colorScheme.surface,
+            );
 
-        ThemeData usableLight =
-            _applyDynamicSchemeAndBaseCustomizations(baseLightTheme, lightScheme);
-        ThemeData usableDark = _applyDynamicSchemeAndBaseCustomizations(baseDarkTheme, darkScheme);
+            usableLight = usableLight.copyWith(
+              textTheme: usableLight.textTheme.withFamilies(
+                display: displayFontFamily,
+                headline: headlineFontFamily,
+                title: titleFontFamily,
+                body: bodyFontFamily,
+                label: labelFontFamily,
+              ),
+            );
+            usableDark = usableDark.copyWith(
+              textTheme: usableDark.textTheme.withFamilies(
+                display: displayFontFamily,
+                headline: headlineFontFamily,
+                title: titleFontFamily,
+                body: bodyFontFamily,
+                label: labelFontFamily,
+              ),
+            );
 
-        usableLight = usableLight.copyWith(
-          scaffoldBackgroundColor: usableLight.colorScheme.surface,
+            usableLight = applyAppCustomizations(usableLight);
+            usableDark = applyAppCustomizations(usableDark);
+
+            return Builder(
+              builder:
+                  (context) =>
+                      builder(context, usableLight, usableDark, themeModeValue),
+            );
+          },
         );
-        usableDark = usableDark.copyWith(
-          scaffoldBackgroundColor: usableDark.colorScheme.surface,
-        );
-
-        usableLight = usableLight.copyWith(
-          textTheme: usableLight.textTheme.withFamilies(
-            display: displayFontFamily,
-            headline: headlineFontFamily,
-            title: titleFontFamily,
-            body: bodyFontFamily,
-            label: labelFontFamily,
-          ),
-        );
-        usableDark = usableDark.copyWith(
-          textTheme: usableDark.textTheme.withFamilies(
-            display: displayFontFamily,
-            headline: headlineFontFamily,
-            title: titleFontFamily,
-            body: bodyFontFamily,
-            label: labelFontFamily,
-          ),
-        );
-
-        usableLight = applyAppCustomizations(usableLight);
-        usableDark = applyAppCustomizations(usableDark);
-
-        return Builder(
-          builder: (context) => builder(
-            context,
-            usableLight,
-            usableDark,
-            themeModeValue,
-          ),
-        );
-      });
-    });
+      },
+    );
   }
 
   /// override this to apply yout theme extensions and such,
@@ -145,33 +155,37 @@ abstract class ThemeLogicBase extends LogicBase {
     return theme;
   }
 
-  ThemeData _applyDynamicSchemeAndBaseCustomizations(ThemeData baseTheme, ColorScheme? scheme) {
+  ThemeData _applyDynamicSchemeAndBaseCustomizations(
+    ThemeData baseTheme,
+    ColorScheme? scheme,
+  ) {
     return switch (scheme) {
       null => baseTheme.copyWith(
-          colorScheme: baseTheme.colorScheme.copyWith(
-            surface: switch (baseTheme.brightness) {
-              Brightness.dark => customDarkBackground,
-              Brightness.light => Colors.white,
-            },
-          ),
-          canvasColor: switch (baseTheme.brightness) {
+        colorScheme: baseTheme.colorScheme.copyWith(
+          surface: switch (baseTheme.brightness) {
             Brightness.dark => customDarkBackground,
             Brightness.light => Colors.white,
           },
-          dividerTheme: _dividerTheme(baseTheme, baseTheme.colorScheme),
         ),
+        canvasColor: switch (baseTheme.brightness) {
+          Brightness.dark => customDarkBackground,
+          Brightness.light => Colors.white,
+        },
+        dividerTheme: _dividerTheme(baseTheme, baseTheme.colorScheme),
+      ),
       ColorScheme scheme => baseTheme.copyWith(
-          colorScheme: scheme,
-          canvasColor: scheme.surface,
-          dividerTheme: _dividerTheme(baseTheme, scheme),
-        ),
+        colorScheme: scheme,
+        canvasColor: scheme.surface,
+        dividerTheme: _dividerTheme(baseTheme, scheme),
+      ),
     };
   }
 
   double get dividerIndent => 16;
   double get dividerEndIndent => 16;
   double get dividerThickness => 0.8;
-  Color dividerColor(ColorScheme scheme) => scheme.onSurface.withOpacity(0.35);
+  Color dividerColor(ColorScheme scheme) =>
+      scheme.onSurface.withValues(alpha: 0.35);
   DividerThemeData _dividerTheme(ThemeData baseTheme, ColorScheme scheme) =>
       baseTheme.dividerTheme.copyWith(
         indent: dividerIndent,

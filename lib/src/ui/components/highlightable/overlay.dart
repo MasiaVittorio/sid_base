@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sid_base/sid_base.dart';
-class HighlightOverlay extends StatefulWidget {
 
+class HighlightOverlay extends StatefulWidget {
   const HighlightOverlay({
     required this.center,
     required this.shape,
@@ -21,15 +21,15 @@ class HighlightOverlay extends StatefulWidget {
   State<HighlightOverlay> createState() => _HighlightOverlayState();
 }
 
-class _HighlightOverlayState extends State<HighlightOverlay> with SingleTickerProviderStateMixin {
-
+class _HighlightOverlayState extends State<HighlightOverlay>
+    with SingleTickerProviderStateMixin {
   late AnimationController controller;
 
   @override
   void initState() {
     super.initState();
     controller = AnimationController(
-      vsync: this, 
+      vsync: this,
       duration: HighlightAnimations.duration,
     );
     init();
@@ -47,19 +47,18 @@ class _HighlightOverlayState extends State<HighlightOverlay> with SingleTickerPr
       duration: HighlightAnimations.duration,
       curve: Curves.linear,
     );
-    if(mounted){
+    if (mounted) {
       widget.remove();
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    
     final c = Theme.of(context).brightness.contrast;
 
     return AnimatedBuilder(
       animation: controller,
-      builder: (_,__){
+      builder: (_, __) {
         final t = controller.value;
         final s = HighlightAnimations.circleSize(t);
         final o = HighlightAnimations.circleOpacity(t);
@@ -67,7 +66,7 @@ class _HighlightOverlayState extends State<HighlightOverlay> with SingleTickerPr
           onTapDown: (_) => widget.remove(),
           child: CustomPaint(
             painter: OverlayPainter(
-              color: c.withOpacity(0.5 * o),
+              color: c.withValues(alpha: 0.5 * o),
               center: widget.center,
               fraction: 1 - s,
               shape: widget.shape,

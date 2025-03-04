@@ -65,19 +65,26 @@ class AdvancedSlider extends StatelessWidget {
             top: 0,
             child: Text(
               annotation,
-              style: annotationStyle ??
+              style:
+                  annotationStyle ??
                   (nameStyle != null
-                      ? nameStyle!.copyWith(color: nameStyle!.color!.withOpacity(0.5))
+                      ? nameStyle!.copyWith(
+                        color: nameStyle!.color!.withValues(alpha: 0.5),
+                      )
                       : TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.5))),
+                        fontWeight: FontWeight.w600,
+                        color: Theme.of(
+                          context,
+                        ).textTheme.bodyMedium?.color?.withValues(alpha: 0.5),
+                      )),
             ),
           ),
           Row(
             children: <Widget>[
               IconButton(
                 icon: const Icon(Icons.remove),
-                onPressed: onMinus ??
+                onPressed:
+                    onMinus ??
                     () {
                       if (buttonDivision != null) {
                         onChanged(math.max(value - buttonDivision!, min));
@@ -96,7 +103,8 @@ class AdvancedSlider extends StatelessWidget {
               ),
               IconButton(
                 icon: const Icon(Icons.add),
-                onPressed: onPlus ??
+                onPressed:
+                    onPlus ??
                     () {
                       if (buttonDivision != null) {
                         onChanged(math.min(value + buttonDivision!, max));

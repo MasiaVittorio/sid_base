@@ -1,5 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-library m3_carousel;
+library;
 
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
@@ -71,36 +71,47 @@ class M3Carousel<T extends CarouselItemState> extends StatelessWidget {
   final bool loop;
 
   final Widget Function(
-      BuildContext context, VoidCallback close, int itemIndex, CarouselItem<T> item)? openBuilder;
+    BuildContext context,
+    VoidCallback close,
+    int itemIndex,
+    CarouselItem<T> item,
+  )?
+  openBuilder;
   final bool autoFocusOnTap;
 
   final M3CarouselTheme<T> defaultTheme;
   @override
   Widget build(BuildContext context) {
     final M3CarouselTheme<T> theme =
-        this.theme ?? CleanProvider.of<M3CarouselTheme<T>>(context) ?? defaultTheme;
+        this.theme ??
+        CleanProvider.of<M3CarouselTheme<T>>(context) ??
+        defaultTheme;
     return CleanProvider(
       data: theme,
-      child: LayoutBuilder(builder: (context, constraints) {
-        return ConstrainedBox(
-          constraints: constraints,
-          child: _M3CarouselBody<T>(
-            autoFocusOnTap: autoFocusOnTap,
-            openBuilder: openBuilder,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return ConstrainedBox(
             constraints: constraints,
-            itemBuilder: itemBuilder,
-            itemCount: itemCount,
-            loop: loop,
-            initialIndex: initialIndex,
-            theme: theme,
-            layouter: theme.getLayouter(theme.direction.fold(
-              ifVertifcal: () => constraints.maxHeight,
-              ifHorizontal: () => constraints.maxWidth,
-            )),
-            decorator: theme.getDecorator(),
-          ),
-        );
-      }),
+            child: _M3CarouselBody<T>(
+              autoFocusOnTap: autoFocusOnTap,
+              openBuilder: openBuilder,
+              constraints: constraints,
+              itemBuilder: itemBuilder,
+              itemCount: itemCount,
+              loop: loop,
+              initialIndex: initialIndex,
+              theme: theme,
+              layouter: theme.getLayouter(
+                theme.direction.fold(
+                  ifVertifcal: () => constraints.maxHeight,
+                  ifHorizontal: () => constraints.maxWidth,
+                ),
+              ),
+              decorator: theme.getDecorator(),
+            ),
+          );
+        },
+      ),
     );
   }
 }
@@ -128,14 +139,20 @@ class _M3CarouselBody<T extends CarouselItemState> extends StatefulWidget {
   final M3CarouselLayouter<T> layouter;
   final M3CarouselItemDecorator decorator;
   final Widget Function(
-      BuildContext context, VoidCallback close, int itemIndex, CarouselItem<T> item)? openBuilder;
+    BuildContext context,
+    VoidCallback close,
+    int itemIndex,
+    CarouselItem<T> item,
+  )?
+  openBuilder;
   final bool autoFocusOnTap;
 
   @override
   State<_M3CarouselBody<T>> createState() => _M3CarouselBodyState<T>();
 }
 
-class _M3CarouselBodyState<T extends CarouselItemState> extends State<_M3CarouselBody<T>> {
+class _M3CarouselBodyState<T extends CarouselItemState>
+    extends State<_M3CarouselBody<T>> {
   late PageController controller;
 
   @override
@@ -206,7 +223,8 @@ class _M3CarouselBodyState<T extends CarouselItemState> extends State<_M3Carouse
                     fit: StackFit.expand,
                     children: [
                       for (int pi = range.$1; pi < range.$2; pi++)
-                        if (widget.layouter.position(pi, page) case (Positioner, T) result)
+                        if (widget.layouter.position(pi, page)
+                            case (Positioner, T) result)
                           if (getIndex(pi) case int itemIndex)
                             ((() {
                               final item = widget.itemBuilder(itemIndex);
@@ -216,14 +234,17 @@ class _M3CarouselBodyState<T extends CarouselItemState> extends State<_M3Carouse
                               final openBuilder = widget.openBuilder;
                               return positioner(
                                 _GesturesDecider<T>(
-                                  isInFocus: future.round() < widget.layouter.pagesInFocus,
+                                  isInFocus:
+                                      future.round() <
+                                      widget.layouter.pagesInFocus,
                                   pagesInFocus: widget.layouter.pagesInFocus,
                                   carouselTheme: widget.theme,
                                   borderRadius: theme.borderRadius,
                                   pageIndex: pi,
-                                  openBuilder: openBuilder == null
-                                      ? null
-                                      : (context, close) => openBuilder(
+                                  openBuilder:
+                                      openBuilder == null
+                                          ? null
+                                          : (context, close) => openBuilder(
                                             context,
                                             close,
                                             itemIndex,
@@ -238,12 +259,18 @@ class _M3CarouselBodyState<T extends CarouselItemState> extends State<_M3Carouse
                                       context,
                                       future,
                                       _LayoutContent(
-                                        contentAlignment: widget.decorator.contentAlignment(future),
-                                        content: item.contentBuilder?.call(context, state, pi),
+                                        contentAlignment: widget.decorator
+                                            .contentAlignment(future),
+                                        content: item.contentBuilder?.call(
+                                          context,
+                                          state,
+                                          pi,
+                                        ),
                                         gradient: item.gradient,
                                         direction: theme.direction,
                                         largeWidth: widget.layouter.largeWidth,
-                                        contentOpacity: result.$2.contentOpacity,
+                                        contentOpacity:
+                                            result.$2.contentOpacity,
                                         onTap: onTap,
                                       ),
                                       item.background,
@@ -252,7 +279,7 @@ class _M3CarouselBodyState<T extends CarouselItemState> extends State<_M3Carouse
                                   },
                                 ),
                               );
-                            })())
+                            })()),
                     ],
                   );
                 },
@@ -266,7 +293,11 @@ class _M3CarouselBodyState<T extends CarouselItemState> extends State<_M3Carouse
     );
   }
 
-  Positioned sideShade(M3CarouselTheme<T> carouselTheme, ThemeData theme, bool end) {
+  Positioned sideShade(
+    M3CarouselTheme<T> carouselTheme,
+    ThemeData theme,
+    bool end,
+  ) {
     final color = theme.colorScheme.surface;
     final Axis direction = widget.theme.direction;
     return Positioned(
@@ -288,11 +319,13 @@ class _M3CarouselBodyState<T extends CarouselItemState> extends State<_M3Carouse
       ),
       width: direction.fold(
         ifVertifcal: () => null,
-        ifHorizontal: () => end ? carouselTheme.lastPadding : carouselTheme.firstPadding,
+        ifHorizontal:
+            () => end ? carouselTheme.lastPadding : carouselTheme.firstPadding,
       ),
       height: direction.fold(
         ifHorizontal: () => null,
-        ifVertifcal: () => end ? carouselTheme.lastPadding : carouselTheme.firstPadding,
+        ifVertifcal:
+            () => end ? carouselTheme.lastPadding : carouselTheme.firstPadding,
       ),
       child: Container(
         decoration: BoxDecoration(
@@ -305,9 +338,12 @@ class _M3CarouselBodyState<T extends CarouselItemState> extends State<_M3Carouse
               ifVertifcal: () => Alignment.bottomCenter,
               ifHorizontal: () => Alignment.centerRight,
             ),
-            from: color.withOpacity(!end ? 1 : 0),
-            to: color.withOpacity(end ? 1 : 0),
-            curve: !end ? Easings.emphasizedDecelerate : Easings.emphasizedAccelerate,
+            from: color.withValues(alpha: !end ? 1 : 0),
+            to: color.withValues(alpha: end ? 1 : 0),
+            curve:
+                !end
+                    ? Easings.emphasizedDecelerate
+                    : Easings.emphasizedAccelerate,
             padStart: end ? 0.0 : 0.1,
             padEnd: !end ? 0.0 : 0.1,
           ),
@@ -342,48 +378,44 @@ class _LayoutContent<T extends CarouselItemState> extends StatelessWidget {
     return Material(
       type: MaterialType.transparency,
       child: Container(
-        decoration: BoxDecoration(
-          gradient: content == null ? null : gradient,
-        ),
+        decoration: BoxDecoration(gradient: content == null ? null : gradient),
         child: InkWell(
           onTap: onTap,
-          child: content == null
-              ? const SizedBox.expand()
-              : Stack(
-                  alignment: contentAlignment,
-                  children: [
-                    Positioned(
-                      left: direction.fold(
-                        ifVertifcal: () => 0,
-                        ifHorizontal: () => null,
+          child:
+              content == null
+                  ? const SizedBox.expand()
+                  : Stack(
+                    alignment: contentAlignment,
+                    children: [
+                      Positioned(
+                        left: direction.fold(
+                          ifVertifcal: () => 0,
+                          ifHorizontal: () => null,
+                        ),
+                        right: direction.fold(
+                          ifVertifcal: () => 0,
+                          ifHorizontal: () => null,
+                        ),
+                        width: direction.fold(
+                          ifVertifcal: () => null,
+                          ifHorizontal: () => largeWidth,
+                        ),
+                        height: direction.fold(
+                          ifVertifcal: () => largeWidth,
+                          ifHorizontal: () => null,
+                        ),
+                        bottom: direction.fold(
+                          ifVertifcal: () => null,
+                          ifHorizontal: () => 0,
+                        ),
+                        top: direction.fold(
+                          ifVertifcal: () => null,
+                          ifHorizontal: () => 0,
+                        ),
+                        child: Opacity(opacity: contentOpacity, child: content),
                       ),
-                      right: direction.fold(
-                        ifVertifcal: () => 0,
-                        ifHorizontal: () => null,
-                      ),
-                      width: direction.fold(
-                        ifVertifcal: () => null,
-                        ifHorizontal: () => largeWidth,
-                      ),
-                      height: direction.fold(
-                        ifVertifcal: () => largeWidth,
-                        ifHorizontal: () => null,
-                      ),
-                      bottom: direction.fold(
-                        ifVertifcal: () => null,
-                        ifHorizontal: () => 0,
-                      ),
-                      top: direction.fold(
-                        ifVertifcal: () => null,
-                        ifHorizontal: () => 0,
-                      ),
-                      child: Opacity(
-                        opacity: contentOpacity,
-                        child: content,
-                      ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
         ),
       ),
     );
@@ -414,16 +446,17 @@ class _GesturesDecider<T extends CarouselItemState> extends StatelessWidget {
   final bool canBeOpened;
   bool get canBeFocused => !canBeOpened;
   final VoidCallback? overrideOnTap;
-  final Widget Function(BuildContext context, bool round, VoidCallback? onTap) builder;
+  final Widget Function(BuildContext context, bool round, VoidCallback? onTap)
+  builder;
 
   final PageController controller;
   final Widget Function(BuildContext context, VoidCallback close)? openBuilder;
 
   void focus() => controller.animateToPage(
-        pageIndex + 1 - pagesInFocus,
-        duration: Durations.medium3,
-        curve: Easing.emphasizedDecelerate,
-      );
+    pageIndex + 1 - pagesInFocus,
+    duration: Durations.medium3,
+    curve: Easing.emphasizedDecelerate,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -431,12 +464,15 @@ class _GesturesDecider<T extends CarouselItemState> extends StatelessWidget {
     return switch ((overrideOnTap, openBuilder)) {
       (VoidCallback ot, _) => builder(context, true, ot),
       (_, null) => builder(
-          context,
-          true,
-          canBeFocused && autoFocus && (!isInFocus) ? focus : null,
-        ),
-      (_, Widget Function(BuildContext, VoidCallback) openBuilder) => OpenContainer(
-          openShape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+        context,
+        true,
+        canBeFocused && autoFocus && (!isInFocus) ? focus : null,
+      ),
+      (_, Widget Function(BuildContext, VoidCallback) openBuilder) =>
+        OpenContainer(
+          openShape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.zero,
+          ),
           closedShape: RoundedRectangleBorder(borderRadius: borderRadius),
           tappable: false,
           clipBehavior: Clip.antiAlias,
@@ -446,14 +482,10 @@ class _GesturesDecider<T extends CarouselItemState> extends StatelessWidget {
           closedBuilder: (context, open) {
             return CleanProvider<M3CarouselTheme<T>>(
               data: carouselTheme,
-              child: builder(
-                context,
-                false,
-                switch (canBeOpened) {
-                  true => open,
-                  false => autoFocus ? focus : null,
-                },
-              ),
+              child: builder(context, false, switch (canBeOpened) {
+                true => open,
+                false => autoFocus ? focus : null,
+              }),
             );
           },
           openBuilder: openBuilder,
@@ -474,17 +506,13 @@ class CurvedGradient {
     double padEnd = 0,
   }) {
     final stops = [
-      for (int i = 0; i <= granularity; i++) (i / granularity).mapToRange(padStart, 1 - padEnd),
+      for (int i = 0; i <= granularity; i++)
+        (i / granularity).mapToRange(padStart, 1 - padEnd),
     ];
     final colors = [
       for (int i = 0; i <= granularity; i++)
         Color.lerp(from, to, curve.transform(i / granularity))!,
     ];
-    return LinearGradient(
-      colors: colors,
-      stops: stops,
-      begin: begin,
-      end: end,
-    );
+    return LinearGradient(colors: colors, stops: stops, begin: begin, end: end);
   }
 }

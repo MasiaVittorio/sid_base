@@ -20,7 +20,8 @@ class PaletteColorPicker extends StatefulWidget {
   State createState() => _PaletteColorPickerState();
 }
 
-class _PaletteColorPickerState extends State<PaletteColorPicker> with TickerProviderStateMixin {
+class _PaletteColorPickerState extends State<PaletteColorPicker>
+    with TickerProviderStateMixin {
   final List<PaletteTab> _tabs = PaletteTab.allTabs;
 
   TabController? _tabController;
@@ -42,12 +43,10 @@ class _PaletteColorPickerState extends State<PaletteColorPicker> with TickerProv
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(
-      length: _tabs.length,
-      vsync: this,
-    );
+    _tabController = TabController(length: _tabs.length, vsync: this);
     List<int?> indexes = find(widget.color);
-    _tabController!.index = indexes[0] ?? PaletteTab.findClosestTabIndex(_tabs, widget.color) ?? 0;
+    _tabController!.index =
+        indexes[0] ?? PaletteTab.findClosestTabIndex(_tabs, widget.color) ?? 0;
     _colorIndex = indexes[1];
 
     /// NOT REALLY SURE WHY IT WAS NEEDED, ON  TAP SHOULD TAKE CARE OF THIS
@@ -64,7 +63,9 @@ class _PaletteColorPickerState extends State<PaletteColorPicker> with TickerProv
     if (oldWidget.color != widget.color) {
       List<int?> indexes = find(widget.color);
       _tabController!.index =
-          indexes[0] ?? PaletteTab.findClosestTabIndex(_tabs, widget.color) ?? 0;
+          indexes[0] ??
+          PaletteTab.findClosestTabIndex(_tabs, widget.color) ??
+          0;
       _colorIndex = indexes[1];
     }
   }
@@ -76,20 +77,21 @@ class _PaletteColorPickerState extends State<PaletteColorPicker> with TickerProv
   }
 
   Color? get currentColor =>
-      _colorIndex == null ? null : _tabs[_tabController!.index].shades[_colorIndex!];
+      _colorIndex == null
+          ? null
+          : _tabs[_tabController!.index].shades[_colorIndex!];
 
   @override
   Widget build(BuildContext context) {
     final Widget row = Material(
       child: Container(
-        constraints: const BoxConstraints(
-          maxHeight: 64,
-        ),
+        constraints: const BoxConstraints(maxHeight: 64),
         child: TabBar(
-          onTap: (int i) => setState(() {
-            _colorIndex = _tabs[i].defaultIndex;
-            widget.onChanged(currentColor);
-          }),
+          onTap:
+              (int i) => setState(() {
+                _colorIndex = _tabs[i].defaultIndex;
+                widget.onChanged(currentColor);
+              }),
           isScrollable: true,
           dragStartBehavior: DragStartBehavior.down,
           indicatorColor: Theme.of(context).textTheme.bodyMedium?.color,
@@ -97,17 +99,19 @@ class _PaletteColorPickerState extends State<PaletteColorPicker> with TickerProv
           tabs: List.generate(_tabs.length, (int i) {
             return Tab(
               text: _tabs[i].name,
-              icon: Icon(
-                MdiIcons.circle,
-                color: _tabs[i].defaultColor,
-              ),
+              icon: Icon(MdiIcons.circle, color: _tabs[i].defaultColor),
             );
           }),
           controller: _tabController,
-          unselectedLabelStyle: const TextStyle(color: Colors.black, fontWeight: FontWeight.w700),
+          unselectedLabelStyle: const TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.w700,
+          ),
           labelColor: Theme.of(context).textTheme.bodyMedium?.color,
           labelStyle: const TextStyle(fontWeight: FontWeight.w700),
-          unselectedLabelColor: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.5),
+          unselectedLabelColor: Theme.of(
+            context,
+          ).textTheme.bodyMedium?.color?.withValues(alpha: 0.5),
         ),
       ),
     );
@@ -115,9 +119,7 @@ class _PaletteColorPickerState extends State<PaletteColorPicker> with TickerProv
     final theme = Theme.of(context);
     final Widget column = Theme(
       data: theme.copyWith(
-        colorScheme: theme.colorScheme.copyWith(
-          secondary: Colors.white,
-        ),
+        colorScheme: theme.colorScheme.copyWith(secondary: Colors.white),
       ),
       child: LayoutBuilder(
         builder: (_, constraints) {
@@ -136,7 +138,11 @@ class _PaletteColorPickerState extends State<PaletteColorPicker> with TickerProv
                     ),
                     children: <Widget>[
                       for (final couple in <Widget>[
-                        for (int colorI = 0; colorI < _tabs[tabI].shades.length; ++colorI)
+                        for (
+                          int colorI = 0;
+                          colorI < _tabs[tabI].shades.length;
+                          ++colorI
+                        )
                           _buildTile(
                             colorIndex: colorI,
                             color: _tabs[tabI].shades[colorI],
@@ -159,17 +165,9 @@ class _PaletteColorPickerState extends State<PaletteColorPicker> with TickerProv
       ),
     );
 
-    const Widget divider = Divider(
-      height: 0.0,
-    );
+    const Widget divider = Divider(height: 0.0);
 
-    return Column(children: <Widget>[
-      Expanded(
-        child: column,
-      ),
-      divider,
-      row,
-    ]);
+    return Column(children: <Widget>[Expanded(child: column), divider, row]);
   }
 
   Widget _buildTile({
@@ -186,32 +184,30 @@ class _PaletteColorPickerState extends State<PaletteColorPicker> with TickerProv
     final Color text = color.contrast;
 
     return Material(
-        color: color,
-        child: InkWell(
-          onTap: () {
-            setState(() {
-              _colorIndex = colorIndex;
-              widget.onChanged(currentColor);
-            });
-          },
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            height: height,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text(
-                  "#FF${color.hexString}",
-                  style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    color: text,
-                  ),
-                ),
-                // TODO: nonsense, la prima volta che viene trovato il closest qua non mostra il selezionato
-                Icon(Icons.check, color: check ? text : Colors.transparent),
-              ],
-            ),
+      color: color,
+      child: InkWell(
+        onTap: () {
+          setState(() {
+            _colorIndex = colorIndex;
+            widget.onChanged(currentColor);
+          });
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          height: height,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text(
+                "#FF${color.hexString}",
+                style: TextStyle(fontWeight: FontWeight.w700, color: text),
+              ),
+              // TODO: nonsense, la prima volta che viene trovato il closest qua non mostra il selezionato
+              Icon(Icons.check, color: check ? text : Colors.transparent),
+            ],
           ),
-        ));
+        ),
+      ),
+    );
   }
 }
