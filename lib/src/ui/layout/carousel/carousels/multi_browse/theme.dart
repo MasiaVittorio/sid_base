@@ -4,6 +4,7 @@ class MultiBrowseCarouselTheme extends M3CarouselTheme<MultiBrowseItemState> {
   const MultiBrowseCarouselTheme({
     super.direction = Axis.horizontal,
     this.defaultBackgroundColor,
+    this.borderRadius = const BorderRadius.all(Radius.circular(28)),
   });
 
   final Color? defaultBackgroundColor;
@@ -17,7 +18,7 @@ class MultiBrowseCarouselTheme extends M3CarouselTheme<MultiBrowseItemState> {
       context.theme.textTheme.bodySmall!;
 
   @override
-  BorderRadius get borderRadius => BorderRadius.circular(28);
+  final BorderRadius borderRadius;
 
   @override
   double get firstPadding => 16;

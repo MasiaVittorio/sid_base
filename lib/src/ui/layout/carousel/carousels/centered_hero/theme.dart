@@ -4,6 +4,7 @@ class CenteredHeroCarouselTheme extends M3CarouselTheme<CenteredHeroItemState> {
   const CenteredHeroCarouselTheme({
     super.direction = Axis.horizontal,
     this.defaultBackgroundColor,
+    this.borderRadius = const BorderRadius.all(Radius.circular(28)),
   });
 
   final Color? defaultBackgroundColor;
@@ -17,7 +18,7 @@ class CenteredHeroCarouselTheme extends M3CarouselTheme<CenteredHeroItemState> {
       context.theme.textTheme.bodySmall!;
 
   @override
-  BorderRadius get borderRadius => BorderRadius.circular(28);
+  final BorderRadius borderRadius;
 
   @override
   double get firstPadding => 16;

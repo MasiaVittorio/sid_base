@@ -4,6 +4,7 @@ class FullScreenCarouselTheme extends M3CarouselTheme<FullScreenItemState> {
   const FullScreenCarouselTheme({
     super.direction = Axis.vertical,
     this.defaultBackgroundColor,
+    this.borderRadius = const BorderRadius.all(Radius.circular(12)),
   });
   final Color? defaultBackgroundColor;
 
@@ -16,7 +17,7 @@ class FullScreenCarouselTheme extends M3CarouselTheme<FullScreenItemState> {
       context.theme.textTheme.bodySmall!;
 
   @override
-  BorderRadius get borderRadius => BorderRadius.circular(12);
+  final BorderRadius borderRadius;
 
   @override
   double get firstPadding => 0;

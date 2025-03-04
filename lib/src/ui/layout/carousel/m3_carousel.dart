@@ -235,8 +235,9 @@ class _M3CarouselBodyState<T extends CarouselItemState>
                               return positioner(
                                 _GesturesDecider<T>(
                                   isInFocus:
-                                      future.round() <
-                                      widget.layouter.pagesInFocus,
+                                      (future.round() <
+                                          widget.layouter.pagesInFocus) &&
+                                      future > -1.0,
                                   pagesInFocus: widget.layouter.pagesInFocus,
                                   carouselTheme: widget.theme,
                                   borderRadius: theme.borderRadius,
@@ -461,6 +462,9 @@ class _GesturesDecider<T extends CarouselItemState> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = context.theme;
+    final background =
+        carouselTheme.getDecorator().defaultBackgroundColor ??
+        theme.colorScheme.secondaryContainer;
     return switch ((overrideOnTap, openBuilder)) {
       (VoidCallback ot, _) => builder(context, true, ot),
       (_, null) => builder(
@@ -476,9 +480,9 @@ class _GesturesDecider<T extends CarouselItemState> extends StatelessWidget {
           closedShape: RoundedRectangleBorder(borderRadius: borderRadius),
           tappable: false,
           clipBehavior: Clip.antiAlias,
-          closedColor: theme.colorScheme.secondaryContainer,
-          middleColor: theme.colorScheme.secondaryContainer,
-          openColor: theme.colorScheme.secondaryContainer,
+          closedColor: background,
+          middleColor: background,
+          openColor: background,
           closedBuilder: (context, open) {
             return CleanProvider<M3CarouselTheme<T>>(
               data: carouselTheme,
