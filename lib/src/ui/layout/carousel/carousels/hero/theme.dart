@@ -1,13 +1,20 @@
 part of "../../m3_carousel.dart";
 
 class HeroCarouselTheme extends M3CarouselTheme<HeroItemState> {
-  const HeroCarouselTheme({super.direction = Axis.horizontal});
+  const HeroCarouselTheme({
+    super.direction = Axis.horizontal,
+    this.defaultBackgroundColor,
+  });
+
+  final Color? defaultBackgroundColor;
 
   @override
-  TextStyle titleStyle(BuildContext context) => context.theme.textTheme.titleMedium!;
+  TextStyle titleStyle(BuildContext context) =>
+      context.theme.textTheme.titleMedium!;
 
   @override
-  TextStyle subtitleStyle(BuildContext context) => context.theme.textTheme.bodySmall!;
+  TextStyle subtitleStyle(BuildContext context) =>
+      context.theme.textTheme.bodySmall!;
 
   @override
   BorderRadius get borderRadius => BorderRadius.circular(28);
@@ -37,11 +44,15 @@ class HeroCarouselTheme extends M3CarouselTheme<HeroItemState> {
   double get widthMedium => (widthLarge + widthSmallMax) / 2;
 
   @override
-  M3CarouselItemDecorator<HeroItemState> getDecorator() =>
-      HeroDecorator(axis: direction, targetBorderRadius: borderRadius);
+  M3CarouselItemDecorator<HeroItemState> getDecorator() => HeroDecorator(
+    axis: direction,
+    targetBorderRadius: borderRadius,
+    defaultBackgroundColor: defaultBackgroundColor,
+  );
 
   @override
-  M3CarouselLayouter<HeroItemState> getLayouter(double displaySize) => HeroLayouter(
+  M3CarouselLayouter<HeroItemState> getLayouter(double displaySize) =>
+      HeroLayouter(
         D: displaySize,
         A: firstPadding,
         Z: lastPadding,

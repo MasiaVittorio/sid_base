@@ -3,13 +3,17 @@ part of "../../m3_carousel.dart";
 class FullScreenCarouselTheme extends M3CarouselTheme<FullScreenItemState> {
   const FullScreenCarouselTheme({
     super.direction = Axis.vertical,
+    this.defaultBackgroundColor,
   });
+  final Color? defaultBackgroundColor;
 
   @override
-  TextStyle titleStyle(BuildContext context) => context.theme.textTheme.titleMedium!;
+  TextStyle titleStyle(BuildContext context) =>
+      context.theme.textTheme.titleMedium!;
 
   @override
-  TextStyle subtitleStyle(BuildContext context) => context.theme.textTheme.bodySmall!;
+  TextStyle subtitleStyle(BuildContext context) =>
+      context.theme.textTheme.bodySmall!;
 
   @override
   BorderRadius get borderRadius => BorderRadius.circular(12);
@@ -40,12 +44,13 @@ class FullScreenCarouselTheme extends M3CarouselTheme<FullScreenItemState> {
 
   @override
   M3CarouselItemDecorator<FullScreenItemState> getDecorator() =>
-      FullScreenDecorator(axis: direction, targetBorderRadius: borderRadius);
+      FullScreenDecorator(
+        axis: direction,
+        targetBorderRadius: borderRadius,
+        defaultBackgroundColor: defaultBackgroundColor,
+      );
 
   @override
-  M3CarouselLayouter<FullScreenItemState> getLayouter(double displaySize) => FullScreenLayouter(
-        D: displaySize,
-        b: inBetweenPadding,
-        axis: direction,
-      );
+  M3CarouselLayouter<FullScreenItemState> getLayouter(double displaySize) =>
+      FullScreenLayouter(D: displaySize, b: inBetweenPadding, axis: direction);
 }

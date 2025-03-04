@@ -1,13 +1,20 @@
 part of "../../m3_carousel.dart";
 
 class MultiBrowseCarouselTheme extends M3CarouselTheme<MultiBrowseItemState> {
-  const MultiBrowseCarouselTheme({super.direction = Axis.horizontal});
+  const MultiBrowseCarouselTheme({
+    super.direction = Axis.horizontal,
+    this.defaultBackgroundColor,
+  });
+
+  final Color? defaultBackgroundColor;
 
   @override
-  TextStyle titleStyle(BuildContext context) => context.theme.textTheme.titleMedium!;
+  TextStyle titleStyle(BuildContext context) =>
+      context.theme.textTheme.titleMedium!;
 
   @override
-  TextStyle subtitleStyle(BuildContext context) => context.theme.textTheme.bodySmall!;
+  TextStyle subtitleStyle(BuildContext context) =>
+      context.theme.textTheme.bodySmall!;
 
   @override
   BorderRadius get borderRadius => BorderRadius.circular(28);
@@ -37,14 +44,17 @@ class MultiBrowseCarouselTheme extends M3CarouselTheme<MultiBrowseItemState> {
   double get widthMedium => (widthLarge + widthSmallMax) / 2;
 
   @override
-  M3CarouselItemDecorator<MultiBrowseItemState> getDecorator() => MultiBrowseDecorator(
+  M3CarouselItemDecorator<MultiBrowseItemState> getDecorator() =>
+      MultiBrowseDecorator(
         axis: direction,
         targetBorderRadius: borderRadius,
         maxFuture: 3,
+        defaultBackgroundColor: defaultBackgroundColor,
       );
 
   @override
-  M3CarouselLayouter<MultiBrowseItemState> getLayouter(double displaySize) => MultiBrowseLayouter(
+  M3CarouselLayouter<MultiBrowseItemState> getLayouter(double displaySize) =>
+      MultiBrowseLayouter(
         D: displaySize,
         targetLarge: widthLarge,
         A: firstPadding,

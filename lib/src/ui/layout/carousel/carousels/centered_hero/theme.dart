@@ -1,13 +1,20 @@
 part of "../../m3_carousel.dart";
 
 class CenteredHeroCarouselTheme extends M3CarouselTheme<CenteredHeroItemState> {
-  const CenteredHeroCarouselTheme({super.direction = Axis.horizontal});
+  const CenteredHeroCarouselTheme({
+    super.direction = Axis.horizontal,
+    this.defaultBackgroundColor,
+  });
+
+  final Color? defaultBackgroundColor;
 
   @override
-  TextStyle titleStyle(BuildContext context) => context.theme.textTheme.titleMedium!;
+  TextStyle titleStyle(BuildContext context) =>
+      context.theme.textTheme.titleMedium!;
 
   @override
-  TextStyle subtitleStyle(BuildContext context) => context.theme.textTheme.bodySmall!;
+  TextStyle subtitleStyle(BuildContext context) =>
+      context.theme.textTheme.bodySmall!;
 
   @override
   BorderRadius get borderRadius => BorderRadius.circular(28);
@@ -38,10 +45,15 @@ class CenteredHeroCarouselTheme extends M3CarouselTheme<CenteredHeroItemState> {
 
   @override
   M3CarouselItemDecorator<CenteredHeroItemState> getDecorator() =>
-      CenteredHeroDecorator(axis: direction, targetBorderRadius: borderRadius);
+      CenteredHeroDecorator(
+        axis: direction,
+        targetBorderRadius: borderRadius,
+        defaultBackgroundColor: defaultBackgroundColor,
+      );
 
   @override
-  M3CarouselLayouter<CenteredHeroItemState> getLayouter(double displaySize) => CenteredHeroLayouter(
+  M3CarouselLayouter<CenteredHeroItemState> getLayouter(double displaySize) =>
+      CenteredHeroLayouter(
         D: displaySize,
         A: firstPadding,
         Z: lastPadding,

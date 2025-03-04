@@ -1,9 +1,11 @@
 part of "../../m3_carousel.dart";
 
-class MultiBrowseDecorator extends M3CarouselItemDecorator<MultiBrowseItemState> {
+class MultiBrowseDecorator
+    extends M3CarouselItemDecorator<MultiBrowseItemState> {
   const MultiBrowseDecorator({
     required super.axis,
     required super.targetBorderRadius,
+    required super.defaultBackgroundColor,
     required this.maxFuture,
   });
 
@@ -15,6 +17,5 @@ class MultiBrowseDecorator extends M3CarouselItemDecorator<MultiBrowseItemState>
       ((switch (future) {
         >= 0 => future / maxFuture,
         _ => future,
-      })
-          .clamp(-1, 1));
+      }).clamp(-1, 1));
 }

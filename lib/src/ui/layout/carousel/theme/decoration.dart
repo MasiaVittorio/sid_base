@@ -5,9 +5,11 @@ abstract class M3CarouselItemDecorator<T extends CarouselItemState> {
   const M3CarouselItemDecorator({
     required this.axis,
     required this.targetBorderRadius,
+    required this.defaultBackgroundColor,
   });
   final Axis axis;
   final BorderRadius targetBorderRadius;
+  final Color? defaultBackgroundColor;
 
   BorderRadius effectiveBorderRadius(double future) => targetBorderRadius;
 
@@ -19,23 +21,25 @@ abstract class M3CarouselItemDecorator<T extends CarouselItemState> {
     bool round,
   ) {
     final al = mainAxisBackgroundAlignment(future);
-    final mTheme = context.theme;
     return Container(
       clipBehavior: round ? Clip.antiAlias : Clip.none,
       decoration: BoxDecoration(
-          borderRadius: round ? effectiveBorderRadius(future) : null,
-          color: mTheme.colorScheme.secondaryContainer,
-          image: switch (image) {
-            null => null,
-            ImageProvider image => DecorationImage(
-                image: image,
-                fit: BoxFit.cover,
-                alignment: switch (axis) {
-                  Axis.horizontal => Alignment(al, 0),
-                  Axis.vertical => Alignment(0, al),
-                },
-              ),
-          }),
+        borderRadius: round ? effectiveBorderRadius(future) : null,
+        color:
+            defaultBackgroundColor ??
+            context.theme.colorScheme.secondaryContainer,
+        image: switch (image) {
+          null => null,
+          ImageProvider image => DecorationImage(
+            image: image,
+            fit: BoxFit.cover,
+            alignment: switch (axis) {
+              Axis.horizontal => Alignment(al, 0),
+              Axis.vertical => Alignment(0, al),
+            },
+          ),
+        },
+      ),
       child: content,
     );
   }
