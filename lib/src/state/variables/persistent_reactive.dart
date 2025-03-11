@@ -47,6 +47,13 @@ class PersistentReactive<T> extends Reactive<T> {
     return result;
   }
 
+  Future<bool> asyncUpdate(T newValue, {bool distinct = true}) async {
+    if (verbose) debugPrint("updating with $newValue");
+    final bool result = super.update(newValue, distinct: distinct);
+    await _write();
+    return result;
+  }
+
   @override
   void refresh() {
     super.refresh();
@@ -80,7 +87,8 @@ class PersistentReactive<T> extends Reactive<T> {
       if (verbose) debugPrint('key $key, reading $source');
       if (source == null) return;
       final Object? jsonDecodedMap = jsonDecode(source);
-      if (verbose) debugPrint('key $key, decodedMap type ${jsonDecodedMap.runtimeType}');
+      if (verbose)
+        debugPrint('key $key, decodedMap type ${jsonDecodedMap.runtimeType}');
 
       if (jsonDecodedMap case {'value': final Object? valueJsonDecoded}) {
         if (verbose) debugPrint('key $key, valueJsonDecoded $valueJsonDecoded');
@@ -114,12 +122,10 @@ class PersistentReactive<T> extends Reactive<T> {
   }
 
   Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      "value": toJsonEncodable?.call(value) ?? value,
-    };
+    return <String, dynamic>{"value": toJsonEncodable?.call(value) ?? value};
   }
 
-  void _write() async {
+  Future<void> _write() async {
     try {
       final line = jsonEncode(toMap());
       if (verbose) debugPrint('key $key, writing $line');
