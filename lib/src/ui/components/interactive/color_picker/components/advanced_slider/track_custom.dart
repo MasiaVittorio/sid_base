@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 
 class ShadeRectangularSliderTrackShape extends SliderTrackShape {
   /// Create a slider track that draws 2 rectangles.
-  const ShadeRectangularSliderTrackShape({this.disabledThumbGapWidth = 2.0, this.gradient});
+  const ShadeRectangularSliderTrackShape({
+    this.disabledThumbGapWidth = 2.0,
+    this.gradient,
+  });
 
   final Gradient? gradient;
 
@@ -35,7 +38,8 @@ class ShadeRectangularSliderTrackShape extends SliderTrackShape {
     assert(parentBox.size.height >= trackHeight);
 
     final double trackLeft = offset.dx + overlayWidth / 2;
-    final double trackTop = offset.dy + (parentBox.size.height - trackHeight) / 2;
+    final double trackTop =
+        offset.dy + (parentBox.size.height - trackHeight) / 2;
     // c'era un todo di google
     final double trackWidth = parentBox.size.width - overlayWidth;
     return Rect.fromLTWH(trackLeft, trackTop, trackWidth, trackHeight);
@@ -62,12 +66,18 @@ class ShadeRectangularSliderTrackShape extends SliderTrackShape {
 
     // Assign the track segment paints, which are left: active, right: inactive,
     // but reversed for right to left text.
-    final ColorTween activeTrackColorTween =
-        ColorTween(begin: sliderTheme.disabledActiveTrackColor, end: sliderTheme.activeTrackColor);
+    final ColorTween activeTrackColorTween = ColorTween(
+      begin: sliderTheme.disabledActiveTrackColor,
+      end: sliderTheme.activeTrackColor,
+    );
     final ColorTween inactiveTrackColorTween = ColorTween(
-        begin: sliderTheme.disabledInactiveTrackColor, end: sliderTheme.inactiveTrackColor);
-    final Paint activePaint = Paint()..color = activeTrackColorTween.evaluate(enableAnimation)!;
-    final Paint inactivePaint = Paint()..color = inactiveTrackColorTween.evaluate(enableAnimation)!;
+      begin: sliderTheme.disabledInactiveTrackColor,
+      end: sliderTheme.inactiveTrackColor,
+    );
+    final Paint activePaint =
+        Paint()..color = activeTrackColorTween.evaluate(enableAnimation)!;
+    final Paint inactivePaint =
+        Paint()..color = inactiveTrackColorTween.evaluate(enableAnimation)!;
     late Paint leftTrackPaint;
     late Paint rightTrackPaint;
     switch (textDirection) {
@@ -79,10 +89,6 @@ class ShadeRectangularSliderTrackShape extends SliderTrackShape {
         leftTrackPaint = inactivePaint;
         rightTrackPaint = activePaint;
         break;
-      default:
-        leftTrackPaint = activePaint;
-        rightTrackPaint = inactivePaint;
-        break;
     }
 
     // Used to create a gap around the thumb iff the slider is disabled.
@@ -93,7 +99,8 @@ class ShadeRectangularSliderTrackShape extends SliderTrackShape {
     double horizontalAdjustment = 0.0;
     if (!isEnabled!) {
       final double disabledThumbRadius =
-          sliderTheme.thumbShape!.getPreferredSize(false, isDiscrete!).width / 2.0;
+          sliderTheme.thumbShape!.getPreferredSize(false, isDiscrete!).width /
+          2.0;
       final double gap = disabledThumbGapWidth * (1.0 - enableAnimation.value);
       horizontalAdjustment = disabledThumbRadius + gap;
     }
@@ -108,13 +115,24 @@ class ShadeRectangularSliderTrackShape extends SliderTrackShape {
 
     if (gradient == null) {
       final Rect leftTrackSegment = Rect.fromLTRB(
-          trackRect.left, trackRect.top, thumbCenter.dx - horizontalAdjustment, trackRect.bottom);
+        trackRect.left,
+        trackRect.top,
+        thumbCenter.dx - horizontalAdjustment,
+        trackRect.bottom,
+      );
       context.canvas.drawRect(leftTrackSegment, leftTrackPaint);
       final Rect rightTrackSegment = Rect.fromLTRB(
-          thumbCenter.dx + horizontalAdjustment, trackRect.top, trackRect.right, trackRect.bottom);
+        thumbCenter.dx + horizontalAdjustment,
+        trackRect.top,
+        trackRect.right,
+        trackRect.bottom,
+      );
       context.canvas.drawRect(rightTrackSegment, rightTrackPaint);
     } else {
-      context.canvas.drawRect(trackRect, Paint()..shader = gradient!.createShader(trackRect));
+      context.canvas.drawRect(
+        trackRect,
+        Paint()..shader = gradient!.createShader(trackRect),
+      );
     }
   }
 }

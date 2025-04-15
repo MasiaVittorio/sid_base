@@ -46,6 +46,7 @@ class M3Carousel<T extends CarouselItemState> extends StatelessWidget {
     this.loop = false,
     this.autoFocusOnTap = true,
     this.openBuilder,
+    this.useSideShades = true,
     required this.defaultTheme,
   });
   M3Carousel.items({
@@ -56,6 +57,7 @@ class M3Carousel<T extends CarouselItemState> extends StatelessWidget {
     this.loop = false,
     this.autoFocusOnTap = true,
     this.openBuilder,
+    this.useSideShades = true,
     required this.defaultTheme,
   }) {
     itemBuilder = (i) => items[i];
@@ -78,6 +80,7 @@ class M3Carousel<T extends CarouselItemState> extends StatelessWidget {
   )?
   openBuilder;
   final bool autoFocusOnTap;
+  final bool useSideShades;
 
   final M3CarouselTheme<T> defaultTheme;
   @override
@@ -93,6 +96,7 @@ class M3Carousel<T extends CarouselItemState> extends StatelessWidget {
           return ConstrainedBox(
             constraints: constraints,
             child: _M3CarouselBody<T>(
+              useSideShades: useSideShades,
               autoFocusOnTap: autoFocusOnTap,
               openBuilder: openBuilder,
               constraints: constraints,
@@ -128,6 +132,7 @@ class _M3CarouselBody<T extends CarouselItemState> extends StatefulWidget {
     required this.decorator,
     required this.openBuilder,
     required this.autoFocusOnTap,
+    required this.useSideShades,
   });
 
   final int initialIndex;
@@ -146,6 +151,7 @@ class _M3CarouselBody<T extends CarouselItemState> extends StatefulWidget {
   )?
   openBuilder;
   final bool autoFocusOnTap;
+  final bool useSideShades;
 
   @override
   State<_M3CarouselBody<T>> createState() => _M3CarouselBodyState<T>();
@@ -287,8 +293,10 @@ class _M3CarouselBodyState<T extends CarouselItemState>
               ),
             ),
           ),
-          sideShade(theme, mTheme, true),
-          sideShade(theme, mTheme, false),
+          if (widget.useSideShades) ...[
+            sideShade(theme, mTheme, true),
+            sideShade(theme, mTheme, false),
+          ],
         ],
       ),
     );

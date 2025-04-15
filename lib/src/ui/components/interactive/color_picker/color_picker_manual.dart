@@ -33,8 +33,9 @@ class _ManualColorPickerState extends State<ManualColorPicker> {
     _val = color.value;
   }
 
-  Color get currentColor => HSVColor.fromAHSV(
-        widget.color.alpha / 255.toDouble(),
+  Color get currentColor =>
+      HSVColor.fromAHSV(
+        widget.color.alpha8Bit / 255.toDouble(),
         _hue,
         _sat,
         _val,
@@ -56,12 +57,9 @@ class _ManualColorPickerState extends State<ManualColorPicker> {
 
   Color get themeContrast => Theme.of(context).canvasColor.contrast;
 
-  void colorFromHsv() => super.widget.onChanged(HSVColor.fromAHSV(
-        color.alpha,
-        _hue,
-        _sat,
-        _val,
-      ).toColor());
+  void colorFromHsv() => super.widget.onChanged(
+    HSVColor.fromAHSV(color.alpha, _hue, _sat, _val).toColor(),
+  );
 
   List<double> _interpolate(int n, double min, double max) {
     List<double> result = <double>[];
@@ -76,45 +74,47 @@ class _ManualColorPickerState extends State<ManualColorPicker> {
 
   //Hue
   void hueOnChange(double value) => setState(() {
-        _hue = value;
-        colorFromHsv();
-      });
+    _hue = value;
+    colorFromHsv();
+  });
 
-  List<Color> get hueColors => _interpolate(360, 0.0, 360)
-      .map<Color>((double x) => HSVColor.fromAHSV(
-            1.0,
-            x,
-            1.0,
-            1.0,
-          ).toColor())
-      .toList();
+  List<Color> get hueColors =>
+      _interpolate(360, 0.0, 360)
+          .map<Color>(
+            (double x) => HSVColor.fromAHSV(1.0, x, 1.0, 1.0).toColor(),
+          )
+          .toList();
 
   //Saturation / Value
   void saturationValueOnChange(Offset value) => setState(() {
-        _sat = value.dx;
-        _val = value.dy;
-        colorFromHsv();
-      });
+    _sat = value.dx;
+    _val = value.dy;
+    colorFromHsv();
+  });
 
   //Saturation
-  List<Color> get saturationColors =>
-      [Colors.white, HSVColor.fromAHSV(1.0, _hue, 1.0, 1.0).toColor()];
+  List<Color> get saturationColors => [
+    Colors.white,
+    HSVColor.fromAHSV(1.0, _hue, 1.0, 1.0).toColor(),
+  ];
 
   //Value
   final List<Color> valueColors = [Colors.transparent, Colors.black];
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, constraints) {
-      double padding = 8.0;
-      return Material(
-        child: Row(children: <Widget>[
-          Expanded(
-            child: Padding(
-              padding: EdgeInsets.all(padding * 2),
-              child: PalettePicker(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        double padding = 8.0;
+        return Row(
+          children: <Widget>[
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.all(padding * 2),
+                child: PalettePicker(
                   circleColor:
-                      ThemeData.estimateBrightnessForColor(color.toColor()) == Brightness.dark
+                      ThemeData.estimateBrightnessForColor(color.toColor()) ==
+                              Brightness.dark
                           ? Colors.white
                           : Colors.black,
                   width: constraints.maxWidth - padding * 2,
@@ -124,57 +124,53 @@ class _ManualColorPickerState extends State<ManualColorPicker> {
                   leftRightColors: saturationColors,
                   topPosition: 1.0,
                   bottomPosition: 0.0,
-                  topBottomColors: valueColors),
+                  topBottomColors: valueColors,
+                ),
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(right: 8.0),
-            child: _hueSlider(themeContrast, constraints.maxHeight),
-          ),
-        ]),
-      );
-    });
+            Padding(
+              padding: const EdgeInsets.only(right: 8.0),
+              child: _hueSlider(themeContrast, constraints.maxHeight),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Widget _hueSlider(Color activeColor, double height) => SliderTheme(
-      data: SliderTheme.of(context).copyWith(
-        thumbColor: HSVColor.fromAHSV(
-          1.0,
-          _hue,
-          1.0,
-          1.0,
-        ).toColor(),
-        thumbShape: BorderRoundSliderThumbShape(
-          border: 2,
-          enabledThumbRadius: 8.0,
-          borderColor: activeColor,
-        ),
-        trackHeight: 8,
-        trackShape: ShadeRectangularSliderTrackShape(
-            gradient: LinearGradient(
-                colors: _interpolate(360, 0.0, 360)
-                    .map<Color>(
-                      (double x) => HSVColor.fromAHSV(
-                        1.0,
-                        x,
-                        1.0,
-                        1.0,
-                      ).toColor(),
-                    )
-                    .toList())),
+    data: SliderTheme.of(context).copyWith(
+      thumbColor: HSVColor.fromAHSV(1.0, _hue, 1.0, 1.0).toColor(),
+      thumbShape: BorderRoundSliderThumbShape(
+        border: 2,
+        enabledThumbRadius: 8.0,
+        borderColor: activeColor,
       ),
-      child: VerticalSlider(
-        height: height,
-        width: 64,
-        value: _hue,
-        max: 360.0,
-        min: 0.0,
-        onChanged: (double newHue) {
-          setState(() {
-            hueOnChange(newHue);
-          });
-        },
-      ));
+      trackHeight: 8,
+      trackShape: ShadeRectangularSliderTrackShape(
+        gradient: LinearGradient(
+          colors:
+              _interpolate(360, 0.0, 360)
+                  .map<Color>(
+                    (double x) => HSVColor.fromAHSV(1.0, x, 1.0, 1.0).toColor(),
+                  )
+                  .toList(),
+        ),
+      ),
+    ),
+    child: VerticalSlider(
+      height: height,
+      width: 64,
+      value: _hue,
+      max: 360.0,
+      min: 0.0,
+      onChanged: (double newHue) {
+        setState(() {
+          hueOnChange(newHue);
+        });
+      },
+    ),
+  );
 }
 
 class PalettePicker extends StatefulWidget {
@@ -194,19 +190,20 @@ class PalettePicker extends StatefulWidget {
 
   final Color circleColor;
 
-  const PalettePicker(
-      {super.key,
-      required this.width,
-      required this.height,
-      required this.position,
-      required this.onChanged,
-      this.circleColor = Colors.black,
-      this.leftPosition = 0.0,
-      this.rightPosition = 1.0,
-      required this.leftRightColors,
-      this.topPosition = 0.0,
-      this.bottomPosition = 1.0,
-      required this.topBottomColors});
+  const PalettePicker({
+    super.key,
+    required this.width,
+    required this.height,
+    required this.position,
+    required this.onChanged,
+    this.circleColor = Colors.black,
+    this.leftPosition = 0.0,
+    this.rightPosition = 1.0,
+    required this.leftRightColors,
+    this.topPosition = 0.0,
+    this.bottomPosition = 1.0,
+    required this.topBottomColors,
+  });
 
   @override
   State<PalettePicker> createState() => _PalettePickerState();
@@ -228,18 +225,24 @@ class _PalettePickerState extends State<PalettePicker> {
 
   /// Position(min, max) > Ratio(0, 1)
   Offset positionToRatio() {
-    double ratioX = leftPosition < rightPosition
-        ? positionToRatio2(position.dx, leftPosition, rightPosition)
-        : 1.0 - positionToRatio2(position.dx, rightPosition, leftPosition);
+    double ratioX =
+        leftPosition < rightPosition
+            ? positionToRatio2(position.dx, leftPosition, rightPosition)
+            : 1.0 - positionToRatio2(position.dx, rightPosition, leftPosition);
 
-    double ratioY = topPosition < bottomPosition
-        ? positionToRatio2(position.dy, topPosition, bottomPosition)
-        : 1.0 - positionToRatio2(position.dy, bottomPosition, topPosition);
+    double ratioY =
+        topPosition < bottomPosition
+            ? positionToRatio2(position.dy, topPosition, bottomPosition)
+            : 1.0 - positionToRatio2(position.dy, bottomPosition, topPosition);
 
     return Offset(ratioX, ratioY);
   }
 
-  double positionToRatio2(double postiton, double minPostition, double maxPostition) {
+  double positionToRatio2(
+    double postiton,
+    double minPostition,
+    double maxPostition,
+  ) {
     if (postiton < minPostition) return 0.0;
     if (postiton > maxPostition) return 1.0;
     return (postiton - minPostition) / (maxPostition - minPostition);
@@ -247,7 +250,8 @@ class _PalettePickerState extends State<PalettePicker> {
 
   /// Ratio(0, 1) > Position(min, max)
   void ratioToPosition(Offset ratio) {
-    RenderBox renderBox = paletteKey.currentContext!.findRenderObject() as RenderBox;
+    RenderBox renderBox =
+        paletteKey.currentContext!.findRenderObject() as RenderBox;
     Offset startposition = renderBox.localToGlobal(Offset.zero);
     Size size = renderBox.size;
     Offset updateOffset = ratio - startposition;
@@ -255,19 +259,25 @@ class _PalettePickerState extends State<PalettePicker> {
     double ratioX = updateOffset.dx / size.width;
     double ratioY = updateOffset.dy / size.height;
 
-    double positionX = leftPosition < rightPosition
-        ? ratioToPosition2(ratioX, leftPosition, rightPosition)
-        : ratioToPosition2(1.0 - ratioX, rightPosition, leftPosition);
+    double positionX =
+        leftPosition < rightPosition
+            ? ratioToPosition2(ratioX, leftPosition, rightPosition)
+            : ratioToPosition2(1.0 - ratioX, rightPosition, leftPosition);
 
-    double positionY = topPosition < bottomPosition
-        ? ratioToPosition2(ratioY, topPosition, bottomPosition)
-        : ratioToPosition2(1.0 - ratioY, bottomPosition, topPosition);
+    double positionY =
+        topPosition < bottomPosition
+            ? ratioToPosition2(ratioY, topPosition, bottomPosition)
+            : ratioToPosition2(1.0 - ratioY, bottomPosition, topPosition);
 
     Offset position = Offset(positionX, positionY);
     super.widget.onChanged(position);
   }
 
-  double ratioToPosition2(double ratio, double minposition, double maxposition) {
+  double ratioToPosition2(
+    double ratio,
+    double minposition,
+    double maxposition,
+  ) {
     if (ratio < 0.0) return minposition;
     if (ratio > 1.0) return maxposition;
     return ratio * maxposition + (1.0 - ratio) * minposition;
@@ -275,50 +285,63 @@ class _PalettePickerState extends State<PalettePicker> {
 
   Widget buildLeftRightColors() {
     return Container(
-        decoration: BoxDecoration(
-            gradient: LinearGradient(
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-                colors: super.widget.leftRightColors)));
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+          colors: super.widget.leftRightColors,
+        ),
+      ),
+    );
   }
 
   Widget buildTopBottomColors() {
     return Container(
-        decoration: BoxDecoration(
-            gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: super.widget.topBottomColors)));
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: super.widget.topBottomColors,
+        ),
+      ),
+    );
   }
 
   Widget buildGestureDetector() {
     void update(details) => ratioToPosition(details.globalPosition);
     return GestureDetector(
-        onPanStart: update,
-        onPanDown: update,
-        onPanUpdate: update,
-        onTapDown: update,
+      onPanStart: update,
+      onPanDown: update,
+      onPanUpdate: update,
+      onTapDown: update,
 
-        //To override eventual outer vertical lists' / sheets' gestures
-        onVerticalDragDown: update,
-        onVerticalDragUpdate: update,
-        onVerticalDragStart: update,
-        child: SizedBox(
-            key: paletteKey,
-            width: widget.width,
-            height: widget.height,
-            child: CustomPaint(
-                painter:
-                    _PalettePainter(ratio: positionToRatio(), circleColor: widget.circleColor))));
+      //To override eventual outer vertical lists' / sheets' gestures
+      onVerticalDragDown: update,
+      onVerticalDragUpdate: update,
+      onVerticalDragStart: update,
+      child: SizedBox(
+        key: paletteKey,
+        width: widget.width,
+        height: widget.height,
+        child: CustomPaint(
+          painter: _PalettePainter(
+            ratio: positionToRatio(),
+            circleColor: widget.circleColor,
+          ),
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Stack(children: <Widget>[
-      buildLeftRightColors(),
-      buildTopBottomColors(),
-      buildGestureDetector(),
-    ]);
+    return Stack(
+      children: <Widget>[
+        buildLeftRightColors(),
+        buildTopBottomColors(),
+        buildGestureDetector(),
+      ],
+    );
   }
 }
 
@@ -329,10 +352,11 @@ class _PalettePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final Paint paintBlack = Paint()
-      ..color = circleColor ?? Colors.black
-      ..strokeWidth = 2
-      ..style = PaintingStyle.stroke;
+    final Paint paintBlack =
+        Paint()
+          ..color = circleColor ?? Colors.black
+          ..strokeWidth = 2
+          ..style = PaintingStyle.stroke;
 
     Offset offset = Offset(size.width * ratio!.dx, size.height * ratio!.dy);
     canvas.drawCircle(offset, 8, paintBlack);

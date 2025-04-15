@@ -8,12 +8,14 @@ class PaletteColorPicker extends StatefulWidget {
   final Color? color;
   final Function(Color?) onChanged;
   final void Function()? paletteUndescrollCallback;
+  final Color? backgroundColor;
 
   const PaletteColorPicker({
     super.key,
     required this.color,
     required this.onChanged,
     this.paletteUndescrollCallback,
+    this.backgroundColor,
   });
 
   @override
@@ -84,6 +86,7 @@ class _PaletteColorPickerState extends State<PaletteColorPicker>
   @override
   Widget build(BuildContext context) {
     final Widget row = Material(
+      color: widget.backgroundColor,
       child: Container(
         constraints: const BoxConstraints(maxHeight: 64),
         child: TabBar(

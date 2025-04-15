@@ -32,18 +32,21 @@ class _ButtonWithIcon extends StatelessWidget {
           width: height,
           alignment: Alignment.center,
           child: AnimatedCrossFade(
-            crossFadeState: isShowing ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+            crossFadeState:
+                isShowing
+                    ? CrossFadeState.showFirst
+                    : CrossFadeState.showSecond,
             firstChild: IconTheme.merge(
               data: IconThemeData(
-                  color: selectedColor ?? radioTheme?.selectedColor,
-                  opacity: selectedColor?.opacity ?? radioTheme?.selectedColor?.opacity),
+                color: selectedColor ?? radioTheme?.selectedColor,
+                opacity: selectedColor?.a ?? radioTheme?.selectedColor?.a,
+              ),
               child: item.selectedIcon ?? item.icon,
             ),
             secondChild: IconTheme.merge(
-                data: IconThemeData(
-                  color: theme.unselectedWidgetColor,
-                ),
-                child: item.icon),
+              data: IconThemeData(color: theme.unselectedWidgetColor),
+              child: item.icon,
+            ),
             duration: duration,
           ),
         ),
@@ -60,12 +63,14 @@ class _ButtonWithIcon extends StatelessWidget {
             alignment: Alignment.centerLeft,
             padding: const EdgeInsets.only(left: 4.0),
             child: DefaultTextStyle.merge(
-                style: theme.textTheme.labelLarge?.copyWith(
-                  color: selectedColor ??
-                      radioTheme?.selectedColor ??
-                      theme.textTheme.bodyMedium?.color,
-                ),
-                child: item.title),
+              style: theme.textTheme.labelLarge?.copyWith(
+                color:
+                    selectedColor ??
+                    radioTheme?.selectedColor ??
+                    theme.textTheme.bodyMedium?.color,
+              ),
+              child: item.title,
+            ),
           ),
         ),
       ],

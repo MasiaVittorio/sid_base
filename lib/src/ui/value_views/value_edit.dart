@@ -14,11 +14,13 @@ abstract class ValueEditView<T> extends StatefulWidget {
   final bool resizeOnKeyboard;
 
   String get discardDialogTitle => "Scarta modifiche?";
-  String get discardDialogContent => "Se esci ora, le modifiche non saranno salvate.";
+  String get discardDialogContent =>
+      "Se esci ora, le modifiche non saranno salvate.";
   String get discardDialogConfirmLabel => "Scarta ed esci";
 }
 
-abstract class ValueEditViewState<T, A extends ValueEditView<T>> extends State<A> {
+abstract class ValueEditViewState<T, A extends ValueEditView<T>>
+    extends State<A> {
   T? get current;
   T? get initial => widget.initial;
 
@@ -47,11 +49,12 @@ abstract class ValueEditViewState<T, A extends ValueEditView<T>> extends State<A
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop: _isConfirmingPop ||
+      canPop:
+          _isConfirmingPop ||
           _tryingToSaveNow ||
           current == initial ||
           initial == null && isCurrentEmpty,
-      onPopInvoked: (didPop) async {
+      onPopInvokedWithResult: (didPop, result) async {
         if (!didPop) {
           bool confirmPop = false;
           if (_isConfirmingPop || _tryingToSaveNow) {
@@ -64,7 +67,7 @@ abstract class ValueEditViewState<T, A extends ValueEditView<T>> extends State<A
                   // TODO: localize or provide edit capabilitini
                   return ConfirmDialog(
                     title: widget.discardDialogTitle,
-                    content: widget.discardDialogContent, 
+                    content: widget.discardDialogContent,
                     confirmLabel: widget.discardDialogConfirmLabel,
                     dangerous: true,
                     action: () {},
@@ -111,12 +114,12 @@ abstract class ValueEditViewState<T, A extends ValueEditView<T>> extends State<A
   }
 
   WidgetBuilder get saveButtonBuilder => (context) {
-        final loc = MaterialLocalizations.of(context);
-        return TextButton(
-          onPressed: getSaveAction,
-          child: Text(loc.saveButtonLabel),
-        );
-      };
+    final loc = MaterialLocalizations.of(context);
+    return TextButton(
+      onPressed: getSaveAction,
+      child: Text(loc.saveButtonLabel),
+    );
+  };
 
   AppBar get appBar {
     final init = initial;

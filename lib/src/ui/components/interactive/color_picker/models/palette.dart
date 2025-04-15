@@ -1,10 +1,14 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:sid_base/sid_base.dart';
 
 extension _DistanceColor on Color {
-  double distance(Color other) =>
-      sqrt(pow((red - other.red), 2) + pow((green - other.green), 2) + pow((blue - other.blue), 2));
+  double distance(Color other) => sqrt(
+    pow((red8Bit - other.red8Bit), 2) +
+        pow((green8Bit - other.green8Bit), 2) +
+        pow((blue8Bit - other.blue8Bit), 2),
+  );
 }
 
 class PaletteTab {
@@ -48,19 +52,34 @@ class PaletteTab {
     PaletteTab(mains: [Colors.red, Colors.redAccent], name: 'Red'),
     PaletteTab(mains: [Colors.pink, Colors.pinkAccent], name: 'Pink'),
     PaletteTab(mains: [Colors.purple, Colors.purpleAccent], name: 'Purple'),
-    PaletteTab(mains: [Colors.deepPurple, Colors.deepPurpleAccent], name: 'Deep Purple'),
-    PaletteTab(mains: [Colors.indigo, Colors.indigoAccent], name: 'Indigo Blue'),
+    PaletteTab(
+      mains: [Colors.deepPurple, Colors.deepPurpleAccent],
+      name: 'Deep Purple',
+    ),
+    PaletteTab(
+      mains: [Colors.indigo, Colors.indigoAccent],
+      name: 'Indigo Blue',
+    ),
     PaletteTab(mains: [Colors.blue, Colors.blueAccent], name: 'Blue'),
-    PaletteTab(mains: [Colors.lightBlue, Colors.lightBlueAccent], name: 'Light Blue'),
+    PaletteTab(
+      mains: [Colors.lightBlue, Colors.lightBlueAccent],
+      name: 'Light Blue',
+    ),
     PaletteTab(mains: [Colors.cyan, Colors.cyanAccent], name: 'Cyan'),
     PaletteTab(mains: [Colors.teal, Colors.tealAccent], name: 'Teal'),
     PaletteTab(mains: [Colors.green, Colors.greenAccent], name: 'Green'),
-    PaletteTab(mains: [Colors.lightGreen, Colors.lightGreenAccent], name: 'Light Green'),
+    PaletteTab(
+      mains: [Colors.lightGreen, Colors.lightGreenAccent],
+      name: 'Light Green',
+    ),
     PaletteTab(mains: [Colors.lime, Colors.limeAccent], name: 'Lime'),
     PaletteTab(mains: [Colors.yellow, Colors.yellowAccent], name: 'Yellow'),
     PaletteTab(mains: [Colors.amber, Colors.amberAccent], name: 'Amber'),
     PaletteTab(mains: [Colors.orange, Colors.orangeAccent], name: 'Orange'),
-    PaletteTab(mains: [Colors.deepOrange, Colors.deepOrangeAccent], name: 'Deep Orange'),
+    PaletteTab(
+      mains: [Colors.deepOrange, Colors.deepOrangeAccent],
+      name: 'Deep Orange',
+    ),
     PaletteTab(mains: [Colors.brown], name: 'Brown'),
     PaletteTab(mains: [Colors.grey], name: 'Grey'),
     PaletteTab(mains: [Colors.blueGrey], name: 'Blue Grey'),
@@ -71,16 +90,14 @@ class PaletteTab {
     for (final x in allTabs) ...x.shades,
   ];
 
-  PaletteTab({
-    required List<Color> mains,
-    required this.name,
-  })  : _colors = <_PaletteColor>[
-          for (final c in mains) _PaletteColor(mainColor: c),
-        ],
-        shades = <Color>[
-          for (final col in mains) ..._PaletteColor(mainColor: col).shades,
-        ],
-        assert(mains.isNotEmpty);
+  PaletteTab({required List<Color> mains, required this.name})
+    : _colors = <_PaletteColor>[
+        for (final c in mains) _PaletteColor(mainColor: c),
+      ],
+      shades = <Color>[
+        for (final col in mains) ..._PaletteColor(mainColor: col).shades,
+      ],
+      assert(mains.isNotEmpty);
 
   final List<_PaletteColor> _colors;
   final String name;
@@ -104,34 +121,45 @@ class _PaletteColor {
     700,
     800,
     850,
-    900
+    900,
   ];
-  static const List<int> _materialShades = <int>[50, 100, 200, 300, 400, 500, 600, 700, 800, 900];
+  static const List<int> _materialShades = <int>[
+    50,
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+  ];
   static const List<int> _accentShades = <int>[100, 200, 400, 700];
 
-  _PaletteColor({
-    required this.mainColor,
-  })  : shades = <Color>[
-          if (mainColor == Colors.grey)
-            for (final s in _greyShades) Colors.grey[s]!
-          else if (mainColor == Colors.black || mainColor == Colors.white)
-            mainColor
-          else if (mainColor is MaterialAccentColor)
-            for (final s in _accentShades) mainColor[s]!
-          else if (mainColor is MaterialColor)
-            for (final s in _materialShades) mainColor[s]!
-          else
-            Colors.black,
-        ],
-        defaultIndex = mainColor == Colors.grey
-            ? 6
-            : mainColor == Colors.black || mainColor == Colors.white
-                ? 0
-                : mainColor is MaterialAccentColor
-                    ? 1
-                    : mainColor is MaterialColor
-                        ? 5
-                        : 0;
+  _PaletteColor({required this.mainColor})
+    : shades = <Color>[
+        if (mainColor == Colors.grey)
+          for (final s in _greyShades) Colors.grey[s]!
+        else if (mainColor == Colors.black || mainColor == Colors.white)
+          mainColor
+        else if (mainColor is MaterialAccentColor)
+          for (final s in _accentShades) mainColor[s]!
+        else if (mainColor is MaterialColor)
+          for (final s in _materialShades) mainColor[s]!
+        else
+          Colors.black,
+      ],
+      defaultIndex =
+          mainColor == Colors.grey
+              ? 6
+              : mainColor == Colors.black || mainColor == Colors.white
+              ? 0
+              : mainColor is MaterialAccentColor
+              ? 1
+              : mainColor is MaterialColor
+              ? 5
+              : 0;
 
   final Color mainColor;
   final List<Color> shades;

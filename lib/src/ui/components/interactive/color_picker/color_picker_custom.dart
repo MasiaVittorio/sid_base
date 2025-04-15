@@ -7,12 +7,14 @@ class CustomColorPicker extends StatefulWidget {
   final Color? color;
   final void Function(Color?) onChanged;
   final void Function()? displayerUndescrollCallback;
+  final bool useShadow;
 
   const CustomColorPicker({
     super.key,
     required this.color,
     required this.onChanged,
     required this.displayerUndescrollCallback,
+    this.useShadow = true,
   });
 
   static const double sliderHeight = 64;
@@ -21,9 +23,27 @@ class CustomColorPicker extends StatefulWidget {
   State createState() => _CustomColorPickerState();
 }
 
+extension Colors8Bit on Color {
+  /// The red channel of this color in an 8 bit value.
+  int get red8Bit => (0x00ff0000 & toARGB32()) >> 16;
+
+  /// The green channel of this color in an 8 bit value.
+  int get green8Bit => (0x0000ff00 & toARGB32()) >> 8;
+
+  /// The blue channel of this color in an 8 bit value.
+  int get blue8Bit => (0x000000ff & toARGB32()) >> 0;
+
+  /// The alpha channel of this color in an 8 bit value.
+  ///
+  /// A value of 0 means this color is fully transparent. A value of 255 means
+  /// this color is fully opaque.
+  int get alpha8Bit => (0xff000000 & toARGB32()) >> 24;
+}
+
 class _CustomColorPickerState extends State<CustomColorPicker>
     with TickerProviderStateMixin {
-  Color? _color;
+  late Color _color = _initialColor();
+  Color _initialColor() => widget.color?.withAlpha(255) ?? Colors.black;
   bool? _rgbMode;
 
   late double _hue;
@@ -45,17 +65,11 @@ class _CustomColorPickerState extends State<CustomColorPicker>
 
     //Insert stuff
     _insertMode = false;
-    _controller = TextEditingController(
-      text:
-          (_color!.red.toRadixString(16).padLeft(2, '0') +
-                  _color!.green.toRadixString(16).padLeft(2, '0') +
-                  _color!.blue.toRadixString(16).padLeft(2, '0'))
-              .toUpperCase(),
-    );
+    _controller = TextEditingController(text: _color.hexString);
   }
 
   void _reset() {
-    _color = widget.color?.withAlpha(255) ?? Colors.black;
+    _color = _initialColor();
     _updateHsvFromColor();
   }
 
@@ -74,11 +88,11 @@ class _CustomColorPickerState extends State<CustomColorPicker>
   }
 
   void copyToClipboard() {
-    Clipboard.setData(ClipboardData(text: _color!.hexString));
+    Clipboard.setData(ClipboardData(text: _color.hexString));
   }
 
   void _updateHsvFromColor() {
-    final hsv = HSVColor.fromColor(_color!);
+    final hsv = HSVColor.fromColor(_color);
 
     _hue = hsv.hue;
     _sat = hsv.saturation;
@@ -91,7 +105,7 @@ class _CustomColorPickerState extends State<CustomColorPicker>
 
   Color get colorFromHsv =>
       HSVColor.fromAHSV(
-        _color!.alpha / 255.toDouble(),
+        _color.alpha8Bit / 255.toDouble(),
         _hue,
         _sat,
         _value,
@@ -121,17 +135,17 @@ class _CustomColorPickerState extends State<CustomColorPicker>
         _valueSlider(activeColor, sliderThemeOfContext),
       ];
 
+      final content = Column(
+        children: <Widget>[
+          if (big || _rgbMode == true) ...rgbs,
+          if (big || _rgbMode == false) ...hsls,
+        ],
+      );
+
       return Column(
         children: <Widget>[
           _displayer(big, themeOfContext),
-          Shadowed(
-            child: Column(
-              children: <Widget>[
-                if (big || _rgbMode == true) ...rgbs,
-                if (big || _rgbMode == false) ...hsls,
-              ],
-            ),
-          ),
+          if (widget.useShadow) Shadowed(child: content) else content,
         ],
       );
     },
@@ -183,9 +197,14 @@ class _CustomColorPickerState extends State<CustomColorPicker>
     "Green": Colors.green,
   };
   Widget _rgbSlider(String rgb) {
-    final Color clr = _color!;
+    final Color clr = _color;
 
-    int number = {"Red": clr.red, "Green": clr.green, "Blue": clr.blue}[rgb]!;
+    int number =
+        {
+          "Red": clr.red8Bit,
+          "Green": clr.green8Bit,
+          "Blue": clr.blue8Bit,
+        }[rgb]!;
 
     Color baseColor = _baseColorMap[rgb]!;
 
@@ -214,7 +233,7 @@ class _CustomColorPickerState extends State<CustomColorPicker>
 
   Widget _materialDisplayer(BoxConstraints? constraints, bool big) {
     final bool darkBkg =
-        ThemeData.estimateBrightnessForColor(_color!) == Brightness.dark;
+        ThemeData.estimateBrightnessForColor(_color) == Brightness.dark;
 
     return Material(
       color: _color,
@@ -325,12 +344,12 @@ class _CustomColorPickerState extends State<CustomColorPicker>
               }),
           child: Center(
             child: Text(
-              "#FF ${_color!.hexString}",
+              "#FF ${_color.hexString}",
               style: TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.w700,
                 color:
-                    ThemeData.estimateBrightnessForColor(_color!) ==
+                    ThemeData.estimateBrightnessForColor(_color) ==
                             Brightness.dark
                         ? Colors.white
                         : Colors.black,
@@ -341,7 +360,12 @@ class _CustomColorPickerState extends State<CustomColorPicker>
   }
 
   void confirmInsert() => setState(() {
-    _color = hexToColor(_controller!.text);
+    final result = tryHexToColor(_controller!.text);
+    if (result == null) {
+      _insertMode = false;
+      return;
+    }
+    _color = result;
     _updateHsvFromColor();
     widget.onChanged(_color);
     _insertMode = false;
@@ -498,4 +522,11 @@ bool checkForHexString(String input) {
 /// Construct a color from a hex code string, of the format RRGGBB.
 Color hexToColor(String hexCode) {
   return Color(int.parse(hexCode.substring(0, 6), radix: 16) + 0xFF000000);
+}
+
+Color? tryHexToColor(String hexCode) {
+  if (hexCode.length < 6) return null;
+  final v = int.tryParse(hexCode.substring(0, 6), radix: 16);
+  if (v == null) return null;
+  return Color(v + 0xFF000000);
 }

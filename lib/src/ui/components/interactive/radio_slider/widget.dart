@@ -21,6 +21,7 @@ class RadioSlider extends StatefulWidget {
   final Widget? title;
 
   final Color? selectedColor;
+  final Color? selectedBackgroundColor;
   final Color? backgroundColor;
   final bool? hideOpenIcons;
   final bool? elevateSlider;
@@ -42,6 +43,7 @@ class RadioSlider extends StatefulWidget {
     this.margin,
     this.height,
     this.selectedColor,
+    this.selectedBackgroundColor,
     this.backgroundColor,
     this.hideOpenIcons,
   });
@@ -50,7 +52,8 @@ class RadioSlider extends StatefulWidget {
   State<RadioSlider> createState() => _RadioSliderState();
 }
 
-class _RadioSliderState extends State<RadioSlider> with TickerProviderStateMixin {
+class _RadioSliderState extends State<RadioSlider>
+    with TickerProviderStateMixin {
   static const double _radius = 8.0;
 
   //================================
@@ -80,8 +83,8 @@ class _RadioSliderState extends State<RadioSlider> with TickerProviderStateMixin
       value: indexVal(widget.selectedIndex),
       duration: widget.duration,
     )..addListener(() {
-        setState(() {});
-      });
+      setState(() {});
+    });
   }
 
   @override
@@ -108,7 +111,10 @@ class _RadioSliderState extends State<RadioSlider> with TickerProviderStateMixin
 
   void snapToIndex(int index) {
     _index = index;
-    _animation!.animateTo(indexVal(index), duration: const Duration(milliseconds: 90));
+    _animation!.animateTo(
+      indexVal(index),
+      duration: const Duration(milliseconds: 90),
+    );
   }
 
   void onDragUpdate(DragUpdateDetails details, double max) {
@@ -147,81 +153,86 @@ class _RadioSliderState extends State<RadioSlider> with TickerProviderStateMixin
     Widget result = SizedBox(
       height: height,
       child: LayoutBuilder(
-        builder: (context, constraints) => Stack(
-          children: <Widget>[
-            Positioned.fill(
-              child: _Background(widget.backgroundColor),
-            ),
-            Positioned(
-              left: position(constraints.maxWidth),
-              child: _VisualSlider(
-                height: this.height(radioTheme),
-                width: sliderWidth(constraints.maxWidth),
-                elevate: widget.elevateSlider ??
-                    radioTheme?.elevateSlider ??
-                    RadioSlider._kElevateSlider,
-              ),
-            ),
-            Positioned.fill(
-              child: Row(
-                children: <Widget>[
-                  for (int i = 0; i < widget.items.length; i++)
-                    Expanded(
-                      child: Material(
-                        type: MaterialType.transparency,
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(_radius),
-                          onTap: () {
-                            goToIndex(i);
-                            tap(i);
-                          },
-                          child: _Button(
-                            withIcon: !(widget.hideOpenIcons ?? radioTheme?.hideOpenIcons ?? false),
-                            selectedColor: widget.selectedColor,
-                            item: widget.items[i],
-                            isShowing: _isShowing(i),
-                            duration: widget.duration,
-                            height: height,
-                            width: sliderWidth(constraints.maxWidth),
+        builder:
+            (context, constraints) => Stack(
+              children: <Widget>[
+                Positioned.fill(child: _Background(widget.backgroundColor)),
+                Positioned(
+                  left: position(constraints.maxWidth),
+                  child: _VisualSlider(
+                    color: widget.selectedBackgroundColor,
+                    height: this.height(radioTheme),
+                    width: sliderWidth(constraints.maxWidth),
+                    elevate:
+                        widget.elevateSlider ??
+                        radioTheme?.elevateSlider ??
+                        RadioSlider._kElevateSlider,
+                  ),
+                ),
+                Positioned.fill(
+                  child: Row(
+                    children: <Widget>[
+                      for (int i = 0; i < widget.items.length; i++)
+                        Expanded(
+                          child: Material(
+                            type: MaterialType.transparency,
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(_radius),
+                              onTap: () {
+                                goToIndex(i);
+                                tap(i);
+                              },
+                              child: _Button(
+                                withIcon:
+                                    !(widget.hideOpenIcons ??
+                                        radioTheme?.hideOpenIcons ??
+                                        false),
+                                selectedColor: widget.selectedColor,
+                                item: widget.items[i],
+                                isShowing: _isShowing(i),
+                                duration: widget.duration,
+                                height: height,
+                                width: sliderWidth(constraints.maxWidth),
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-            Positioned(
-              left: position(constraints.maxWidth),
-              child: GestureDetector(
-                behavior: HitTestBehavior.translucent,
-                onHorizontalDragUpdate: (details) => onDragUpdate(details, constraints.maxWidth),
-                onHorizontalDragEnd: (details) => onDragEnd(details),
-                onHorizontalDragCancel: () => endDragToIndex(nearestIndex),
-                child: Container(
-                  height: height,
-                  width: constraints.maxWidth / n,
-                  color: Colors.transparent,
+                    ],
+                  ),
                 ),
-              ),
+                Positioned(
+                  left: position(constraints.maxWidth),
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.translucent,
+                    onHorizontalDragUpdate:
+                        (details) =>
+                            onDragUpdate(details, constraints.maxWidth),
+                    onHorizontalDragEnd: (details) => onDragEnd(details),
+                    onHorizontalDragCancel: () => endDragToIndex(nearestIndex),
+                    child: Container(
+                      height: height,
+                      width: constraints.maxWidth / n,
+                      color: Colors.transparent,
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
       ),
     );
 
     if (widget.title != null) {
-      result = Row(children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.only(right: 10),
-          child: widget.title,
-        ),
-        Expanded(child: result),
-      ]);
+      result = Row(
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(right: 10),
+            child: widget.title,
+          ),
+          Expanded(child: result),
+        ],
+      );
     }
 
-    return Padding(
-      padding: margin(radioTheme),
-      child: result,
-    );
+    return Padding(padding: margin(radioTheme), child: result);
   }
 }

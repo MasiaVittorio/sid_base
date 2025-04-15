@@ -4,6 +4,8 @@ class HeroCarouselTheme extends M3CarouselTheme<HeroItemState> {
   const HeroCarouselTheme({
     super.direction = Axis.horizontal,
     this.defaultBackgroundColor,
+    this.borderRadius = const BorderRadius.all(Radius.circular(28)),
+    this.inBetweenPadding = 8,
   });
 
   final Color? defaultBackgroundColor;
@@ -17,7 +19,7 @@ class HeroCarouselTheme extends M3CarouselTheme<HeroItemState> {
       context.theme.textTheme.bodySmall!;
 
   @override
-  BorderRadius get borderRadius => BorderRadius.circular(28);
+  final BorderRadius borderRadius;
 
   @override
   double get firstPadding => 16;
@@ -26,7 +28,7 @@ class HeroCarouselTheme extends M3CarouselTheme<HeroItemState> {
   double get lastPadding => 16;
 
   @override
-  double get inBetweenPadding => 8;
+  final double inBetweenPadding;
 
   @override
   double get widthLowerLimit => 12;

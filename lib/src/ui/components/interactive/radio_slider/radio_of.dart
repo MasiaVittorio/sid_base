@@ -11,6 +11,7 @@ class RadioSliderOf<T> extends StatelessWidget {
   final Widget? title;
 
   final Color? selectedColor;
+  final Color? selectedBackgroundColor;
   final Color? backgroundColor;
   final bool? hideOpenIcons;
   final bool? elevateSlider;
@@ -31,6 +32,7 @@ class RadioSliderOf<T> extends StatelessWidget {
     this.hideOpenIcons,
     this.margin,
     this.selectedColor,
+    this.selectedBackgroundColor,
     this.title,
   });
 
@@ -52,6 +54,7 @@ class RadioSliderOf<T> extends StatelessWidget {
       hideOpenIcons: hideOpenIcons,
       margin: margin,
       selectedColor: selectedColor,
+      selectedBackgroundColor: selectedBackgroundColor,
       title: title,
     );
   }

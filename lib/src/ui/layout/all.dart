@@ -7,3 +7,4 @@ export 'responsive_scroll/all.dart';
 export 'sections/all.dart';
 export 'shadowed.dart';
 export 'space.dart';
+export 'custom_divider.dart';

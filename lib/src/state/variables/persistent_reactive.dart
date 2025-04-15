@@ -31,7 +31,7 @@ class PersistentReactive<T> extends Reactive<T> {
     _read();
   }
 
-  final verbose;
+  final bool verbose;
   final String key;
   final T Function(dynamic jsonDecoded)? fromJsonDecoded;
   final dynamic Function(T)? toJsonEncodable;
@@ -87,8 +87,9 @@ class PersistentReactive<T> extends Reactive<T> {
       if (verbose) debugPrint('key $key, reading $source');
       if (source == null) return;
       final Object? jsonDecodedMap = jsonDecode(source);
-      if (verbose)
+      if (verbose) {
         debugPrint('key $key, decodedMap type ${jsonDecodedMap.runtimeType}');
+      }
 
       if (jsonDecodedMap case {'value': final Object? valueJsonDecoded}) {
         if (verbose) debugPrint('key $key, valueJsonDecoded $valueJsonDecoded');
@@ -126,11 +127,14 @@ class PersistentReactive<T> extends Reactive<T> {
   }
 
   Future<void> _write() async {
+    if (verbose) debugPrint('writing $key');
     try {
       final line = jsonEncode(toMap());
       if (verbose) debugPrint('key $key, writing $line');
       persistenceProvider.write(key, line);
       // ignore: avoid_catches_without_on_clauses
-    } catch (_) {}
+    } catch (e) {
+      if (verbose) debugPrint('error writing key $key, error: $e');
+    }
   }
 }

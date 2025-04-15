@@ -20,12 +20,12 @@ class SimpleNavBar extends StatelessWidget {
     this.iconColor,
     this.inactiveIconColor,
     this.height = kBottomNavigationBarHeight,
-  })  : assert(items.length >= 2),
-        assert(
-          items.every((SimpleItem item) => item.title != null),
-          'Every item must have a non-null title',
-        ),
-        assert(0 <= currentIndex && currentIndex < items.length);
+  }) : assert(items.length >= 2),
+       assert(
+         items.every((SimpleItem item) => item.title != null),
+         'Every item must have a non-null title',
+       ),
+       assert(0 <= currentIndex && currentIndex < items.length);
 
   final List<SimpleItem> items;
   final ValueChanged<int>? onTap; //stream ? or listener ? callbacks dude
@@ -46,17 +46,15 @@ class SimpleNavBar extends StatelessWidget {
     );
 
     return Padding(
-      padding: const EdgeInsets.only(
-        right: 10,
-      ),
+      padding: const EdgeInsets.only(right: 10),
       child: ConstrainedBox(
-        constraints: BoxConstraints(minHeight: height + additionalBottomPadding),
+        constraints: BoxConstraints(
+          minHeight: height + additionalBottomPadding,
+        ),
         child: Material(
           type: MaterialType.transparency,
           child: Padding(
-            padding: EdgeInsets.only(
-              bottom: additionalBottomPadding,
-            ),
+            padding: EdgeInsets.only(bottom: additionalBottomPadding),
             child: MediaQuery.removePadding(
               context: context,
               removeBottom: true,
@@ -98,12 +96,15 @@ class SimpleNavBar extends StatelessWidget {
         }
       }
 
-      children.add(Expanded(
+      children.add(
+        Expanded(
           child: InkResponse(
-        splashColor: Colors.transparent,
-        highlightColor: Colors.transparent,
-        onTap: onTapPrev,
-      )));
+            splashColor: Colors.transparent,
+            highlightColor: Colors.transparent,
+            onTap: onTapPrev,
+          ),
+        ),
+      );
       children.add(
         _SimpleTile(
           items[i],
@@ -117,12 +118,15 @@ class SimpleNavBar extends StatelessWidget {
           height: height,
         ),
       );
-      children.add(Expanded(
+      children.add(
+        Expanded(
           child: InkResponse(
-        splashColor: Colors.transparent,
-        highlightColor: Colors.transparent,
-        onTap: onTapNext,
-      )));
+            splashColor: Colors.transparent,
+            highlightColor: Colors.transparent,
+            onTap: onTapNext,
+          ),
+        ),
+      );
     }
     return children;
   }
@@ -132,9 +136,7 @@ class SimpleNavBar extends StatelessWidget {
       overflow: TextOverflow.ellipsis,
       child: Container(
         constraints: BoxConstraints(maxHeight: height),
-        child: Row(
-          children: tiles,
-        ),
+        child: Row(children: tiles),
       ),
     );
   }
@@ -146,7 +148,7 @@ class _SimpleTile extends StatelessWidget {
     this.iconSize, {
     this.onTap,
     this.selected = false,
-    // ignore: unused_element
+    // ignore: unused_element, unused_element_parameter
     this.indexLabel,
     this.titleStyle,
     required this.duration,
@@ -240,14 +242,14 @@ class _TileIcon extends StatelessWidget {
       width: _tileSize,
       child: Center(
         child: IconTheme(
-          data: IconThemeData(
-            size: iconSize,
-          ),
+          data: IconThemeData(size: iconSize),
           child: AnimatedCrossFade(
-              firstChild: Icon(item.activeIcon, color: item.color),
-              secondChild: Icon(item.icon, color: inactiveIconColor),
-              crossFadeState: selected ? CrossFadeState.showFirst : CrossFadeState.showSecond,
-              duration: duration),
+            firstChild: Icon(item.activeIcon, color: item.color),
+            secondChild: Icon(item.icon, color: inactiveIconColor),
+            crossFadeState:
+                selected ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+            duration: duration,
+          ),
         ),
       ),
     );

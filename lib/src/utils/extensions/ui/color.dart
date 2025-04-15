@@ -4,25 +4,25 @@ import 'package:material_color_utilities/material_color_utilities.dart';
 extension ColorTones on Color {
   // 0 = black / 100 = white
   Color withTone(int tone) {
-    final h = Hct.fromInt(value);
+    final h = Hct.fromInt(toARGB32());
     final palette = TonalPalette.of(h.hue, h.chroma);
     return Color(palette.get(tone.clamp(0, 100)));
   }
 
   double get tone {
-    return Hct.fromInt(value).tone;
+    return Hct.fromInt(toARGB32()).tone;
   }
 
   double get chroma {
-    return Hct.fromInt(value).chroma;
+    return Hct.fromInt(toARGB32()).chroma;
   }
 
   double get hue {
-    return Hct.fromInt(value).hue;
+    return Hct.fromInt(toARGB32()).hue;
   }
 
   Color withChroma(double chroma) {
-    Hct h = Hct.fromInt(value);
+    Hct h = Hct.fromInt(toARGB32());
     h.chroma = chroma;
     final palette = TonalPalette.of(h.hue, h.chroma);
     return Color(palette.get(h.tone.round().clamp(0, 100)));
@@ -44,12 +44,11 @@ extension RightContrastFromTheme on ThemeData {
   RightContrast rightContrast({
     bool fallbackOnTextTheme = false,
     bool fallbackOnIconTheme = false,
-  }) =>
-      RightContrast(
-        this,
-        fallbackOnIconTheme: fallbackOnIconTheme,
-        fallbackOnTextTheme: fallbackOnTextTheme,
-      );
+  }) => RightContrast(
+    this,
+    fallbackOnIconTheme: fallbackOnIconTheme,
+    fallbackOnTextTheme: fallbackOnTextTheme,
+  );
 }
 
 class RightContrast {
