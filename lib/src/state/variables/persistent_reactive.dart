@@ -34,7 +34,7 @@ class PersistentReactive<T> extends Reactive<T> {
   final bool verbose;
   final String key;
   final T Function(dynamic jsonDecoded)? fromJsonDecoded;
-  final dynamic Function(T)? toJsonEncodable;
+  final dynamic Function(T value)? toJsonEncodable;
   final List<VoidCallback> _afterReading = <VoidCallback>[];
   bool finishedReading = false;
   final PersistenceProvider persistenceProvider;
