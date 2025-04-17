@@ -11,7 +11,7 @@ class ImplicitlyAnimatedIcon extends ImplicitlyAnimatedWidget {
     this.color,
     this.size,
     super.curve = Easings.standard,
-    super.duration = Motion.short4,
+    super.duration = Durations.short4,
   });
 
   final AnimatedIconData icon;
@@ -29,8 +29,13 @@ class _ImplicitlyAnimatedIconState
 
   @override
   void forEachTween(TweenVisitor<dynamic> visitor) {
-    _tween = visitor(_tween, widget.progress,
-        (dynamic value) => Tween<double>(begin: value)) as Tween<double>;
+    _tween =
+        visitor(
+              _tween,
+              widget.progress,
+              (dynamic value) => Tween<double>(begin: value),
+            )
+            as Tween<double>;
   }
 
   @override

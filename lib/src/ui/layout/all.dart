@@ -3,6 +3,7 @@ export 'biggest_aspect_ratio.dart';
 export 'carousel/m3_carousel.dart';
 export 'circular_layout.dart';
 export 'custom_divider.dart';
+export 'bottomed_list_view.dart';
 export 'padding.dart';
 export 'responsive_scroll/all.dart';
 export 'sections/all.dart';

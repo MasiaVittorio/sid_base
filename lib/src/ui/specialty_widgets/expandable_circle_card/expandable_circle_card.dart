@@ -20,8 +20,12 @@ class ExpandableCircleCard extends StatelessWidget {
     required this.titleChild,
     this.oppositeColor,
     this.surfaceColor,
-    this.borderPadding =
-        const EdgeInsets.fromLTRB(_kBorder, _kTopBorder, _kBorder, _kBorder),
+    this.borderPadding = const EdgeInsets.fromLTRB(
+      _kBorder,
+      _kTopBorder,
+      _kBorder,
+      _kBorder,
+    ),
     this.overrideCircleBorderWidth,
     this.collapsedCircleRadius = 18,
     this.circleHorizontalPadding = _kSmallH,
@@ -70,11 +74,17 @@ class ExpandableCircleCard extends StatelessWidget {
 
   TextStyle _titleStyle(ThemeData theme) => (theme.textTheme.titleMedium ??
           const TextStyle(
-              fontSize: 16, height: 24 / 16, fontWeight: FontWeight.w500))
+            fontSize: 16,
+            height: 24 / 16,
+            fontWeight: FontWeight.w500,
+          ))
       .copyWith(color: _oppositeColor(theme), height: 1);
   TextStyle _bodyStyle(ThemeData theme) => (theme.textTheme.bodyMedium ??
           const TextStyle(
-              fontSize: 14, height: 20 / 14, fontWeight: FontWeight.w400))
+            fontSize: 14,
+            height: 20 / 14,
+            fontWeight: FontWeight.w400,
+          ))
       .copyWith(color: _oppositeColor(theme));
 
   final bool showDivider;
@@ -87,15 +97,17 @@ class ExpandableCircleCard extends StatelessWidget {
   final double bottomBodyPadding;
 
   Widget suggestColor({required Color color, required Widget child}) {
-    return Builder(builder: (context) {
-      return DefaultTextStyle(
-        style: DefaultTextStyle.of(context).style.copyWith(color: color),
-        child: IconTheme(
-          data: IconTheme.of(context).copyWith(color: color),
-          child: child,
-        ),
-      );
-    });
+    return Builder(
+      builder: (context) {
+        return DefaultTextStyle(
+          style: DefaultTextStyle.of(context).style.copyWith(color: color),
+          child: IconTheme(
+            data: IconTheme.of(context).copyWith(color: color),
+            child: child,
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -105,7 +117,7 @@ class ExpandableCircleCard extends StatelessWidget {
       color: _oppositeColor(theme),
       padding: borderPadding,
       child: AnimatedContainer(
-        duration: Motion.extraLong4,
+        duration: Durations.extralong4,
         curve: Easings.emphasized,
         decoration: BoxDecoration(
           color: _surfaceColor(theme),
@@ -131,15 +143,23 @@ class ExpandableCircleCard extends StatelessWidget {
         children: [
           _title(context, theme),
           GenericAnimatedBuilder(
-            duration: Motion.medium3,
+            duration: Durations.medium3,
             curve: Easings.emphasized,
             value: expanded ? 1.0 : 0.0,
             builder: (context, value, child) {
               const double f = 0.5;
-              final double h =
-                  value.mapToRange(0, dividerWidth, fromMin: 0.0, fromMax: f);
-              final double wf =
-                  value.mapToRange(0.0, 1.0, fromMin: f, fromMax: 1.0);
+              final double h = value.mapToRange(
+                0,
+                dividerWidth,
+                fromMin: 0.0,
+                fromMax: f,
+              );
+              final double wf = value.mapToRange(
+                0.0,
+                1.0,
+                fromMin: f,
+                fromMax: 1.0,
+              );
               return Pad(
                 horizontal: horizontalContentPadding,
                 child: Al.centerLeft(
@@ -158,7 +178,7 @@ class ExpandableCircleCard extends StatelessWidget {
           AnimatedListed(
             overlapSizeAndOpacity: 1,
             listed: expanded,
-            duration: Motion.long4,
+            duration: Durations.long4,
             curve: Easings.emphasizedDecelerate,
             child: _body(context, theme),
           ),
@@ -180,7 +200,7 @@ class ExpandableCircleCard extends StatelessWidget {
               top: topTitlePadding,
               bottom: expanded ? bottomTitlePadding : topTitlePadding,
             ),
-            duration: Motion.short4,
+            duration: Durations.short4,
             curve: Easings.standard,
             child: titleChild,
           ),
@@ -191,7 +211,7 @@ class ExpandableCircleCard extends StatelessWidget {
             bottom: -_expandedCircleExtraSpaceComparedToTitle,
             child: AnimatedAlign(
               alignment: expanded ? Alignment.topCenter : Alignment.center,
-              duration: Motion.long1,
+              duration: Durations.long1,
               curve: Easings.emphasized,
               child: _circle(context, theme),
             ),
@@ -206,16 +226,13 @@ class ExpandableCircleCard extends StatelessWidget {
       horizontal: horizontalContentPadding,
       top: topBodyPadding,
       bottom: bottomBodyPadding,
-      child: DefaultTextStyle(
-        style: _bodyStyle(theme),
-        child: expandedChild,
-      ),
+      child: DefaultTextStyle(style: _bodyStyle(theme), child: expandedChild),
     );
   }
 
   Widget _circle(BuildContext context, ThemeData theme) {
     return AnimatedContainer(
-      duration: Motion.short3,
+      duration: Durations.short3,
       curve: Easings.standard,
       width: _circleDiameter,
       height: _circleDiameter,
@@ -227,24 +244,29 @@ class ExpandableCircleCard extends StatelessWidget {
         children: [
           Positioned.fill(
             child: Center(
-                child: suggestColor(
-                    color: _surfaceColor(theme), child: collapsedCircleChild)),
+              child: suggestColor(
+                color: _surfaceColor(theme),
+                child: collapsedCircleChild,
+              ),
+            ),
           ),
           Center(
             child: GenericAnimatedBuilder(
-                duration: expanded ? Motion.short4 : Motion.long3,
-                curve: expanded
-                    ? Easings.emphasizedDecelerate
-                    : Easings.emphasizedDecelerate,
-                value: expanded ? 1.0 : 0.0,
-                child: _expandedCircle(theme),
-                builder: (context, value, child) {
-                  return ExternalCircleClipper(
-                    fraction: value.mapToRange(1.0, 0.0),
-                    mode: ExternalCircleClipperMode.fromSides,
-                    child: child!,
-                  );
-                }),
+              duration: expanded ? Durations.short4 : Durations.long3,
+              curve:
+                  expanded
+                      ? Easings.emphasizedDecelerate
+                      : Easings.emphasizedDecelerate,
+              value: expanded ? 1.0 : 0.0,
+              child: _expandedCircle(theme),
+              builder: (context, value, child) {
+                return ExternalCircleClipper(
+                  fraction: value.mapToRange(1.0, 0.0),
+                  mode: ExternalCircleClipperMode.fromSides,
+                  child: child!,
+                );
+              },
+            ),
           ),
         ],
       ),
