@@ -1,6 +1,8 @@
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:sid_base/sid_base.dart';
+import 'package:sid_base/src/state/logic/theme_logic/custom_scheme.dart';
 
 abstract class ThemeLogicBase extends LogicBase {
   @mustCallSuper
@@ -14,13 +16,22 @@ abstract class ThemeLogicBase extends LogicBase {
   final String keyBase;
   late final PersistentReactive<ThemeMode> themeMode;
   late final PersistentReactive<bool> useDynamic;
+  late final PersistentReactive<CustomScheme> customScheme;
+
+  CustomScheme get defaultCustomScheme => CustomScheme(
+    dynamicSchemeVariant: DynamicSchemeVariant.tonalSpot,
+    contrastLevel: 0,
+    seedColor: const Color.fromARGB(255, 179, 140, 223),
+  );
+
+  void resetToDefaultCustomScheme() => customScheme.update(defaultCustomScheme);
 
   void toggleUseDynamic() => useDynamic.update(!useDynamic.value);
 
   ThemeLogicBase({
     ThemeMode initialThemeMode = ThemeMode.system,
     bool initialUseDynamic = true,
-    this.keyBase = "theme logic",
+    this.keyBase = "new theme logic",
   }) {
     themeMode = PersistentReactive(
       initialThemeMode,
@@ -31,9 +42,15 @@ abstract class ThemeLogicBase extends LogicBase {
     useDynamic = initialUseDynamic.createPersistentReactive(
       key: "$keyBase $dataOverwrite persistent var: useDynamicColors",
     );
+    customScheme = PersistentReactive(
+      defaultCustomScheme,
+      key: "$keyBase $dataOverwrite persistent var: customScheme",
+      toJsonEncodable: (value) => value.toMap(),
+      fromJsonDecoded: (jsonDecoded) => CustomScheme.fromMap(jsonDecoded),
+    );
   }
 
-  int get dataOverwrite => 1;
+  int get dataOverwrite => 4;
 
   String get defaultFontFamily => "Roboto";
   String? get displayFontFamily => null;
@@ -42,32 +59,43 @@ abstract class ThemeLogicBase extends LogicBase {
   String? get bodyFontFamily => null;
   String? get labelFontFamily => null;
 
-  ColorScheme get defaultLightScheme;
-  ColorScheme get defaultDarkScheme;
+  ThemeData _baseThemeFromCustom(
+    CustomScheme customScheme,
+    Brightness brightness,
+  ) => _baseThemeFromScheme(customScheme.getScheme(brightness), brightness);
 
-  ThemeData _baseThemeFromDark(bool dark) {
-    final scheme = !dark ? defaultLightScheme : defaultDarkScheme;
-    final base = ThemeData(
-      fontFamily: defaultFontFamily,
-      highlightColor: Colors.transparent,
-      splashFactory: InkRipple.splashFactory,
-      brightness: dark ? Brightness.dark : Brightness.light,
-      colorScheme: scheme,
-      useMaterial3: true,
-      applyElevationOverlayColor: true,
-      scaffoldBackgroundColor: scheme.surface,
-      pageTransitionsTheme: const PageTransitionsTheme(
-        builders: {
-          TargetPlatform.android: ZoomPageTransitionsBuilder(
-            allowEnterRouteSnapshotting: false,
-          ),
-        },
+  ThemeData _baseThemeFromScheme(ColorScheme scheme, Brightness brightness) {
+    return _fixTransitions(
+      ThemeData.from(
+        colorScheme: scheme,
+        useMaterial3: true,
+        textTheme:
+            ThemeData(
+              fontFamily: defaultFontFamily,
+              colorScheme: scheme,
+              useMaterial3: true,
+            ).textTheme,
       ),
     );
-    return base.copyWith(splashFactory: InkSparkle.splashFactory);
   }
 
-  Color get customDarkBackground => const Color(0xff171717);
+  ThemeData _fixTransitions(ThemeData theme) => theme.copyWith(
+    pageTransitionsTheme: const PageTransitionsTheme(
+      builders: {
+        TargetPlatform.android: ZoomPageTransitionsBuilder(
+          allowEnterRouteSnapshotting: false,
+        ),
+      },
+    ),
+  );
+
+  ThemeData _applyFamilies(ThemeData theme) => theme.applyFamilies(
+    display: displayFontFamily,
+    headline: headlineFontFamily,
+    title: titleFontFamily,
+    body: bodyFontFamily,
+    label: labelFontFamily,
+  );
 
   Widget buildWithUsableTheme({
     required Widget Function(
@@ -78,70 +106,38 @@ abstract class ThemeLogicBase extends LogicBase {
     )
     builder,
   }) {
-    return Reactive.build2(
+    return Reactive.build3(
       themeMode,
       useDynamic,
-      builder: (_, themeModeValue, useDynamic) {
-        return DynamicColorBuilder(
-          builder: (ColorScheme? lD, ColorScheme? dD) {
-            ColorScheme? lightScheme;
-            ColorScheme? darkScheme;
-
-            if (useDynamic) {
-              if (dD != null) {
-                final b = customDarkBackground;
-                darkScheme = dD.copyWith(surface: b);
-              } else {
-                darkScheme = null;
-              }
-              lightScheme = lD;
-            }
-
-            final baseLightTheme = _baseThemeFromDark(false);
-            final baseDarkTheme = _baseThemeFromDark(true);
-
-            ThemeData usableLight = _applyDynamicSchemeAndBaseCustomizations(
-              baseLightTheme,
-              lightScheme,
-            );
-            ThemeData usableDark = _applyDynamicSchemeAndBaseCustomizations(
-              baseDarkTheme,
-              darkScheme,
-            );
-
-            usableLight = usableLight.copyWith(
-              scaffoldBackgroundColor: usableLight.colorScheme.surface,
-            );
-            usableDark = usableDark.copyWith(
-              scaffoldBackgroundColor: usableDark.colorScheme.surface,
-            );
-
-            usableLight = usableLight.copyWith(
-              textTheme: usableLight.textTheme.withFamilies(
-                display: displayFontFamily,
-                headline: headlineFontFamily,
-                title: titleFontFamily,
-                body: bodyFontFamily,
-                label: labelFontFamily,
+      customScheme,
+      builder: (_, mode, dynamic, customSchemeValue) {
+        return MyDynamicThemeBuilder(
+          builder: (context, dynamicSeed) {
+            final ThemeData light = applyAppCustomizations(
+              _applyFamilies(
+                _baseThemeFromCustom(
+                  customSchemeValue.copyWith(
+                    seedColor:
+                        dynamic && dynamicSeed != null ? dynamicSeed : null,
+                  ),
+                  Brightness.light,
+                ),
               ),
             );
-            usableDark = usableDark.copyWith(
-              textTheme: usableDark.textTheme.withFamilies(
-                display: displayFontFamily,
-                headline: headlineFontFamily,
-                title: titleFontFamily,
-                body: bodyFontFamily,
-                label: labelFontFamily,
+            final ThemeData dark = applyAppCustomizations(
+              _applyFamilies(
+                _baseThemeFromCustom(
+                  customSchemeValue.copyWith(
+                    seedColor:
+                        dynamic && dynamicSeed != null ? dynamicSeed : null,
+                  ),
+                  Brightness.dark,
+                ),
               ),
             );
-
-            usableLight = applyAppCustomizations(usableLight);
-            usableDark = applyAppCustomizations(usableDark);
 
             return Builder(
-              builder:
-                  (context) =>
-                      builder(context, usableLight, usableDark, themeModeValue),
+              builder: (context) => builder(context, light, dark, mode),
             );
           },
         );
@@ -154,43 +150,90 @@ abstract class ThemeLogicBase extends LogicBase {
   ThemeData applyAppCustomizations(ThemeData theme) {
     return theme;
   }
+}
 
-  ThemeData _applyDynamicSchemeAndBaseCustomizations(
-    ThemeData baseTheme,
-    ColorScheme? scheme,
-  ) {
-    return switch (scheme) {
-      null => baseTheme.copyWith(
-        colorScheme: baseTheme.colorScheme.copyWith(
-          surface: switch (baseTheme.brightness) {
-            Brightness.dark => customDarkBackground,
-            Brightness.light => Colors.white,
-          },
-        ),
-        canvasColor: switch (baseTheme.brightness) {
-          Brightness.dark => customDarkBackground,
-          Brightness.light => Colors.white,
-        },
-        dividerTheme: _dividerTheme(baseTheme, baseTheme.colorScheme),
+extension on ThemeData {
+  ThemeData applyFamilies({
+    String? display,
+    String? headline,
+    String? title,
+    String? body,
+    String? label,
+  }) {
+    return copyWith(
+      textTheme: textTheme.withFamilies(
+        display: display,
+        headline: headline,
+        title: title,
+        body: body,
+        label: label,
       ),
-      ColorScheme scheme => baseTheme.copyWith(
-        colorScheme: scheme,
-        canvasColor: scheme.surface,
-        dividerTheme: _dividerTheme(baseTheme, scheme),
-      ),
-    };
+    );
+  }
+}
+
+class MyDynamicThemeBuilder extends StatefulWidget {
+  const MyDynamicThemeBuilder({super.key, required this.builder});
+
+  final Widget Function(BuildContext context, Color? seed) builder;
+
+  @override
+  State<MyDynamicThemeBuilder> createState() => _MyDynamicThemeBuilderState();
+}
+
+class _MyDynamicThemeBuilderState extends State<MyDynamicThemeBuilder> {
+  Color? seed;
+
+  @override
+  void initState() {
+    super.initState();
+    initPlatformState();
   }
 
-  double get dividerIndent => 16;
-  double get dividerEndIndent => 16;
-  double get dividerThickness => 0.8;
-  Color dividerColor(ColorScheme scheme) =>
-      scheme.onSurface.withValues(alpha: 0.35);
-  DividerThemeData _dividerTheme(ThemeData baseTheme, ColorScheme scheme) =>
-      baseTheme.dividerTheme.copyWith(
-        indent: dividerIndent,
-        endIndent: dividerEndIndent,
-        thickness: dividerThickness,
-        color: dividerColor(scheme),
-      );
+  // Platform messages are asynchronous, so we initialize in an async method.
+  Future<void> initPlatformState() async {
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    try {
+      final corePalette = await DynamicColorPlugin.getCorePalette();
+
+      // If the widget was removed from the tree while the asynchronous platform
+      // message was in flight, we want to discard the reply rather than calling
+      // setState to update our non-existent appearance.
+      if (!mounted) return;
+
+      if (corePalette != null) {
+        debugPrint('dynamic_color: Core palette detected.');
+        setState(() {
+          seed = Color(corePalette.primary.get(70));
+        });
+        return;
+      }
+    } on PlatformException {
+      debugPrint('dynamic_color: Failed to obtain core palette.');
+    }
+
+    try {
+      final Color? accentColor = await DynamicColorPlugin.getAccentColor();
+
+      // Likewise above.
+      if (!mounted) return;
+
+      if (accentColor != null) {
+        debugPrint('dynamic_color: Accent color detected.');
+        setState(() {
+          seed = accentColor;
+        });
+        return;
+      }
+    } on PlatformException {
+      debugPrint('dynamic_color: Failed to obtain accent color.');
+    }
+
+    debugPrint('dynamic_color: Dynamic color not detected on this device.');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return widget.builder(context, seed);
+  }
 }

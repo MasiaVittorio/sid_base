@@ -17,14 +17,15 @@ class ThemeLogicProvider<T extends ThemeLogicBase> extends StatefulWidget {
     ThemeData darkTheme,
     ThemeMode themeMode,
     Widget? child,
-  ) builder;
+  )
+  builder;
 
   @override
   State<ThemeLogicProvider<T>> createState() => _ThemeLogicProviderState<T>();
 }
 
-class _ThemeLogicProviderState<T extends ThemeLogicBase> extends State<ThemeLogicProvider<T>> {
-
+class _ThemeLogicProviderState<T extends ThemeLogicBase>
+    extends State<ThemeLogicProvider<T>> {
   late T logic;
 
   @override
@@ -45,7 +46,13 @@ class _ThemeLogicProviderState<T extends ThemeLogicBase> extends State<ThemeLogi
       data: logic,
       child: logic.buildWithUsableTheme(
         builder: (context, lightTheme, darkTheme, themeMode) {
-          return widget.builder(context, lightTheme, darkTheme, themeMode, widget.child);
+          return widget.builder(
+            context,
+            lightTheme,
+            darkTheme,
+            themeMode,
+            widget.child,
+          );
         },
       ),
     );
