@@ -44,23 +44,31 @@ class _RadioPageTransitionState<A> extends State<RadioPageTransition<A>> {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: widget.backgroundColor,
+      color:
+          widget.backgroundColor ?? Theme.of(context).scaffoldBackgroundColor,
       child: Stack(
         fit: StackFit.expand,
         children: <Widget>[
           for (final p in widget.orderedPages)
             if (widget.staticOffset ??
-                    (p == widget.page // if this is the current page
+                    (p ==
+                            widget
+                                .page // if this is the current page
                         ? widget.orderedPages.indexOf(p) <
-                                widget.orderedPages
-                                    .indexOf(previous) // if this is to the left of the previous one
-                            ? -widget.offset // comes from the left
-                            : widget.offset // comes from the right
-                        : widget.orderedPages.indexOf(p) <
                                 widget.orderedPages.indexOf(
-                                    widget.page) // if this is to the left of the current one
-                            ? -widget.offset // goes to the left
-                            : widget.offset) // goes to the right
+                                  previous,
+                                ) // if this is to the left of the previous one
+                            ? -widget
+                                .offset // comes from the left
+                            : widget
+                                .offset // comes from the right
+                        : widget.orderedPages.indexOf(p) <
+                            widget.orderedPages.indexOf(
+                              widget.page,
+                            ) // if this is to the left of the current one
+                        ? -widget
+                            .offset // goes to the left
+                        : widget.offset) // goes to the right
                 case double ffst)
               AnimatedPresented(
                 slideOffset: switch (widget.axis) {

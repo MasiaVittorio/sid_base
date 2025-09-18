@@ -3,15 +3,9 @@ import 'package:flutter/widgets.dart';
 
 import 'persistent_reactive.dart';
 
-typedef ValueBuilder<T> = Widget Function(
-  BuildContext context,
-  T val,
-);
-typedef ChildValueBuilder<T> = Widget Function(
-  BuildContext context,
-  T val,
-  Widget? child,
-);
+typedef ValueBuilder<T> = Widget Function(BuildContext context, T val);
+typedef ChildValueBuilder<T> =
+    Widget Function(BuildContext context, T val, Widget? child);
 
 extension QuickReactive<T> on T {
   Reactive<T> get createReactive => Reactive(this);
@@ -30,10 +24,7 @@ class Reactive<T> extends ChangeNotifier {
   final List<VoidCallback> _beforeDisposing = [];
   final bool Function(T, T)? equality;
 
-  Reactive(
-    this.value, {
-    this.equality,
-  });
+  Reactive(this.value, {this.equality});
 
   void beforeDisposing(VoidCallback callback) => _beforeDisposing.add(callback);
 
@@ -66,6 +57,10 @@ class Reactive<T> extends ChangeNotifier {
     refresh();
   }
 
+  void updateFromValue(T Function(T value) editor, {bool distinct = true}) {
+    update(editor(value), distinct: distinct);
+  }
+
   Future<void> updateWithFuture(Future<T> Function() getValue) async {
     try {
       final T v = await getValue();
@@ -77,21 +72,22 @@ class Reactive<T> extends ChangeNotifier {
     return AnimatedBuilder(
       animation: this,
       builder: (BuildContext context, _) {
-        return builder(context, this.value);
+        return builder(context, value);
       },
     );
   }
 
   // So that the child is not rebuilt every time
   Widget buildWithStaticChild({
-    required Widget Function(BuildContext context, T value, Widget child) builder,
+    required Widget Function(BuildContext context, T value, Widget child)
+    builder,
     required Widget child,
   }) {
     return AnimatedBuilder(
       animation: this,
       child: child,
       builder: (BuildContext context, Widget? c) {
-        return builder(context, this.value, c!);
+        return builder(context, value, c!);
       },
     );
   }
@@ -101,14 +97,17 @@ class Reactive<T> extends ChangeNotifier {
     Reactive<B> b, {
     required Widget Function(BuildContext context, A a, B b) builder,
   }) {
-    return a.build((context, aV) => b.build((context, bV) => builder(context, aV, bV)));
+    return a.build(
+      (context, aV) => b.build((context, bV) => builder(context, aV, bV)),
+    );
   }
 
   static Widget build3<A, B, C>(
     Reactive<A> a,
     Reactive<B> b,
     Reactive<C> c, {
-    required Widget Function(BuildContext context, A aVal, B bVal, C cVal) builder,
+    required Widget Function(BuildContext context, A aVal, B bVal, C cVal)
+    builder,
   }) {
     return a.build((context, aV) {
       return b.build((context, bV) {
@@ -124,7 +123,14 @@ class Reactive<T> extends ChangeNotifier {
     Reactive<B> b,
     Reactive<C> c,
     Reactive<D> d, {
-    required Widget Function(BuildContext context, A aVal, B bVal, C cVal, D dVal) builder,
+    required Widget Function(
+      BuildContext context,
+      A aVal,
+      B bVal,
+      C cVal,
+      D dVal,
+    )
+    builder,
   }) {
     return a.build((context, aV) {
       return b.build((context, bV) {
@@ -149,18 +155,18 @@ class Reactive<T> extends ChangeNotifier {
   }) =>
       key != null
           ? PersistentReactive<T>(
-              initVal,
-              key: key,
-              fromJsonDecoded: fromJsonDecoded,
-              toJsonEncodable: toJsonEncodable,
-              afterReading: readCallback,
-              readCount: readCount,
-              // copier: copier,
-              equality: equals,
-            )
+            initVal,
+            key: key,
+            fromJsonDecoded: fromJsonDecoded,
+            toJsonEncodable: toJsonEncodable,
+            afterReading: readCallback,
+            readCount: readCount,
+            // copier: copier,
+            equality: equals,
+          )
           : Reactive<T>(
-              initVal,
-              // copier: copier,
-              equality: equals,
-            );
+            initVal,
+            // copier: copier,
+            equality: equals,
+          );
 }

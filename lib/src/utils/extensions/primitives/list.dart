@@ -12,26 +12,24 @@ extension SidBaseList<T> on List<T> {
     bool alsoFirst = false,
     bool alsoLast = false,
     bool alsoFirstAndLast = false,
-  }) =>
-      <T>[
-        if (alsoFirst || alsoFirstAndLast) splitter,
-        if (isNotEmpty) first,
-        for (int i = 1; i < length; ++i) ...<T>[splitter, this[i]],
-        if (alsoLast || alsoFirstAndLast) splitter,
-      ];
+  }) => <T>[
+    if (alsoFirst || alsoFirstAndLast) splitter,
+    if (isNotEmpty) first,
+    for (int i = 1; i < length; ++i) ...<T>[splitter, this[i]],
+    if (alsoLast || alsoFirstAndLast) splitter,
+  ];
 
   List<T> separateWithMultiple(
     Iterable<T> splitters, {
     bool alsoFirst = false,
     bool alsoLast = false,
     bool alsoFirstAndLast = false,
-  }) =>
-      <T>[
-        if (alsoFirst || alsoFirstAndLast) ...splitters,
-        if (isNotEmpty) first,
-        for (int i = 1; i < length; ++i) ...<T>[...splitters, this[i]],
-        if (alsoLast || alsoFirstAndLast) ...splitters,
-      ];
+  }) => <T>[
+    if (alsoFirst || alsoFirstAndLast) ...splitters,
+    if (isNotEmpty) first,
+    for (int i = 1; i < length; ++i) ...<T>[...splitters, this[i]],
+    if (alsoLast || alsoFirstAndLast) ...splitters,
+  ];
 
   bool checkIndex(int index) {
     if (index < 0) return false;
@@ -40,8 +38,8 @@ extension SidBaseList<T> on List<T> {
   }
 
   bool move(int from, int to) {
-    if (!this.checkIndex(from)) return false;
-    if (!this.checkIndex(to)) return false;
+    if (!checkIndex(from)) return false;
+    if (!checkIndex(to)) return false;
     insert(to, removeAt(from));
     return true;
   }
@@ -55,7 +53,8 @@ extension SidBaseList<T> on List<T> {
 }
 
 extension IterablePartition<T> on Iterable<T> {
-  Iterable<List<T>> part(int size) => isEmpty ? <List<T>>[] : _Partition<T>(this, size);
+  Iterable<List<T>> part(int size) =>
+      isEmpty ? <List<T>>[] : _Partition<T>(this, size);
 }
 
 class _Partition<T> extends Iterable<List<T>> {
@@ -67,10 +66,8 @@ class _Partition<T> extends Iterable<List<T>> {
   }
 
   @override
-  Iterator<List<T>> get iterator => _PartitionIterator<T>(
-        _iterable.iterator,
-        _size,
-      );
+  Iterator<List<T>> get iterator =>
+      _PartitionIterator<T>(_iterable.iterator, _size);
 }
 
 class _PartitionIterator<T> implements Iterator<List<T>> {

@@ -11,9 +11,7 @@ class AnimatedListed extends ImplicitlyAnimatedWidget {
     Curve? curve,
     super.duration = const Duration(milliseconds: 250),
     this.overlapSizeAndOpacity = 0.0,
-  }) : super(
-          curve: curve ?? Curves.ease,
-        );
+  }) : super(curve: curve ?? Curves.ease);
 
   final double axisAlignment;
   final Axis axis;
@@ -21,7 +19,8 @@ class AnimatedListed extends ImplicitlyAnimatedWidget {
   final Widget? child;
   final double overlapSizeAndOpacity;
   @override
-  AnimatedWidgetBaseState<AnimatedListed> createState() => _DivisionAnimateState();
+  AnimatedWidgetBaseState<AnimatedListed> createState() =>
+      _DivisionAnimateState();
 }
 
 class _DivisionAnimateState extends AnimatedWidgetBaseState<AnimatedListed> {
@@ -30,32 +29,76 @@ class _DivisionAnimateState extends AnimatedWidgetBaseState<AnimatedListed> {
   @override
   void forEachTween(TweenVisitor<dynamic> visitor) {
     _tween =
-        visitor(_tween, widget.listed ? 1.0 : 0.0, (dynamic value) => Tween<double>(begin: value))
+        visitor(
+              _tween,
+              widget.listed ? 1.0 : 0.0,
+              (dynamic value) => Tween<double>(begin: value),
+            )
             as Tween<double>;
   }
 
   @override
   Widget build(BuildContext context) {
-    final double overlap = widget.overlapSizeAndOpacity.clamp(0.0, 1.0);
     final double val = _tween!.evaluate(animation);
+
+    return FractionallyListed(
+      value: val,
+      axis: widget.axis,
+      axisAlignment: widget.axisAlignment,
+      overlapSizeAndOpacity: widget.overlapSizeAndOpacity,
+      child: widget.child,
+    );
+  }
+}
+
+class FractionallyListed extends StatelessWidget {
+  const FractionallyListed({
+    super.key,
+    required this.value,
+    this.axis = Axis.vertical,
+    this.axisAlignment = -1,
+    this.child,
+    this.overlapSizeAndOpacity = 0.0,
+  });
+
+  final double axisAlignment;
+  final Axis axis;
+  final Widget? child;
+  final double overlapSizeAndOpacity;
+  final double value;
+
+  @override
+  Widget build(BuildContext context) {
+    final value = this.value.clamp(0, 1);
+    final double overlap = overlapSizeAndOpacity.clamp(0.0, 1.0);
 
     final double maxSizeVal = 1 / 2 + overlap / 2;
 
-    final double sizeFactor = val.mapToRange(0, 1, fromMin: 0.0, fromMax: maxSizeVal);
+    final double sizeFactor = value.mapToRange(
+      0,
+      1,
+      fromMin: 0.0,
+      fromMax: maxSizeVal,
+    );
 
     final double minOpacityVal = 1 / 2 - overlap / 2;
 
-    final double opacity = val.mapToRange(0.0, 1.0, fromMin: minOpacityVal, fromMax: 1.0);
+    final double opacity = value.mapToRange(
+      0.0,
+      1.0,
+      fromMin: minOpacityVal,
+      fromMax: 1.0,
+    );
 
     return ClipRect(
       child: Align(
         alignment: Alignment(
-          widget.axis == Axis.horizontal ? widget.axisAlignment : 0.0,
-          widget.axis == Axis.vertical ? widget.axisAlignment : 0.0,
+          axis == Axis.horizontal ? axisAlignment : 0.0,
+          axis == Axis.vertical ? axisAlignment : 0.0,
         ),
-        widthFactor: widget.axis == Axis.horizontal ? sizeFactor : 1.0,
-        heightFactor: widget.axis == Axis.vertical ? sizeFactor : 1.0,
-        child: Opacity(opacity: opacity, child: widget.child),
+        widthFactor: axis == Axis.horizontal ? sizeFactor : 1.0,
+        heightFactor: axis == Axis.vertical ? sizeFactor : 1.0,
+        child: Opacity(opacity: opacity, child: child),
       ),
     );
   }

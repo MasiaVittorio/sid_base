@@ -17,10 +17,7 @@ extension QuickAdvanced<T> on T? {
     final T? v = this;
     return v == null
         ? PersistentAdvancedReactive<T>.empty(key: key)
-        : PersistentAdvancedReactive<T>.initial(
-            v,
-            key: key,
-          );
+        : PersistentAdvancedReactive<T>.initial(v, key: key);
   }
 }
 
@@ -39,25 +36,17 @@ class AdvancedReactive<T> extends ChangeNotifier {
   bool get hasValidValue => (!hasError) && _hasValue;
   bool get isEmpty => (!_hasValue) && (!hasError);
 
-  AdvancedReactive.initial(T value)
-      : _hasValue = true,
-        _value = value;
+  AdvancedReactive.initial(T value) : _hasValue = true, _value = value;
 
-  AdvancedReactive.empty()
-      : _hasValue = false,
-        _value = null;
+  AdvancedReactive.empty() : _hasValue = false, _value = null;
 
-  AdvancedReactive.error(String error)
-      : _hasValue = false,
-        _error = error;
+  AdvancedReactive.error(String error) : _hasValue = false, _error = error;
 
   @mustCallSuper
   void updateWithValue(T newValue, {bool distinct = true, bool notify = true}) {
-    if (newValue == _value) {
-    }
+    if (newValue == _value) {}
     if (distinct && newValue == _value && _hasValue && _error == null) return;
-    if (newValue == _value) {
-    }
+    if (newValue == _value) {}
     _hasValue = true;
     _error = null;
     _value = newValue;
@@ -74,7 +63,11 @@ class AdvancedReactive<T> extends ChangeNotifier {
 
   // useful for reading storage
   @mustCallSuper
-  void updateWithErrorAndValue(String newError, T? alsoValue, {bool notify = true}) {
+  void updateWithErrorAndValue(
+    String newError,
+    T? alsoValue, {
+    bool notify = true,
+  }) {
     _error = newError;
     _value = alsoValue;
     _hasValue = false;
@@ -234,10 +227,7 @@ class PersistentAdvancedReactive<T> extends AdvancedReactive<T> {
   final PersistenceProvider persistenceProvider;
 
   @override
-  void updateWithEmpty({
-    bool write = true,
-    bool notify = true,
-  }) {
+  void updateWithEmpty({bool write = true, bool notify = true}) {
     super.updateWithEmpty(notify: notify);
     if (write) _write();
   }
@@ -272,7 +262,11 @@ class PersistentAdvancedReactive<T> extends AdvancedReactive<T> {
     bool distinct = true,
     bool write = true,
   }) async {
-    final result = await super.updateWithFuture(getValue, notify: notify, distinct: distinct);
+    final result = await super.updateWithFuture(
+      getValue,
+      notify: notify,
+      distinct: distinct,
+    );
     if (write) _write();
     return result;
   }
@@ -331,14 +325,15 @@ class PersistentAdvancedReactive<T> extends AdvancedReactive<T> {
       if (_v) debugPrint('key $key, reading $source');
       if (source == null) return;
       final Object? jsonDecodedMap = jsonDecode(source);
-      if (_v) debugPrint('key $key, decodedMap type ${jsonDecodedMap.runtimeType}');
+      if (_v) {
+        debugPrint('key $key, decodedMap type ${jsonDecodedMap.runtimeType}');
+      }
 
-      if (jsonDecodedMap
-          case {
-            'value': final Object? valueJsonDecoded,
-            'hasValue': final bool hasValue,
-            'error': final String? error,
-          }) {
+      if (jsonDecodedMap case {
+        'value': final Object? valueJsonDecoded,
+        'hasValue': final bool hasValue,
+        'error': final String? error,
+      }) {
         if (_v) debugPrint('key $key, valueJsonDecoded $valueJsonDecoded');
 
         T? value;
@@ -360,17 +355,17 @@ class PersistentAdvancedReactive<T> extends AdvancedReactive<T> {
         } else {
           if (value is T && (hasValue)) {
             if (_v) debugPrint("after reading updating with value");
-            this.updateWithValue(value, write: false);
+            updateWithValue(value, write: false);
           } else {
             if (_v) debugPrint("after reading updating with empty");
-            this.updateWithEmpty(write: false);
+            updateWithEmpty(write: false);
           }
         }
       }
 
       // ignore: avoid_catches_without_on_clauses
     } catch (_) {
-      this.updateWithError("Erorr reading from storage", write: false);
+      updateWithError("Erorr reading from storage", write: false);
       return;
     }
   }
@@ -393,7 +388,7 @@ class PersistentAdvancedReactive<T> extends AdvancedReactive<T> {
       persistenceProvider.write(key, line);
       // ignore: avoid_catches_without_on_clauses
     } catch (_) {
-      this.updateWithError("Erorr writing on storage", write: true);
+      updateWithError("Erorr writing on storage", write: true);
       return;
     }
   }

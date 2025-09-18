@@ -5,7 +5,7 @@ import 'package:sid_base/sid_base.dart';
 extension BaseContextExtensions on BuildContext {
   ThemeData get theme => Theme.of(this);
   MediaQueryData get mediaQuery => MediaQuery.of(this);
-  EdgeInsets get safe => mediaQuery.padding;
+  EdgeInsets get safe => MediaQuery.paddingOf(this);
   ScaffoldState get scaffold => Scaffold.of(this);
   NavigatorState get navigator => Navigator.of(this);
 
@@ -20,19 +20,20 @@ extension BaseContextExtensions on BuildContext {
     }
   }
 
-  Future<T?> pushPage<T>(Widget page) => navigator.push<T>(MaterialPageRoute<T>(
-        builder: (context) {
-          return page;
-        },
-      ));
-  Future<void> pushReplacementPage(Widget page) =>
-      navigator.pushReplacement(MaterialPageRoute<void>(
-        builder: (context) {
-          return page;
-        },
-      ));
-  Future<T?> showDialog<T>(Widget dialog) => mat.showDialog<T>(
-        context: this,
-        builder: (_) => dialog,
-      );
+  Future<T?> pushPage<T>(Widget page) => navigator.push<T>(
+    MaterialPageRoute<T>(
+      builder: (context) {
+        return page;
+      },
+    ),
+  );
+  Future<void> pushReplacementPage(Widget page) => navigator.pushReplacement(
+    MaterialPageRoute<void>(
+      builder: (context) {
+        return page;
+      },
+    ),
+  );
+  Future<T?> showDialog<T>(Widget dialog) =>
+      mat.showDialog<T>(context: this, builder: (_) => dialog);
 }

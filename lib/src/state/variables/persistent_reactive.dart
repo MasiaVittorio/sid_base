@@ -20,10 +20,10 @@ class PersistentReactive<T> extends Reactive<T> {
     if (afterReading != null) _afterReading.add(() => afterReading(value));
 
     if (readCount != null) {
-      readCount.value[this.key] = false;
+      readCount.value[key] = false;
       readCount.refresh();
       _afterReading.add(() {
-        readCount.value[this.key] = true;
+        readCount.value[key] = true;
         readCount.refresh();
       });
     }
@@ -110,7 +110,7 @@ class PersistentReactive<T> extends Reactive<T> {
 
         if (value is T) {
           if (verbose) debugPrint("after reading updating with value");
-          this.update(value);
+          update(value);
         } else {
           if (verbose) debugPrint("after reading updating without value");
         }

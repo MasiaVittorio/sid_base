@@ -113,8 +113,7 @@ class RadioNavBar<T> extends StatelessWidget {
       color = items[selectedValue]!.color ?? theme.canvasColor;
     }
 
-    final Brightness? forcedBrightness =
-        googleLike ? null : this.forceBrightness;
+    final Brightness? forcedBrightness = googleLike ? null : forceBrightness;
     final Brightness colorBrightness =
         forcedBrightness ?? ThemeData.estimateBrightnessForColor(color);
 
@@ -150,21 +149,21 @@ class RadioNavBar<T> extends StatelessWidget {
 
   Widget buildBar(Color accentTextColor) {
     return SizedBox(
-      height: this.tileSize,
+      height: tileSize,
       child: Row(
         mainAxisSize: MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          for (final T value in this.orderedValues) ...[
+          for (final T value in orderedValues) ...[
             Expanded(
               child: InkResponse(
                 splashColor: Colors.transparent,
                 highlightColor: Colors.transparent,
                 onTap: () {
-                  final i = this.orderedValues.indexOf(value);
-                  this.onSelect(
-                    this.orderedValues[(value == this.selectedValue)
-                        ? (i - 1).clamp(0, this.orderedValues.length - 1)
+                  final i = orderedValues.indexOf(value);
+                  onSelect(
+                    orderedValues[(value == selectedValue)
+                        ? (i - 1).clamp(0, orderedValues.length - 1)
                         : i],
                   );
                 },
@@ -175,19 +174,19 @@ class RadioNavBar<T> extends StatelessWidget {
               badge: badges == null ? false : (badges![value] ?? false),
               accentTextColor: accentTextColor,
               duration: duration,
-              selected: value == this.selectedValue,
-              onTap: () => this.onSelect(value),
-              height: this.tileSize,
+              selected: value == selectedValue,
+              onTap: () => onSelect(value),
+              height: tileSize,
             ),
             Expanded(
               child: InkResponse(
                 splashColor: Colors.transparent,
                 highlightColor: Colors.transparent,
                 onTap: () {
-                  final i = this.orderedValues.indexOf(value);
-                  this.onSelect(
-                    this.orderedValues[(value == this.selectedValue)
-                        ? (i + 1).clamp(0, this.orderedValues.length - 1)
+                  final i = orderedValues.indexOf(value);
+                  onSelect(
+                    orderedValues[(value == selectedValue)
+                        ? (i + 1).clamp(0, orderedValues.length - 1)
                         : i],
                   );
                 },

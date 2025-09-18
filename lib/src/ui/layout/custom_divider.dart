@@ -15,7 +15,36 @@ class CustomDivider extends StatelessWidget {
     this.color,
     this.axis = Axis.horizontal,
     this.rounded = false,
+    this.length,
   });
+  const CustomDivider.vertical({
+    super.key,
+    this.thickness = 1,
+    this.cross = 0,
+    this.main = 0,
+    this.start = 0,
+    this.end = 0,
+    this.before = 0,
+    this.after = 0,
+    this.all = 0,
+    this.color,
+    this.rounded = false,
+    this.length,
+  }) : axis = Axis.vertical;
+  const CustomDivider.horizontal({
+    super.key,
+    this.thickness = 1,
+    this.cross = 0,
+    this.main = 0,
+    this.start = 0,
+    this.end = 0,
+    this.before = 0,
+    this.after = 0,
+    this.all = 0,
+    this.color,
+    this.rounded = false,
+    this.length,
+  }) : axis = Axis.horizontal;
 
   final double cross;
   final double main;
@@ -28,6 +57,7 @@ class CustomDivider extends StatelessWidget {
   final double thickness;
   final Axis axis;
   final bool rounded;
+  final double? length;
 
   @override
   Widget build(BuildContext context) {
@@ -52,12 +82,12 @@ class CustomDivider extends StatelessWidget {
         ),
       },
       width: switch (axis) {
-        Axis.horizontal => double.infinity,
+        Axis.horizontal => length ?? double.infinity,
         Axis.vertical => thickness,
       },
       height: switch (axis) {
         Axis.horizontal => thickness,
-        Axis.vertical => double.infinity,
+        Axis.vertical => length ?? double.infinity,
       },
     );
   }
