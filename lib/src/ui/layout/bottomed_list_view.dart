@@ -6,7 +6,7 @@ class BottomedListView extends StatelessWidget {
     super.key,
     required this.children,
     required this.bottom,
-    required this.useSafeArea,
+    this.useSafeArea = true,
     this.physics,
   });
 

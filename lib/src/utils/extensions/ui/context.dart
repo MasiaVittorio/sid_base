@@ -36,4 +36,52 @@ extension BaseContextExtensions on BuildContext {
   );
   Future<T?> showDialog<T>(Widget dialog) =>
       mat.showDialog<T>(context: this, builder: (_) => dialog);
+  Future<T?> showModalBottomSheet<T>(
+    Widget sheet, {
+
+    Color? backgroundColor,
+    String? barrierLabel,
+    double? elevation,
+    ShapeBorder? shape,
+    Clip? clipBehavior,
+    BoxConstraints? constraints,
+    Color? barrierColor,
+    bool isScrollControlled = false,
+    double scrollControlDisabledMaxHeightRatio =
+        _defaultScrollControlDisabledMaxHeightRatio,
+    bool useRootNavigator = false,
+    bool isDismissible = true,
+    bool enableDrag = true,
+    bool? showDragHandle,
+    bool useSafeArea = false,
+    RouteSettings? routeSettings,
+    AnimationController? transitionAnimationController,
+    Offset? anchorPoint,
+    AnimationStyle? sheetAnimationStyle,
+    bool? requestFocus,
+  }) => mat.showModalBottomSheet<T>(
+    context: this,
+    builder: (_) => sheet,
+    backgroundColor: backgroundColor,
+    barrierLabel: barrierLabel,
+    elevation: elevation,
+    shape: shape,
+    clipBehavior: clipBehavior,
+    constraints: constraints,
+    barrierColor: barrierColor,
+    isScrollControlled: isScrollControlled,
+    scrollControlDisabledMaxHeightRatio: scrollControlDisabledMaxHeightRatio,
+    useRootNavigator: useRootNavigator,
+    isDismissible: isDismissible,
+    enableDrag: enableDrag,
+    showDragHandle: showDragHandle,
+    useSafeArea: useSafeArea,
+    routeSettings: routeSettings,
+    transitionAnimationController: transitionAnimationController,
+    anchorPoint: anchorPoint,
+    sheetAnimationStyle: sheetAnimationStyle,
+    requestFocus: requestFocus,
+  );
+
+  static const double _defaultScrollControlDisabledMaxHeightRatio = 9.0 / 16.0;
 }

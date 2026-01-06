@@ -75,6 +75,7 @@ class PersistentReactive<T> extends Reactive<T> {
   void _read() async {
     await __read();
     finishedReading = true;
+    refresh();
     for (final callback in _afterReading) {
       callback.call();
     }

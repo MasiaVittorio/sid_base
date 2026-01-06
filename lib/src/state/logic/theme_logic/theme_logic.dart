@@ -2,7 +2,8 @@ import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sid_base/sid_base.dart';
-import 'package:sid_base/src/state/logic/theme_logic/custom_scheme.dart';
+
+export 'custom_scheme.dart';
 
 abstract class ThemeLogicBase extends LogicBase {
   @mustCallSuper
