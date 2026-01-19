@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sid_base/sid_base.dart';
 
-enum ConfirmButtonType {
-  text,
-  outlined,
-  filled,
-}
+enum ConfirmButtonType { text, outlined, filled }
 
 class ConfirmDialog extends StatelessWidget {
   const ConfirmDialog({
@@ -30,7 +26,7 @@ class ConfirmDialog extends StatelessWidget {
   final IconData? confirmIcon;
   final String? confirmLabel;
   final String? customCancelLabel;
-  final VoidCallback action;
+  final VoidCallback? action;
   final ConfirmButtonType confirmButtonType;
 
   @override
@@ -49,7 +45,7 @@ class ConfirmDialog extends StatelessWidget {
 
     void confirmAction() {
       Navigator.of(context).pop(true);
-      action();
+      action?.call();
     }
 
     final icon = this.icon;
@@ -59,7 +55,8 @@ class ConfirmDialog extends StatelessWidget {
       foregroundColor: WidgetStatePropertyAll(theme.colorScheme.onSurface),
     );
     final Color? filledBackground = dangerous ? theme.colorScheme.error : null;
-    final Color? filledForeground = dangerous ? theme.colorScheme.onError : null;
+    final Color? filledForeground =
+        dangerous ? theme.colorScheme.onError : null;
     final Color? textForeground = dangerous ? theme.colorScheme.error : null;
     final filledConfirmStyle = ButtonStyle(
       backgroundColor: WidgetStatePropertyAll(filledBackground),
@@ -67,52 +64,58 @@ class ConfirmDialog extends StatelessWidget {
       iconColor: WidgetStatePropertyAll(filledForeground),
     );
     final textConfirmStyle = ButtonStyle(
-        foregroundColor: WidgetStatePropertyAll(textForeground),
-        iconColor: WidgetStatePropertyAll(textForeground),
-        side: switch (confirmButtonType) {
-          ConfirmButtonType.outlined =>
-            WidgetStatePropertyAll(BorderSide(color: textForeground ?? theme.colorScheme.primary)),
-          _ => null,
-        });
+      foregroundColor: WidgetStatePropertyAll(textForeground),
+      iconColor: WidgetStatePropertyAll(textForeground),
+      side: switch (confirmButtonType) {
+        ConfirmButtonType.outlined => WidgetStatePropertyAll(
+          BorderSide(color: textForeground ?? theme.colorScheme.primary),
+        ),
+        _ => null,
+      },
+    );
 
     return AlertDialog(
       title: Text(
         title,
         style: TextStyle(color: dangerous ? theme.colorScheme.error : null),
       ),
-      icon: icon == null ? null : Icon(icon, color: dangerous ? theme.colorScheme.error : null),
+      icon:
+          icon == null
+              ? null
+              : Icon(icon, color: dangerous ? theme.colorScheme.error : null),
       content: customContent ?? (content == null ? null : Text(content)),
       actions: [
-        if (confirmIcon != null)
-          TextButton.icon(
-            onPressed: cancelAction,
-            icon: const Icon(Icons.close),
-            label: cancelText,
-            style: cancelStyle,
-          )
-        else
-          TextButton(
-            onPressed: cancelAction,
-            style: cancelStyle,
-            child: cancelText,
-          ),
+        if (action != null)
+          if (confirmIcon != null)
+            TextButton.icon(
+              onPressed: cancelAction,
+              icon: const Icon(Icons.close),
+              label: cancelText,
+              style: cancelStyle,
+            )
+          else
+            TextButton(
+              onPressed: cancelAction,
+              style: cancelStyle,
+              child: cancelText,
+            ),
         switch (confirmButtonType) {
           ConfirmButtonType.filled => filledConfirmButton(
-              confirmStyle: filledConfirmStyle,
-              confirmAction: confirmAction,
-              confirmText: confirmText,
-            ),
+            confirmStyle: filledConfirmStyle,
+            confirmAction: confirmAction,
+            confirmText: confirmText,
+          ),
           ConfirmButtonType.outlined => outlineConfirmButton(
-              confirmStyle: textConfirmStyle,
-              confirmAction: confirmAction,
-              confirmText: confirmText,
-            ),
+            confirmStyle: textConfirmStyle,
+            confirmAction: confirmAction,
+            confirmText: confirmText,
+          ),
           ConfirmButtonType.text => textConfirmButton(
-              confirmStyle: textConfirmStyle,
-              confirmAction: confirmAction,
-              confirmText: confirmText,
-            ),
-        }
+            confirmStyle: textConfirmStyle,
+            confirmAction: confirmAction,
+            confirmText: confirmText,
+          ),
+        },
       ],
     );
   }

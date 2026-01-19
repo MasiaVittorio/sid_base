@@ -14,9 +14,11 @@ class InsertDialog extends StatefulWidget {
     this.icon,
     this.maxLength,
     this.keyboardType,
+    this.maxLines = 1,
+    this.canInsertEmptyText = false,
   });
 
-  final void Function(String) onInsert;
+  final ValueChanged<String> onInsert;
   final String? initial;
   final String fieldLabel;
   final String? fieldHint;
@@ -25,7 +27,9 @@ class InsertDialog extends StatefulWidget {
   final String confirmLabel;
   final String cancelLabel;
   final int? maxLength;
+  final int? maxLines;
   final TextInputType? keyboardType;
+  final bool canInsertEmptyText;
 
   @override
   State<InsertDialog> createState() => _InsertDialogState();
@@ -56,6 +60,7 @@ class _InsertDialogState extends State<InsertDialog> {
         autofocus: true,
         controller: controller,
         maxLength: widget.maxLength,
+        maxLines: widget.maxLines,
         onSubmitted: (value) {
           Navigator.pop(context);
           widget.onInsert(value);
@@ -70,24 +75,24 @@ class _InsertDialogState extends State<InsertDialog> {
           onPressed: Navigator.of(context).pop,
           child: Text(
             widget.cancelLabel,
-            style: TextStyle(
-              color: context.theme.colorScheme.onSurface,
-            ),
+            style: TextStyle(color: context.theme.colorScheme.onSurface),
           ),
         ),
         TextReactor(
           controller: controller,
           child: Text(widget.confirmLabel),
-          builder: (_, child, string) => TextButton(
-            onPressed: string.isEmpty
-                ? null
-                : () {
-                    final string = controller.text;
-                    Navigator.pop(context);
-                    widget.onInsert(string);
-                  },
-            child: child!,
-          ),
+          builder:
+              (_, child, string) => TextButton(
+                onPressed:
+                    (string.isEmpty && !widget.canInsertEmptyText)
+                        ? null
+                        : () {
+                          final string = controller.text;
+                          Navigator.pop(context);
+                          widget.onInsert(string);
+                        },
+                child: child!,
+              ),
         ),
       ],
     );
