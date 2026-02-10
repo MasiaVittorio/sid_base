@@ -11,7 +11,10 @@ class HeroCarouselHome extends StatelessWidget {
   Widget build(BuildContext context) {
     var themeLogic = context.provide<ThemeLogic>();
     return Scaffold(
-      appBar: AppBar(title: const Text("Carousel example"), scrolledUnderElevation: 0),
+      appBar: AppBar(
+        title: const Text("Carousel example"),
+        scrolledUnderElevation: 0,
+      ),
       body: Column(
         children: [
           const Expanded(child: SlidableCarousel()),
@@ -31,9 +34,7 @@ class HeroCarouselHome extends StatelessWidget {
 }
 
 class SlidableCarousel extends StatefulWidget {
-  const SlidableCarousel({
-    super.key,
-  });
+  const SlidableCarousel({super.key});
 
   @override
   State<SlidableCarousel> createState() => _SlidableCarouselState();
@@ -64,15 +65,29 @@ class _SlidableCarouselState extends State<SlidableCarousel> {
             ),
           ),
         ),
-        RadioSlider(
-          items: const [
-            RadioSliderItem(title: Text("Vertical"), icon: Icon(Icons.vertical_distribute_sharp)),
-            RadioSliderItem(title: Text("Horizontal"), icon: Icon(Icons.horizontal_distribute))
+        SegmentedButton<int>(
+          segments: const [
+            ButtonSegment(
+              label: Text("Vertical"),
+              icon: Icon(Icons.vertical_distribute_sharp),
+              value: 0,
+            ),
+            ButtonSegment(
+              label: Text("Horizontal"),
+              icon: Icon(Icons.horizontal_distribute),
+              value: 1,
+            ),
           ],
-          selectedIndex: direction == Axis.vertical ? 0 : 1,
-          onTap: (int index) {
-            onChangedDirection(index == 0 ? Axis.vertical : Axis.horizontal);
+          selected: {direction == Axis.vertical ? 0 : 1},
+          onSelectionChanged: (selection) {
+            if (selection.length == 1) {
+              onChangedDirection(
+                selection.first == 0 ? Axis.vertical : Axis.horizontal,
+              );
+            }
           },
+          emptySelectionAllowed: false,
+          multiSelectionEnabled: false,
         ),
         const Space.vertical(12),
       ],
@@ -93,14 +108,17 @@ class _SlidableCarouselState extends State<SlidableCarousel> {
   HeroCarousel carousel() {
     return HeroCarousel(
       theme: HeroCarouselTheme(direction: direction),
-      itemBuilder: (int i) => CarouselItem(
-        background: CachedNetworkImageProvider('https://picsum.photos${ratio(i)}?image=${i + 10}'),
-        contentBuilder: (context, state, pi) => CarouselItemLabels(
-          title: "$i",
-          label: "Title $pi",
-        ),
-      ),
-      openBuilder: (context, close, itemIndex, item) => fullScreenCarousel(itemIndex),
+      itemBuilder:
+          (int i) => CarouselItem(
+            background: CachedNetworkImageProvider(
+              'https://picsum.photos${ratio(i)}?image=${i + 10}',
+            ),
+            contentBuilder:
+                (context, state, pi) =>
+                    CarouselItemLabels(title: "$i", label: "Title $pi"),
+          ),
+      openBuilder:
+          (context, close, itemIndex, item) => fullScreenCarousel(itemIndex),
     );
   }
 
@@ -126,14 +144,15 @@ class _SlidableCarouselState extends State<SlidableCarousel> {
           ),
         ),
         initialIndex: itemIndex,
-        itemBuilder: (int i) => CarouselItem(
-          background:
-              CachedNetworkImageProvider('https://picsum.photos${fsRatio(i)}?image=${i + 10}'),
-          contentBuilder: (context, state, pi) => CarouselItemLabels(
-            title: "$i",
-            label: "Title $pi",
-          ),
-        ),
+        itemBuilder:
+            (int i) => CarouselItem(
+              background: CachedNetworkImageProvider(
+                'https://picsum.photos${fsRatio(i)}?image=${i + 10}',
+              ),
+              contentBuilder:
+                  (context, state, pi) =>
+                      CarouselItemLabels(title: "$i", label: "Title $pi"),
+            ),
       ),
     );
   }

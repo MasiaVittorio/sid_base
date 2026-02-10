@@ -1,2 +1,2 @@
 export 'extensions/all.dart';
-export 'easing.dart';
+export 'motion.dart';

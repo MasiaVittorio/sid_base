@@ -32,6 +32,7 @@ abstract class ThemeLogicBase extends LogicBase {
   ThemeLogicBase({
     ThemeMode initialThemeMode = ThemeMode.system,
     bool initialUseDynamic = true,
+    CustomScheme? initialCustomScheme,
     this.keyBase = "new theme logic",
   }) {
     themeMode = PersistentReactive(
@@ -44,7 +45,7 @@ abstract class ThemeLogicBase extends LogicBase {
       key: "$keyBase $dataOverwrite persistent var: useDynamicColors",
     );
     customScheme = PersistentReactive(
-      defaultCustomScheme,
+      initialCustomScheme ?? defaultCustomScheme,
       key: "$keyBase $dataOverwrite persistent var: customScheme",
       toJsonEncodable: (value) => value.toMap(),
       fromJsonDecoded: (jsonDecoded) => CustomScheme.fromMap(jsonDecoded),

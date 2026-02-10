@@ -221,7 +221,7 @@ class _M3CarouselBodyState<T extends CarouselItemState>
           ),
           Positioned.fill(
             child: TransparentPointer(
-              child: SmoothPageReactor(
+              child: PageReactor(
                 controller: controller,
                 builder: (context, child, page) {
                   final range = widget.layouter.visibleRange(page);
