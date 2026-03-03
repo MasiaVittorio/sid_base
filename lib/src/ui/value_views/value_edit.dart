@@ -37,7 +37,7 @@ abstract class ValueEditViewState<T, A extends ValueEditView<T>>
     return TextReactor(
       controller: controller,
       child: null,
-      builder: (_, __, ___) => builder(context),
+      builder: (_, _, _) => builder(context),
     );
   }
 

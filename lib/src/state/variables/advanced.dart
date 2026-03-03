@@ -171,7 +171,7 @@ class AdvancedReactive<T> extends ChangeNotifier {
   Widget buildSimple(Widget Function(T? valueOrNull) builder) {
     return AnimatedBuilder(
       animation: this,
-      builder: (_, __) => builder(accessSimple()),
+      builder: (_, _) => builder(accessSimple()),
     );
   }
 

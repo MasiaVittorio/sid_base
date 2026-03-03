@@ -27,7 +27,9 @@ class MultiBrowseLayouter extends M3CarouselLayouter<MultiBrowseItemState> {
       return null;
     }
 
-    final (double tm, double ts, double tLok)? withTarget = tryLarge(targetLarge);
+    final (double tm, double ts, double tLok)? withTarget = tryLarge(
+      targetLarge,
+    );
 
     if (withTarget != null) {
       m = withTarget.$1;
@@ -40,8 +42,11 @@ class MultiBrowseLayouter extends M3CarouselLayouter<MultiBrowseItemState> {
       const mLfrac = 2 / 10;
       final int newN = ((D - A - Z - sMax) / (targetLarge + b)).floor();
       final newTarget =
-          (D - A - Z - sMax - b * (newN + 1) - (sMax * (1 - mLfrac))) / (newN + mLfrac);
-      final (double tm, double ts, double tLok)? withNewTarget = tryLarge(newTarget);
+          (D - A - Z - sMax - b * (newN + 1) - (sMax * (1 - mLfrac))) /
+          (newN + mLfrac);
+      final (double tm, double ts, double tLok)? withNewTarget = tryLarge(
+        newTarget,
+      );
       if (withNewTarget != null) {
         m = withNewTarget.$1;
         s = withNewTarget.$2;
@@ -90,14 +95,12 @@ class MultiBrowseLayouter extends M3CarouselLayouter<MultiBrowseItemState> {
 
   double get thinFrac => (b + t + b) / l;
   double get pastThinFrac =>
-      (b + t + b - A) / (D * viewPortFraction); // (b + t + b - A) / (D * viewportFrac) = tF / 1
+      (b + t + b - A) /
+      (D * viewPortFraction); // (b + t + b - A) / (D * viewportFrac) = tF / 1
 
   bool get newThinStrat => true;
   @override
-  (Positioner, MultiBrowseItemState)? position(
-    int i,
-    double x,
-  ) {
+  (Positioner, MultiBrowseItemState)? position(int i, double x) {
     final int v = n + 2;
     final double tF = thinFrac;
     final double ptF = pastThinFrac;
@@ -105,55 +108,19 @@ class MultiBrowseLayouter extends M3CarouselLayouter<MultiBrowseItemState> {
       (min: v, positioner: _future),
       [
         if (newThinStrat)
-          (
-            max: v,
-            min: v - 1,
-            positioner: _futureToSmall,
-          )
+          (max: v, min: v - 1, positioner: _futureToSmall)
         else ...[
-          (
-            max: v,
-            min: v - tF,
-            positioner: _futureToThin,
-          ),
-          (
-            max: v - tF,
-            min: v - 1,
-            positioner: _thinToSmall,
-          ),
+          (max: v, min: v - tF, positioner: _futureToThin),
+          (max: v - tF, min: v - 1, positioner: _thinToSmall),
         ],
-        (
-          max: (v - 1),
-          min: n,
-          positioner: _smallToMedium,
-        ),
-        (
-          max: n,
-          min: n - 1,
-          positioner: _mediumToLarge,
-        ),
-        (
-          max: n - 1,
-          min: 0,
-          positioner: _largeToFirst,
-        ),
+        (max: (v - 1), min: n, positioner: _smallToMedium),
+        (max: n, min: n - 1, positioner: _mediumToLarge),
+        (max: n - 1, min: 0, positioner: _largeToFirst),
         if (newThinStrat)
-          (
-            max: 0,
-            min: -1,
-            positioner: _firstToPast,
-          )
+          (max: 0, min: -1, positioner: _firstToPast)
         else ...[
-          (
-            max: 0,
-            min: -1 + ptF,
-            positioner: _firstToThin,
-          ),
-          (
-            max: -1 + ptF,
-            min: -1,
-            positioner: _thinToPast,
-          ),
+          (max: 0, min: -1 + ptF, positioner: _firstToThin),
+          (max: -1 + ptF, min: -1, positioner: _thinToPast),
         ],
       ],
       _past,
@@ -173,31 +140,29 @@ class MultiBrowseLayouter extends M3CarouselLayouter<MultiBrowseItemState> {
     final tF = thinFrac;
     final clippedStart = _smallToMediumEnd(value) + b;
     final lastThinStart = _smallToMediumEnd(tF) + b;
-    final double start = value <= tF
-        ? value.mapToRange(
-            D,
-            lastThinStart,
-            fromMax: tF,
-          )
-        : clippedStart;
-    final double end = value <= thinFrac
-        ? start + t
-        : value.mapToRange(
-            lastThinStart + t,
-            D - Z,
-            fromMin: thinFrac,
-          );
+    final double start =
+        value <= tF
+            ? value.rangeMap(to: (D, lastThinStart), from: (0, tF))
+            : clippedStart;
+    final double end =
+        value <= thinFrac
+            ? start + t
+            : value.rangeMap(
+              to: (lastThinStart + t, D - Z),
+              from: (thinFrac, 1),
+            );
     return _position(
       start: start,
       end: end,
       state: MultiBrowseFutureThinItem(
-          value <= thinFrac ? 0 : value.mapToRange(0, 1, fromMin: thinFrac)),
+        value <= thinFrac ? 0 : value.rangeMap(from: (thinFrac, 1)),
+      ),
     );
   }
 
   double get rightThinStart => D - b - t;
   (Positioner, MultiBrowseItemState) _futureToThin(double value) {
-    final start = value.mapToRange(D, rightThinStart);
+    final start = value.rangeMap(to: (D, rightThinStart));
     return _position(
       start: start,
       end: start + t,
@@ -208,14 +173,8 @@ class MultiBrowseLayouter extends M3CarouselLayouter<MultiBrowseItemState> {
   double get smallStart => D - Z - s;
   (Positioner, MultiBrowseItemState) _thinToSmall(double value) {
     return _position(
-      start: value.mapToRange(
-        rightThinStart,
-        smallStart,
-      ),
-      end: value.mapToRange(
-        rightThinStart + t,
-        smallStart + s,
-      ),
+      start: value.rangeMap(to: (rightThinStart, smallStart)),
+      end: value.rangeMap(to: (rightThinStart + t, smallStart + s)),
       state: MultiBrowseFutureThinItem(value),
     );
   }
@@ -223,92 +182,84 @@ class MultiBrowseLayouter extends M3CarouselLayouter<MultiBrowseItemState> {
   double get mediumStart => D - Z - s - b - m;
   (Positioner, MultiBrowseItemState) _smallToMedium(double value) {
     return _position(
-      start: value.mapToRange(smallStart, mediumStart),
+      start: value.rangeMap(to: (smallStart, mediumStart)),
       end: _smallToMediumEnd(value),
       state: MultiBrowseSmallItem(value),
     );
   }
 
-  double _smallToMediumEnd(double value) => value.mapToRange(smallStart + s, mediumStart + m);
+  double _smallToMediumEnd(double value) =>
+      value.rangeMap(to: (smallStart + s, mediumStart + m));
 
   double get firstTimeLargeStart => A + (lb * (n - 1));
   (Positioner, MultiBrowseItemState) _mediumToLarge(double value) {
     return _position(
-      start: value.mapToRange(mediumStart, firstTimeLargeStart),
-      end: value.mapToRange(mediumStart + m, firstTimeLargeStart + l),
+      start: value.rangeMap(to: (mediumStart, firstTimeLargeStart)),
+      end: value.rangeMap(to: (mediumStart + m, firstTimeLargeStart + l)),
       state: MultiBrowseMediumItem(value),
     );
   }
 
   (Positioner, MultiBrowseItemState) _largeToFirst(double value) {
     return _position(
-      start: value.mapToRange(firstTimeLargeStart, A),
-      end: value.mapToRange(firstTimeLargeStart + l, A + l),
+      start: value.rangeMap(to: (firstTimeLargeStart, A)),
+      end: value.rangeMap(to: (firstTimeLargeStart + l, A + l)),
       state: const MultiBrowseLargeItem(0),
     );
   }
 
   (Positioner, MultiBrowseItemState) _firstToPast(double value) {
-    final double straightEnd = value.mapToRange(A + l, A - b);
+    final double straightEnd = value.rangeMap(to: (A + l, A - b));
     // final double tF = thinFrac;
     final double tF = pastThinFrac;
-    final double lastStraightEnd = (1 - tF).mapToRange(A + l, A - b);
+    final double lastStraightEnd = (1 - tF).rangeMap(to: (A + l, A - b));
     final double end =
-        value <= 1 - tF ? straightEnd : value.mapToRange(lastStraightEnd, 0, fromMin: 1 - tF);
+        value <= 1 - tF
+            ? straightEnd
+            : value.rangeMap(to: (lastStraightEnd, 0), from: (1 - tF, 1));
     // final double start = value <= 1 - tF ? value.mapToRange(A, b, fromMax: 1 - tF) : end - t;
-    final double start = end <= b + t ? end - t : value.mapToRange(A, b, fromMax: 1 - tF);
+    final double start =
+        end <= b + t ? end - t : value.rangeMap(to: (A, b), from: (0, 1 - tF));
     return _position(
       start: start,
       end: end,
       state: MultiBrowseLargeItem(
-        value >= 1 - tF
-            ? 1
-            : value.mapToRange(
-                0,
-                1,
-                fromMin: 0,
-                fromMax: 1 - tF,
-              ),
+        value >= 1 - tF ? 1 : value.rangeMap(from: (0, 1 - tF)),
       ),
     );
   }
 
   (Positioner, MultiBrowseItemState) _firstToThin(double value) {
     return _position(
-      start: value.mapToRange(A, b),
-      end: value.mapToRange(A + l, b + t),
+      start: value.rangeMap(to: (A, b)),
+      end: value.rangeMap(to: (A + l, b + t)),
       state: MultiBrowseLargeItem(value),
     );
   }
 
   (Positioner, MultiBrowseItemState) _thinToPast(double value) {
     return _position(
-      start: value.mapToRange(b, -t),
-      end: value.mapToRange(b + t, 0),
+      start: value.rangeMap(to: (b, -t)),
+      end: value.rangeMap(to: (b + t, 0)),
       state: const MultiBrowsePastThinItem(),
     );
   }
 
   (Positioner, MultiBrowseItemState)? _past() {
-    return _position(
-      start: -t,
-      end: 0,
-      state: const MultiBrowsePastThinItem(),
-    );
+    return _position(start: -t, end: 0, state: const MultiBrowsePastThinItem());
   }
 
   (Positioner, MultiBrowseItemState)? _steps(
-    ({
-      num min,
-      (Positioner, MultiBrowseItemState)? Function() positioner,
-    }) onFuture,
+    ({num min, (Positioner, MultiBrowseItemState)? Function() positioner})
+    onFuture,
     List<
-            ({
-              num min,
-              num max,
-              (Positioner, MultiBrowseItemState) Function(double value) positioner,
-            })>
-        steps,
+      ({
+        num min,
+        num max,
+        (Positioner, MultiBrowseItemState) Function(double value) positioner,
+      })
+    >
+    steps,
     (Positioner, MultiBrowseItemState)? Function() onPast,
     double future,
   ) {
@@ -317,9 +268,7 @@ class MultiBrowseLayouter extends M3CarouselLayouter<MultiBrowseItemState> {
     }
     for (final step in steps) {
       if (future >= step.min && future < step.max) {
-        return step.positioner(
-          future.mapToRange(0, 1, fromMin: step.max, fromMax: step.min),
-        );
+        return step.positioner(future.rangeMap(from: (step.max, step.min)));
       }
     }
     return onPast();
@@ -332,22 +281,26 @@ class MultiBrowseLayouter extends M3CarouselLayouter<MultiBrowseItemState> {
   }) {
     return (
       axis.fold(
-        ifHorizontal: () => (Widget child) => Positioned(
-              top: 0,
-              bottom: 0,
-              left: start,
-              right: D - end,
-              child: child,
-            ),
-        ifVertifcal: () => (Widget child) => Positioned(
-              top: start,
-              bottom: D - end,
-              left: 0,
-              right: 0,
-              child: child,
-            ),
+        ifHorizontal:
+            () =>
+                (Widget child) => Positioned(
+                  top: 0,
+                  bottom: 0,
+                  left: start,
+                  right: D - end,
+                  child: child,
+                ),
+        ifVertifcal:
+            () =>
+                (Widget child) => Positioned(
+                  top: start,
+                  bottom: D - end,
+                  left: 0,
+                  right: 0,
+                  child: child,
+                ),
       ),
-      state
+      state,
     );
   }
 }

@@ -55,9 +55,9 @@ class FractionallyListed extends StatelessWidget {
   const FractionallyListed({
     super.key,
     required this.value,
+    required this.child,
     this.axis = Axis.vertical,
     this.axisAlignment = -1,
-    this.child,
     this.overlapSizeAndOpacity = 0.0,
   });
 
@@ -74,21 +74,11 @@ class FractionallyListed extends StatelessWidget {
 
     final double maxSizeVal = 1 / 2 + overlap / 2;
 
-    final double sizeFactor = value.mapToRange(
-      0,
-      1,
-      fromMin: 0.0,
-      fromMax: maxSizeVal,
-    );
+    final double sizeFactor = value.rangeMap(from: (0, maxSizeVal));
 
     final double minOpacityVal = 1 / 2 - overlap / 2;
 
-    final double opacity = value.mapToRange(
-      0.0,
-      1.0,
-      fromMin: minOpacityVal,
-      fromMax: 1.0,
-    );
+    final double opacity = value.rangeMap(from: (minOpacityVal, 1));
 
     return ClipRect(
       child: Align(

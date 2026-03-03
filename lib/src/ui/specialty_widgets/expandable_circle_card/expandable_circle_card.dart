@@ -148,18 +148,8 @@ class ExpandableCircleCard extends StatelessWidget {
             value: expanded ? 1.0 : 0.0,
             builder: (context, value, child) {
               const double f = 0.5;
-              final double h = value.mapToRange(
-                0,
-                dividerWidth,
-                fromMin: 0.0,
-                fromMax: f,
-              );
-              final double wf = value.mapToRange(
-                0.0,
-                1.0,
-                fromMin: f,
-                fromMax: 1.0,
-              );
+              final h = value.rangeMap(to: (0, dividerWidth), from: (0.0, f));
+              final wf = value.rangeMap(to: (0.0, 1.0), from: (f, 1.0));
               return Pad(
                 horizontal: horizontalContentPadding,
                 child: Al.centerLeft(
@@ -261,7 +251,7 @@ class ExpandableCircleCard extends StatelessWidget {
               child: _expandedCircle(theme),
               builder: (context, value, child) {
                 return ExternalCircleClipper(
-                  fraction: value.mapToRange(1.0, 0.0),
+                  fraction: value.rangeMap(to: (1.0, 0.0)),
                   mode: ExternalCircleClipperMode.fromSides,
                   child: child!,
                 );

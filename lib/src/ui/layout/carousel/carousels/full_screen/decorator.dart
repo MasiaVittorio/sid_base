@@ -12,7 +12,7 @@ class FullScreenDecorator extends M3CarouselItemDecorator<FullScreenItemState> {
     return BorderRadius.lerp(
       BorderRadius.zero,
       targetBorderRadius,
-      future.abs().clamp(0, 1).mapFromRange(0, 0.05),
+      future.abs().clamp(0, 1).rangeMap(from: (0, 0.05)),
     )!;
   }
 }

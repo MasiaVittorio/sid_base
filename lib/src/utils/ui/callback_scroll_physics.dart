@@ -1,20 +1,18 @@
-// ignore_for_file: curly_braces_in_flow_control_structures
-
-import 'package:flutter/material.dart';
 import 'dart:math' as math;
-import 'package:flutter/gestures.dart';
 
-/// {OC} this class is made by simply taking some parts from [ClampingScrollPhysics] 
-/// and [BouncingScrollPhysics] by the flutter material library and tweaking 
+import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
+
+/// {OC} this class is made by simply taking some parts from [ClampingScrollPhysics]
+/// and [BouncingScrollPhysics] by the flutter material library and tweaking
 /// it a bit to achieve new features. every comment that doesn't start with
 /// "{OC} " is barely a copy-paste from the material library
 
-
-/// {OC} Scroll physics for environments that allow a personalized way to 
-/// manage the scroll offset: you can allow the offset to go beyond the 
-/// top and/or the bottom of the bounds of the content, and then bounce 
+/// {OC} Scroll physics for environments that allow a personalized way to
+/// manage the scroll offset: you can allow the offset to go beyond the
+/// top and/or the bottom of the bounds of the content, and then bounce
 /// the content back to the edge of those bounds.
-/// 
+///
 /// You can also trigger a callback when the user overscrolls or underscrolls
 /// the content over a certain threshold you can set
 ///
@@ -25,38 +23,29 @@ import 'package:flutter/gestures.dart';
 ///  * [ClampingScrollPhysics], which is the analogous physics for Android's
 ///    clamping behavior.
 class CallbackScrollPhysics extends ScrollPhysics {
+  static bool defaultBounceCallbackCondition(double over, double velocity) =>
+      customBounceCallbackCondition(1.0, over, velocity);
 
-  static bool defaultBounceCallbackCondition(double over, double velocity)
-    => customBounceCallbackCondition(1.0, over, velocity);
-
-  static bool customBounceCallbackCondition(double hard, double over, double velocity) {
-    const double refVel = 1100;
-    if(velocity > hard * refVel * 3  )
-      if(over > 15) return true;
-    if(velocity > hard * refVel * 2.5)
-      if(over > 25) return true;
-    if(velocity > hard * refVel * 2  )
-      if(over > 30) return true;
-    if(velocity > hard * refVel * 1.5)
-      if(over > 45) return true;
-    if(velocity > hard * refVel      )
-      if(over > 50) return true;
-    if(velocity > hard * refVel * 0.8)
-      if(over > 65) return true;
-    if(velocity > hard * refVel / 2  )
-      if(over > 70) return true;
-
-    if(velocity >= hard * 50)
-      if(over > 100) return true;
-
-    return false;
-  }
-
+  static bool customBounceCallbackCondition(
+    double hard,
+    double over,
+    double velocity,
+  ) => switch ((velocity / hard, over)) {
+    (> 3300, > 15) => true,
+    (> 2750, > 25) => true,
+    (> 2200, > 30) => true,
+    (> 1650, > 45) => true,
+    (> 1100, > 50) => true,
+    (> 880, > 65) => true,
+    (> 550, > 70) => true,
+    (>= 50, > 100) => true,
+    _ => false,
+  };
 
   /// {OC} Creates scroll physics that can bounce back from the edge and trigger callbacks.
-  const CallbackScrollPhysics({ 
-    super.parent, 
-    this.topBounce, 
+  const CallbackScrollPhysics({
+    super.parent,
+    this.topBounce,
     this.callbackCondition,
     this.bottomBounce,
     this.bottomBounceCallback,
@@ -65,10 +54,11 @@ class CallbackScrollPhysics extends ScrollPhysics {
     this.neverScrollable,
   });
 
-  /// {OC} you can customize the behavior of the scrollable object to 
+  /// {OC} you can customize the behavior of the scrollable object to
   /// always accept scroll gestures by setting [alwaysScrollable] to true
   final bool? alwaysScrollable;
-  /// {OC} you can customize the behavior of the scrollable object to 
+
+  /// {OC} you can customize the behavior of the scrollable object to
   /// never accept scroll gestures by setting [neverScrollable] to true
   final bool? neverScrollable;
 
@@ -84,22 +74,22 @@ class CallbackScrollPhysics extends ScrollPhysics {
   /// when the user overscrolls (or underscrolls) in a way that makes this function return true
   final bool Function(double over, double velocity)? callbackCondition;
 
-  /// {OC} if [topBounce] is true and [callbackThreshold] is non null, the user will trigger 
-  /// this callback by underscrolling the object over the top by a given amount of pixels 
+  /// {OC} if [topBounce] is true and [callbackThreshold] is non null, the user will trigger
+  /// this callback by underscrolling the object over the top by a given amount of pixels
   final void Function()? topBounceCallback;
 
-  /// {OC} if [topBounce] is true and [callbackThreshold] is non null, the user will trigger 
+  /// {OC} if [topBounce] is true and [callbackThreshold] is non null, the user will trigger
   /// this callback by overscrolling the object over the bottom by a given amount of pixels
   final void Function()? bottomBounceCallback;
 
   @override
   CallbackScrollPhysics applyTo(ScrollPhysics? ancestor) {
     return CallbackScrollPhysics(
-      parent: buildParent(ancestor), 
+      parent: buildParent(ancestor),
       alwaysScrollable: alwaysScrollable,
       neverScrollable: neverScrollable,
-      topBounce: topBounce, 
-      bottomBounce: bottomBounce, 
+      topBounce: topBounce,
+      bottomBounce: bottomBounce,
       callbackCondition: callbackCondition,
       topBounceCallback: topBounceCallback,
       bottomBounceCallback: bottomBounceCallback,
@@ -114,38 +104,54 @@ class CallbackScrollPhysics extends ScrollPhysics {
   /// This factor starts at 0.52 and progressively becomes harder to overscroll
   /// as more of the area past the edge is dragged in (represented by an increasing
   /// `overscrollFraction` which starts at 0 when there is no overscroll).
-  double frictionFactor(double overscrollFraction) => 0.52 * math.pow(1 - overscrollFraction, 2);
+  double frictionFactor(double overscrollFraction) =>
+      0.52 * math.pow(1 - overscrollFraction, 2);
 
   @override
   double applyPhysicsToUserOffset(ScrollMetrics position, double offset) {
     assert(offset != 0.0);
     assert(position.minScrollExtent <= position.maxScrollExtent);
 
-    if (!position.outOfRange)
-      return offset;
+    if (!position.outOfRange) return offset;
 
-    final double overscrollPastStart = math.max(position.minScrollExtent - position.pixels, 0.0);
-    final double overscrollPastEnd = math.max(position.pixels - position.maxScrollExtent, 0.0);
-    final double overscrollPast = math.max(overscrollPastStart, overscrollPastEnd);
-    final bool easing = (overscrollPastStart > 0.0 && offset < 0.0)
-        || (overscrollPastEnd > 0.0 && offset > 0.0);
+    final double overscrollPastStart = math.max(
+      position.minScrollExtent - position.pixels,
+      0.0,
+    );
+    final double overscrollPastEnd = math.max(
+      position.pixels - position.maxScrollExtent,
+      0.0,
+    );
+    final double overscrollPast = math.max(
+      overscrollPastStart,
+      overscrollPastEnd,
+    );
+    final bool easing =
+        (overscrollPastStart > 0.0 && offset < 0.0) ||
+        (overscrollPastEnd > 0.0 && offset > 0.0);
 
-    final double friction = easing
-        // Apply less resistance when easing the overscroll vs tensioning.
-        ? frictionFactor((overscrollPast - offset.abs()) / position.viewportDimension)
-        : frictionFactor(overscrollPast / position.viewportDimension);
+    final double friction =
+        easing
+            // Apply less resistance when easing the overscroll vs tensioning.
+            ? frictionFactor(
+              (overscrollPast - offset.abs()) / position.viewportDimension,
+            )
+            : frictionFactor(overscrollPast / position.viewportDimension);
     final double direction = offset.sign;
 
     return direction * _applyFriction(overscrollPast, offset.abs(), friction);
   }
 
-  static double _applyFriction(double extentOutside, double absDelta, double gamma) {
+  static double _applyFriction(
+    double extentOutside,
+    double absDelta,
+    double gamma,
+  ) {
     assert(absDelta > 0);
     double total = 0.0;
     if (extentOutside > 0) {
       final double deltaToLimit = extentOutside / gamma;
-      if (absDelta < deltaToLimit)
-        return absDelta * gamma;
+      if (absDelta < deltaToLimit) return absDelta * gamma;
       total += extentOutside;
       absDelta -= deltaToLimit;
     }
@@ -165,65 +171,71 @@ class CallbackScrollPhysics extends ScrollPhysics {
           'The physics object in question was:\n'
           '  $this\n'
           'The position object in question was:\n'
-          '  $position\n'
+          '  $position\n',
         );
       }
       return true;
     }());
-    if (value < position.pixels && position.pixels <= position.minScrollExtent) {// underscroll
-      if(topBounce != true) return value - position.pixels;      
+    if (value < position.pixels &&
+        position.pixels <= position.minScrollExtent) {
+      // underscroll
+      if (topBounce != true) return value - position.pixels;
     }
-    if (position.maxScrollExtent <= position.pixels && position.pixels < value) {// overscroll
-      if(bottomBounce != true) return value - position.pixels;
+    if (position.maxScrollExtent <= position.pixels &&
+        position.pixels < value) {
+      // overscroll
+      if (bottomBounce != true) return value - position.pixels;
     }
-    if (value < position.minScrollExtent && position.minScrollExtent < position.pixels) {// hit top edge
-      if(topBounce != true) 
-        return value - position.minScrollExtent;
+    if (value < position.minScrollExtent &&
+        position.minScrollExtent < position.pixels) {
+      // hit top edge
+      if (topBounce != true) return value - position.minScrollExtent;
     }
-    if (position.pixels < position.maxScrollExtent && position.maxScrollExtent < value) {// hit bottom edge
-      if(bottomBounce != true) 
-        return value - position.maxScrollExtent;
+    if (position.pixels < position.maxScrollExtent &&
+        position.maxScrollExtent < value) {
+      // hit bottom edge
+      if (bottomBounce != true) return value - position.maxScrollExtent;
     }
     return 0.0;
   }
 
   @override
-  Simulation? createBallisticSimulation(ScrollMetrics position, double velocity) {
+  Simulation? createBallisticSimulation(
+    ScrollMetrics position,
+    double velocity,
+  ) {
     final Tolerance tolerance = toleranceFor(position);
-    if (
-      ( velocity.abs() >= tolerance.velocity && 
-        position.pixels > position.minScrollExtent && 
-        position.pixels < position.maxScrollExtent
-      ) ||
-      position.outOfRange
-    ) {
+    if ((velocity.abs() >= tolerance.velocity &&
+            position.pixels > position.minScrollExtent &&
+            position.pixels < position.maxScrollExtent) ||
+        position.outOfRange) {
       bool underscroll = false;
       bool overscroll = false;
       double top = position.pixels - position.minScrollExtent;
       double bottom = position.pixels - position.maxScrollExtent;
-      double dist = math.min(top.abs(), bottom.abs() );
+      double dist = math.min(top.abs(), bottom.abs());
 
       if (top < 0) {
-        if(topBounce == true) underscroll = true;
+        if (topBounce == true) underscroll = true;
       }
       if (bottom > 0) {
-        if(bottomBounce == true) overscroll = true;
+        if (bottomBounce == true) overscroll = true;
       }
 
-      bool Function (double, double)? conditionChecker;
-      if(callbackCondition != null)
+      bool Function(double, double)? conditionChecker;
+      if (callbackCondition != null) {
         conditionChecker = callbackCondition;
-      else 
-        if(bottomBounceCallback != null || topBounceCallback != null)
-          conditionChecker = defaultBounceCallbackCondition;
+      } else if (bottomBounceCallback != null || topBounceCallback != null) {
+        conditionChecker = defaultBounceCallbackCondition;
+      }
 
-      if(conditionChecker != null){
-        bool checked = conditionChecker(dist, velocity.abs()); 
-        if(checked){
-          if(overscroll && bottomBounceCallback != null && velocity >= 0){
+      if (conditionChecker != null) {
+        bool checked = conditionChecker(dist, velocity.abs());
+        if (checked) {
+          if (overscroll && bottomBounceCallback != null && velocity >= 0) {
             bottomBounceCallback!();
           }
-          if(underscroll && topBounceCallback != null && velocity <= 0){
+          if (underscroll && topBounceCallback != null && velocity <= 0) {
             topBounceCallback!();
           }
         }
@@ -239,12 +251,13 @@ class CallbackScrollPhysics extends ScrollPhysics {
       );
     }
     // return null;
-    if (velocity.abs() < tolerance.velocity)
+    if (velocity.abs() < tolerance.velocity) return null;
+    if (velocity > 0.0 && position.pixels >= position.maxScrollExtent) {
       return null;
-    if (velocity > 0.0 && position.pixels >= position.maxScrollExtent)
+    }
+    if (velocity < 0.0 && position.pixels <= position.minScrollExtent) {
       return null;
-    if (velocity < 0.0 && position.pixels <= position.minScrollExtent)
-      return null;
+    }
     return ClampingScrollSimulation(
       position: position.pixels,
       velocity: velocity,
@@ -275,7 +288,10 @@ class CallbackScrollPhysics extends ScrollPhysics {
   @override
   double carriedMomentum(double existingVelocity) {
     return existingVelocity.sign *
-        math.min(0.000816 * math.pow(existingVelocity.abs(), 1.967).toDouble(), 40000.0);
+        math.min(
+          0.000816 * math.pow(existingVelocity.abs(), 1.967).toDouble(),
+          40000.0,
+        );
   }
 
   // Eyeballed from observation to counter the effect of an unintended scroll
@@ -286,12 +302,12 @@ class CallbackScrollPhysics extends ScrollPhysics {
   @override
   bool shouldAcceptUserOffset(ScrollMetrics position) //=> true;
   {
-    if(alwaysScrollable == true) return true;
-    if(neverScrollable ==  true) return false;
-    if (parent == null)
-      return position.pixels != 0.0 || position.minScrollExtent != position.maxScrollExtent;
+    if (alwaysScrollable == true) return true;
+    if (neverScrollable == true) return false;
+    if (parent == null) {
+      return position.pixels != 0.0 ||
+          position.minScrollExtent != position.maxScrollExtent;
+    }
     return parent!.shouldAcceptUserOffset(position);
   }
-
-
 }

@@ -130,7 +130,7 @@ class _HighlightableState extends State<Highlightable>
       final s = HighlightAnimations.slide(t);
       return Container(
         decoration: BoxDecoration(
-          color: color.withValues(alpha: b.mapToRangeLoose(0, 0.10)),
+          color: color.withValues(alpha: b.rangeMapLoose(to: (0, 0.1))),
           borderRadius: BorderRadius.circular(widget.borderRadius),
         ),
         child: Padding(
@@ -155,8 +155,8 @@ class _HighlightableState extends State<Highlightable>
       final t = animation.value;
       final b = HighlightAnimations.breath(t);
       return Transform.scale(
-        scale: b.mapToRangeLoose(1.0, 0.95),
-        child: Opacity(opacity: b.mapToRangeLoose(1.0, 0.6), child: child!),
+        scale: b.rangeMapLoose(to: (1.0, 0.95)),
+        child: Opacity(opacity: b.rangeMapLoose(to: (1.0, 0.6)), child: child!),
       );
     },
   );

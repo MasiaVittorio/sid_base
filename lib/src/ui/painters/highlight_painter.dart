@@ -57,10 +57,11 @@ class HighlightPainter extends CustomPainter {
     final verticalLenght = h - radius * 2;
     final lenght = horizontalLenght * 2 + verticalLenght * 2 + cornerLenght * 4;
 
-    final paint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = width
-      ..color = color;
+    final paint =
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = width
+          ..color = color;
 
     final path = Path();
 
@@ -93,7 +94,9 @@ class HighlightPainter extends CustomPainter {
     final bool clockWise = !firstHalf;
 
     final double frac =
-        firstHalf ? fraction * 2 : fraction.mapToRange(1, 0, fromMin: 0.5, fromMax: 1);
+        firstHalf
+            ? fraction * 2
+            : fraction.rangeMap(to: (1, 0), from: (0.5, 1));
     final double end = lenght * frac;
 
     double l = 0.0;
@@ -133,24 +136,14 @@ class HighlightPainter extends CustomPainter {
           clockWise,
           path,
           e,
-          thisLenght.mapToRange(
-            0,
-            pi / 2,
-            fromMin: 0,
-            fromMax: cornerLenght,
-          ),
+          thisLenght.rangeMap(to: (0, pi / 2), from: (0, cornerLenght)),
         );
       } else if (e is _Side) {
         thisLenght = min(
           remaining,
           e.isHorizontal ? horizontalLenght : verticalLenght,
         );
-        side(
-          clockWise,
-          path,
-          e,
-          thisLenght,
-        );
+        side(clockWise, path, e, thisLenght);
       } else {
         // should not happen
         thisLenght = 0;
@@ -169,12 +162,7 @@ class HighlightPainter extends CustomPainter {
       oldDelegate.width != width;
 }
 
-enum _Corner {
-  topLeft,
-  topRight,
-  bottomRight,
-  bottomLeft,
-}
+enum _Corner { topLeft, topRight, bottomRight, bottomLeft }
 
 enum _Side {
   top,

@@ -5,6 +5,14 @@ import 'package:sid_base/sid_base.dart';
 
 export 'custom_scheme.dart';
 
+extension ThemeModeIcons on ThemeMode {
+  IconData get icon => switch (this) {
+    ThemeMode.system => MdiIcons.android,
+    ThemeMode.light => MdiIcons.weatherSunny,
+    ThemeMode.dark => MdiIcons.weatherNight,
+  };
+}
+
 abstract class ThemeLogicBase extends LogicBase {
   @mustCallSuper
   @override

@@ -1,11 +1,7 @@
 part of "../../m3_carousel.dart";
 
 class FullScreenLayouter extends M3CarouselLayouter<FullScreenItemState> {
-  FullScreenLayouter({
-    required this.D,
-    required this.b,
-    required this.axis,
-  });
+  FullScreenLayouter({required this.D, required this.b, required this.axis});
 
   final double D; // display size
   final double b; // padding in between items
@@ -21,23 +17,12 @@ class FullScreenLayouter extends M3CarouselLayouter<FullScreenItemState> {
   double get largeWidth => D;
 
   @override
-  (Positioner, FullScreenItemState)? position(
-    int i,
-    double x,
-  ) {
+  (Positioner, FullScreenItemState)? position(int i, double x) {
     return _steps(
       (min: 1, positioner: _future),
       [
-        (
-          max: 1,
-          min: 0,
-          positioner: _futureToCenter,
-        ),
-        (
-          max: 0,
-          min: -1,
-          positioner: _centerToPast,
-        ),
+        (max: 1, min: 0, positioner: _futureToCenter),
+        (max: 0, min: -1, positioner: _centerToPast),
       ],
       _past,
       i - x,
@@ -56,16 +41,16 @@ class FullScreenLayouter extends M3CarouselLayouter<FullScreenItemState> {
 
   (Positioner, FullScreenItemState) _futureToCenter(double value) {
     return _position(
-      start: value.mapToRange(D + b, 0),
-      end: value.mapToRange(futureEnd, D),
+      start: value.rangeMap(to: (D + b, 0)),
+      end: value.rangeMap(to: (futureEnd, D)),
       state: FullScreenFutureItem(value),
     );
   }
 
   (Positioner, FullScreenItemState) _centerToPast(double value) {
     return _position(
-      start: value.mapToRange(0, -b - extSize),
-      end: value.mapToRange(D, -b),
+      start: value.rangeMap(to: (0, -b - extSize)),
+      end: value.rangeMap(to: (D, -b)),
       state: FullScreenCenterItem(value),
     );
   }
@@ -79,17 +64,16 @@ class FullScreenLayouter extends M3CarouselLayouter<FullScreenItemState> {
   }
 
   (Positioner, FullScreenItemState)? _steps(
-    ({
-      num min,
-      (Positioner, FullScreenItemState)? Function() positioner,
-    }) onFuture,
+    ({num min, (Positioner, FullScreenItemState)? Function() positioner})
+    onFuture,
     List<
-            ({
-              num min,
-              num max,
-              (Positioner, FullScreenItemState) Function(double value) positioner,
-            })>
-        steps,
+      ({
+        num min,
+        num max,
+        (Positioner, FullScreenItemState) Function(double value) positioner,
+      })
+    >
+    steps,
     (Positioner, FullScreenItemState)? Function() onPast,
     double future,
   ) {
@@ -98,9 +82,7 @@ class FullScreenLayouter extends M3CarouselLayouter<FullScreenItemState> {
     }
     for (final step in steps) {
       if (future >= step.min && future < step.max) {
-        return step.positioner(
-          future.mapToRange(0, 1, fromMin: step.max, fromMax: step.min),
-        );
+        return step.positioner(future.rangeMap(from: (step.max, step.min)));
       }
     }
     return onPast();
@@ -113,22 +95,26 @@ class FullScreenLayouter extends M3CarouselLayouter<FullScreenItemState> {
   }) {
     return (
       axis.fold(
-        ifHorizontal: () => (Widget child) => Positioned(
-              top: 0,
-              bottom: 0,
-              left: start,
-              right: D - end,
-              child: child,
-            ),
-        ifVertifcal: () => (Widget child) => Positioned(
-              top: start,
-              bottom: D - end,
-              left: 0,
-              right: 0,
-              child: child,
-            ),
+        ifHorizontal:
+            () =>
+                (Widget child) => Positioned(
+                  top: 0,
+                  bottom: 0,
+                  left: start,
+                  right: D - end,
+                  child: child,
+                ),
+        ifVertifcal:
+            () =>
+                (Widget child) => Positioned(
+                  top: start,
+                  bottom: D - end,
+                  left: 0,
+                  right: 0,
+                  child: child,
+                ),
       ),
-      state
+      state,
     );
   }
 }

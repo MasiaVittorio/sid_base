@@ -5,21 +5,21 @@ sealed class HeroItemState extends CarouselItemState {
 
   @override
   bool get canBeOpened => switch (this) {
-        HeroSmallItem(smallToHero: double v) => v > 0.95,
-        HeroCenterItem(heroToPast: double v) => v <= 0.05,
-        _ => false,
-      };
+    HeroSmallItem(smallToHero: double v) => v > 0.95,
+    HeroCenterItem(heroToPast: double v) => v <= 0.05,
+    _ => false,
+  };
 
   @override
   double get contentOpacity => fold(
-        thin: () => 0.0,
-        thinToSmall: (v) => 0.0,
-        small: () => 0.0,
-        smallToHero: (v) => v.mapToRangeFrom((0, 1), (0.5, 0.95)),
-        hero: () => 1.0,
-        heroToPast: (v) => v.mapToRangeFrom((1, 0), (0.05, 0.5)),
-        past: () => 0.0,
-      );
+    thin: () => 0.0,
+    thinToSmall: (v) => 0.0,
+    small: () => 0.0,
+    smallToHero: (v) => v.rangeMap(from: (0.5, 0.95)),
+    hero: () => 1.0,
+    heroToPast: (v) => v.rangeMap(to: (1, 0), from: (0.05, 0.5)),
+    past: () => 0.0,
+  );
 
   T fold<T>({
     required T Function() thin,
@@ -29,19 +29,18 @@ sealed class HeroItemState extends CarouselItemState {
     required T Function() hero,
     required T Function(double v) heroToPast,
     required T Function() past,
-  }) =>
-      switch (this) {
-        HeroThinItem(thinToSmall: 0) => thin(),
-        HeroThinItem(thinToSmall: 1) => small(),
-        HeroSmallItem(smallToHero: 0) => small(),
-        HeroSmallItem(smallToHero: 1) => hero(),
-        HeroCenterItem(heroToPast: 0) => hero(),
-        HeroCenterItem(heroToPast: 1) => past(),
-        HeroPastItem() => past(),
-        HeroThinItem(thinToSmall: double v) => thinToSmall(v),
-        HeroSmallItem(smallToHero: double v) => smallToHero(v),
-        HeroCenterItem(heroToPast: double v) => heroToPast(v),
-      };
+  }) => switch (this) {
+    HeroThinItem(thinToSmall: 0) => thin(),
+    HeroThinItem(thinToSmall: 1) => small(),
+    HeroSmallItem(smallToHero: 0) => small(),
+    HeroSmallItem(smallToHero: 1) => hero(),
+    HeroCenterItem(heroToPast: 0) => hero(),
+    HeroCenterItem(heroToPast: 1) => past(),
+    HeroPastItem() => past(),
+    HeroThinItem(thinToSmall: double v) => thinToSmall(v),
+    HeroSmallItem(smallToHero: double v) => smallToHero(v),
+    HeroCenterItem(heroToPast: double v) => heroToPast(v),
+  };
 
   double get _v {
     return switch (this) {

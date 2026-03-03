@@ -40,7 +40,7 @@ class ExpandableAppBarList extends StatelessWidget {
     final topDelta = topExpanded - topCollapsed;
     assert(topDelta > 0);
 
-    double topPadding(bool overThreshold, bool? atEnd, _, __) {
+    double topPadding(bool overThreshold, bool? atEnd, _, _) {
       if (atEnd == null) {
         if (_verbose) {
           debugPrint(

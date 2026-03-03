@@ -34,33 +34,14 @@ class CenteredHeroLayouter extends M3CarouselLayouter<CenteredHeroItemState> {
   double get thinFrac => (b + t + b) / l;
 
   @override
-  (Positioner, CenteredHeroItemState)? position(
-    int i,
-    double x,
-  ) {
+  (Positioner, CenteredHeroItemState)? position(int i, double x) {
     return _steps(
       (min: 2, positioner: _future),
       [
-        (
-          max: 2,
-          min: 1,
-          positioner: _futureToSmall,
-        ),
-        (
-          max: 1,
-          min: 0,
-          positioner: _smallToCenter,
-        ),
-        (
-          max: 0,
-          min: -1,
-          positioner: _centerToSmall,
-        ),
-        (
-          max: -1,
-          min: -2,
-          positioner: _smallToPast,
-        ),
+        (max: 2, min: 1, positioner: _futureToSmall),
+        (max: 1, min: 0, positioner: _smallToCenter),
+        (max: 0, min: -1, positioner: _centerToSmall),
+        (max: -1, min: -2, positioner: _smallToPast),
       ],
       _past,
       i - x,
@@ -79,25 +60,19 @@ class CenteredHeroLayouter extends M3CarouselLayouter<CenteredHeroItemState> {
     final tF = thinFrac;
     final clippedStart = _smallToCenterEnd(value) + b;
     final lastThinStart = _smallToCenterEnd(tF) + b;
-    final double start = value <= tF
-        ? value.mapToRange(
-            D,
-            lastThinStart,
-            fromMax: tF,
-          )
-        : clippedStart;
-    final double end = value <= tF
-        ? start + t
-        : value.mapToRange(
-            lastThinStart + t,
-            D - Z,
-            fromMin: tF,
-          );
+    final double start =
+        value <= tF
+            ? value.rangeMap(to: (D, lastThinStart), from: (0, tF))
+            : clippedStart;
+    final double end =
+        value <= tF
+            ? start + t
+            : value.rangeMap(to: (lastThinStart + t, D - Z), from: (tF, 1));
     return _position(
       start: start,
       end: end,
       state: CenteredHeroFutureThinItem(
-        value <= tF ? 0 : value.mapToRange(0, 1, fromMin: thinFrac),
+        value <= tF ? 0 : value.rangeMap(to: (0, 1), from: (thinFrac, 1)),
       ),
     );
   }
@@ -116,9 +91,11 @@ class CenteredHeroLayouter extends M3CarouselLayouter<CenteredHeroItemState> {
     );
   }
 
-  double _smallToCenterStart(double value) => value.mapToRange(futureSmallStart, centerStart);
+  double _smallToCenterStart(double value) =>
+      value.rangeMap(to: (futureSmallStart, centerStart));
 
-  double _smallToCenterEnd(double value) => value.mapToRange(D - Z, D - Z - s - b);
+  double _smallToCenterEnd(double value) =>
+      value.rangeMap(to: (D - Z, D - Z - s - b));
 
   double get pastSmallStart => A;
   double get pastSmallEnd => A + s;
@@ -130,34 +107,31 @@ class CenteredHeroLayouter extends M3CarouselLayouter<CenteredHeroItemState> {
     );
   }
 
-  double _centerToSmallStart(double value) => value.mapToRange(centerStart, pastSmallStart);
+  double _centerToSmallStart(double value) =>
+      value.rangeMap(to: (centerStart, pastSmallStart));
 
-  double _centerToSmallEnd(double value) => value.mapToRange(centerEnd, pastSmallEnd);
+  double _centerToSmallEnd(double value) =>
+      value.rangeMap(to: (centerEnd, pastSmallEnd));
 
   (Positioner, CenteredHeroItemState) _smallToPast(double value) {
     final tF = thinFrac;
     final clippedEnd = _centerToSmallStart(value) - b;
     final lastThinEnd = _centerToSmallStart(1 - tF) - b;
-    final double end = value <= 1 - tF
-        ? clippedEnd
-        : value.mapToRange(
-            lastThinEnd,
-            0,
-            fromMin: 1 - tF,
-          );
-    final double start = value >= 1 - tF
-        ? end - t
-        : value.mapToRange(
-            A,
-            lastThinEnd - t,
-            fromMax: 1 - tF,
-          );
+    final double end =
+        value <= 1 - tF
+            ? clippedEnd
+            : value.rangeMap(to: (lastThinEnd, 0), from: (1 - tF, 1));
+    final double start =
+        value >= 1 - tF
+            ? end - t
+            : value.rangeMap(to: (A, lastThinEnd - t), from: (0, 1 - tF));
     return _position(
       start: start,
       end: end,
-      state: value <= 1 - tF
-          ? CenteredHeroPastSmallItem(value.mapFromRange(0, 1 - tF))
-          : const CenteredHeroPastThinItem(),
+      state:
+          value <= 1 - tF
+              ? CenteredHeroPastSmallItem(value.rangeMap(from: (0, 1 - tF)))
+              : const CenteredHeroPastThinItem(),
     );
   }
 
@@ -170,17 +144,16 @@ class CenteredHeroLayouter extends M3CarouselLayouter<CenteredHeroItemState> {
   }
 
   (Positioner, CenteredHeroItemState)? _steps(
-    ({
-      num min,
-      (Positioner, CenteredHeroItemState)? Function() positioner,
-    }) onFuture,
+    ({num min, (Positioner, CenteredHeroItemState)? Function() positioner})
+    onFuture,
     List<
-            ({
-              num min,
-              num max,
-              (Positioner, CenteredHeroItemState) Function(double value) positioner,
-            })>
-        steps,
+      ({
+        num min,
+        num max,
+        (Positioner, CenteredHeroItemState) Function(double value) positioner,
+      })
+    >
+    steps,
     (Positioner, CenteredHeroItemState)? Function() onPast,
     double future,
   ) {
@@ -190,7 +163,7 @@ class CenteredHeroLayouter extends M3CarouselLayouter<CenteredHeroItemState> {
     for (final step in steps) {
       if (future >= step.min && future < step.max) {
         return step.positioner(
-          future.mapToRange(0, 1, fromMin: step.max, fromMax: step.min),
+          future.rangeMap(to: (0, 1), from: (step.max, step.min)),
         );
       }
     }
@@ -204,22 +177,26 @@ class CenteredHeroLayouter extends M3CarouselLayouter<CenteredHeroItemState> {
   }) {
     return (
       axis.fold(
-        ifHorizontal: () => (Widget child) => Positioned(
-              top: 0,
-              bottom: 0,
-              left: start,
-              right: D - end,
-              child: child,
-            ),
-        ifVertifcal: () => (Widget child) => Positioned(
-              top: start,
-              bottom: D - end,
-              left: 0,
-              right: 0,
-              child: child,
-            ),
+        ifHorizontal:
+            () =>
+                (Widget child) => Positioned(
+                  top: 0,
+                  bottom: 0,
+                  left: start,
+                  right: D - end,
+                  child: child,
+                ),
+        ifVertifcal:
+            () =>
+                (Widget child) => Positioned(
+                  top: start,
+                  bottom: D - end,
+                  left: 0,
+                  right: 0,
+                  child: child,
+                ),
       ),
-      state
+      state,
     );
   }
 }
