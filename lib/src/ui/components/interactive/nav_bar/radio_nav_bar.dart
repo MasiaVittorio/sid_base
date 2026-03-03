@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:sid_base/sid_base.dart';
 
-class RadioNavBarItem {
+// TODO: rewrite radio nav bar completely
+
+class RadioNavBarItem<T> {
   final Color? color;
-  final String title;
-  final IconData icon;
-  final IconData? unselectedIcon;
+  final Widget title;
+  final Widget icon;
+  final Widget? unselectedIcon;
   final double? iconSize;
+  final T value;
 
   const RadioNavBarItem({
     required this.title,
     required this.icon,
+    required this.value,
     this.unselectedIcon,
     this.color,
     this.iconSize,
@@ -40,7 +44,6 @@ class RadioNavBar<T> extends StatelessWidget {
   // Constructor
   RadioNavBar({
     required this.selectedValue,
-    required this.orderedValues,
     required this.items,
     required this.onSelect,
     this.duration = const Duration(milliseconds: 250),
@@ -53,14 +56,12 @@ class RadioNavBar<T> extends StatelessWidget {
     this.googleLike = false,
     this.badges,
     super.key,
-  }) : shifting = RadioNavBarItem.allColoredItems(items.values) ?? false,
-       assert(items.containsKey(selectedValue));
+  }) : shifting = RadioNavBarItem.allColoredItems(items) ?? false;
 
   //=============================================
   // Values
   final T selectedValue;
-  final List<T> orderedValues;
-  final Map<T, RadioNavBarItem> items;
+  final List<RadioNavBarItem<T>> items;
   final double topPadding;
   final void Function(T) onSelect;
   final bool shifting;
@@ -91,6 +92,17 @@ class RadioNavBar<T> extends StatelessWidget {
 
     Color color;
     bool single;
+
+    int? selectedIndex;
+    for (int i = 0; i < items.length; i++) {
+      if (items[i].value == selectedValue) {
+        selectedIndex = i;
+        break;
+      }
+    }
+    selectedIndex ??= 0;
+    final selectedItem = items[selectedIndex];
+
     if (!shifting || forceSingleColor == true || googleLike) {
       single = true;
       color =
@@ -103,14 +115,14 @@ class RadioNavBar<T> extends StatelessWidget {
       final barCenterVerticalOffset = topPadding + tileSize / 2;
       final barCenterVerticalAlignment =
           (barCenterVerticalOffset / totalHeight) * 2 - 1;
-      final selectedIndex = orderedValues.indexOf(selectedValue);
+
       final splashHorizontalAlignment =
-          ((selectedIndex + 1) / (orderedValues.length + 1)) * 2 - 1;
+          ((selectedIndex + 1) / (items.length + 1)) * 2 - 1;
       alignment = Alignment(
         splashHorizontalAlignment,
         barCenterVerticalAlignment,
       );
-      color = items[selectedValue]!.color ?? theme.canvasColor;
+      color = items[selectedIndex].color ?? theme.canvasColor;
     }
 
     final Brightness? forcedBrightness = googleLike ? null : forceBrightness;
@@ -125,12 +137,12 @@ class RadioNavBar<T> extends StatelessWidget {
     final Color accentTextColor =
         (single && !googleLike && this.accentTextColor != null)
             ? this.accentTextColor!
-            : (googleLike ? items[selectedValue]!.color : null) ??
+            : (googleLike ? selectedItem.color : null) ??
                 unselectedIconColor.withValues(alpha: 1.0);
 
     final Widget bar = IconTheme.merge(
       data: IconThemeData(color: unselectedIconColor, opacity: 1.0, size: 24.0),
-      child: buildBar(accentTextColor),
+      child: buildBar(accentTextColor, selectedIndex),
     );
 
     return SplashingColoredBackground(
@@ -147,35 +159,33 @@ class RadioNavBar<T> extends StatelessWidget {
     );
   }
 
-  Widget buildBar(Color accentTextColor) {
+  Widget buildBar(Color accentTextColor, int selectedIndex) {
     return SizedBox(
       height: tileSize,
       child: Row(
         mainAxisSize: MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          for (final T value in orderedValues) ...[
+          for (int i = 0; i < items.length; i++) ...[
             Expanded(
               child: InkResponse(
                 splashColor: Colors.transparent,
                 highlightColor: Colors.transparent,
                 onTap: () {
-                  final i = orderedValues.indexOf(value);
                   onSelect(
-                    orderedValues[(value == selectedValue)
-                        ? (i - 1).clamp(0, orderedValues.length - 1)
-                        : i],
+                    items[i == selectedIndex ? (i > 0 ? i - 1 : 0) : i].value,
                   );
                 },
               ),
             ),
             _Tile(
-              items[value]!,
-              badge: badges == null ? false : (badges![value] ?? false),
+              items[i],
+              badge:
+                  badges == null ? false : (badges![items[i].value] ?? false),
               accentTextColor: accentTextColor,
               duration: duration,
-              selected: value == selectedValue,
-              onTap: () => onSelect(value),
+              selected: i == selectedIndex,
+              onTap: () => onSelect(items[i].value),
               height: tileSize,
             ),
             Expanded(
@@ -183,11 +193,11 @@ class RadioNavBar<T> extends StatelessWidget {
                 splashColor: Colors.transparent,
                 highlightColor: Colors.transparent,
                 onTap: () {
-                  final i = orderedValues.indexOf(value);
                   onSelect(
-                    orderedValues[(value == selectedValue)
-                        ? (i + 1).clamp(0, orderedValues.length - 1)
-                        : i],
+                    items[i == selectedIndex
+                            ? (i < items.length - 1 ? i + 1 : i)
+                            : i]
+                        .value,
                   );
                 },
               ),
@@ -289,7 +299,7 @@ class _Icon extends StatelessWidget {
     final double size =
         item.iconSize ?? IconTheme.of(context).size ?? _defaultIconSize;
 
-    if (item.unselectedIcon != null) {
+    if (item.unselectedIcon case Widget unselectedIcon) {
       return Container(
         height: height,
         width: height,
@@ -309,7 +319,10 @@ class _Icon extends StatelessWidget {
                     child: AnimatedOpacity(
                       duration: duration,
                       opacity: !selected ? 1.0 : 0.0,
-                      child: Icon(item.unselectedIcon!, size: size),
+                      child: IconTheme(
+                        data: IconTheme.of(context).copyWith(size: size),
+                        child: unselectedIcon,
+                      ),
                     ),
                   ),
                 ),
@@ -325,7 +338,12 @@ class _Icon extends StatelessWidget {
                     child: AnimatedOpacity(
                       duration: duration,
                       opacity: selected ? 1.0 : 0.0,
-                      child: Icon(item.icon, color: accentColor, size: size),
+                      child: IconTheme(
+                        data: IconTheme.of(
+                          context,
+                        ).copyWith(size: size, color: accentColor),
+                        child: item.icon,
+                      ),
                     ),
                   ),
                 ),
@@ -339,10 +357,11 @@ class _Icon extends StatelessWidget {
         height: height,
         width: height,
         alignment: Alignment.center,
-        child: Icon(
-          selected ? item.icon : (item.unselectedIcon ?? item.icon),
-          color: selected ? accentColor : null,
-          size: size,
+        child: IconTheme(
+          data: IconTheme.of(
+            context,
+          ).copyWith(color: selected ? accentColor : null, size: size),
+          child: selected ? item.icon : (item.unselectedIcon ?? item.icon),
         ),
       );
     }
@@ -374,7 +393,10 @@ class _Label extends StatelessWidget {
       axisAlignment: -1,
       child: Padding(
         padding: const EdgeInsets.only(right: 16.0),
-        child: Text(item.title, style: textStyle),
+        child: DefaultTextStyle(
+          style: DefaultTextStyle.of(context).style.merge(textStyle),
+          child: item.title,
+        ),
       ),
     );
   }
