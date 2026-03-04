@@ -93,3 +93,43 @@ class FractionallyListed extends StatelessWidget {
     );
   }
 }
+
+class CustomFractionallyListed extends StatelessWidget {
+  const CustomFractionallyListed({
+    super.key,
+    required this.value,
+    required this.child,
+    this.axis = Axis.vertical,
+    this.axisAlignment = -1,
+    this.maxSizeVal = 1,
+    this.minOpacityVal = 1 / 2,
+  });
+
+  final double axisAlignment;
+  final Axis axis;
+  final Widget? child;
+  final double value;
+  final double maxSizeVal;
+  final double minOpacityVal;
+
+  @override
+  Widget build(BuildContext context) {
+    final value = this.value.clamp(0, 1);
+
+    final double sizeFactor = value.rangeMap(from: (0, maxSizeVal));
+
+    final double opacity = value.rangeMap(from: (minOpacityVal, 1));
+
+    return ClipRect(
+      child: Align(
+        alignment: Alignment(
+          axis == Axis.horizontal ? axisAlignment : 0.0,
+          axis == Axis.vertical ? axisAlignment : 0.0,
+        ),
+        widthFactor: axis == Axis.horizontal ? sizeFactor : 1.0,
+        heightFactor: axis == Axis.vertical ? sizeFactor : 1.0,
+        child: Opacity(opacity: opacity, child: child),
+      ),
+    );
+  }
+}

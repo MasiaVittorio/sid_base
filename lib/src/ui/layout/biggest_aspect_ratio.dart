@@ -4,11 +4,11 @@ import 'package:flutter/rendering.dart';
 class BiggestSquare extends StatelessWidget {
   const BiggestSquare({
     super.key,
-    required this.child,
+    this.child,
     this.shrink = false,
     this.fallback = 56,
   });
-  final Widget child;
+  final Widget? child;
   final bool shrink;
   final double fallback;
 

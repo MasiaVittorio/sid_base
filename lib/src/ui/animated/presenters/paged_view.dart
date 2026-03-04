@@ -190,7 +190,13 @@ class _AnimatedPageState extends State<AnimatedPage>
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: slideController,
-      child: widget.child,
+      child: AnimatedBuilder(
+        animation: opacityController,
+        child: widget.child,
+        builder: (context, child) {
+          return Opacity(opacity: opacityController.value, child: child);
+        },
+      ),
       builder: (context, child) {
         final double slideValue =
             slideController.value * widget.fractionalOffset;
@@ -199,13 +205,7 @@ class _AnimatedPageState extends State<AnimatedPage>
             Axis.horizontal => Offset(slideValue, 0),
             Axis.vertical => Offset(0, slideValue),
           },
-          child: AnimatedBuilder(
-            animation: opacityController,
-            child: child,
-            builder: (context, child) {
-              return Opacity(opacity: opacityController.value, child: child);
-            },
-          ),
+          child: child,
         );
       },
     );
