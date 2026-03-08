@@ -5,7 +5,7 @@ class ViewPage<T> {
   final Widget child;
   final T value;
 
-  ViewPage({required this.child, required this.value});
+  const ViewPage({required this.child, required this.value});
 }
 
 class AnimatedPagedView<T> extends StatelessWidget {

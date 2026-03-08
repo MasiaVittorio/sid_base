@@ -132,7 +132,7 @@ class HorizontalNavigationBar<T> extends StatelessWidget {
       color: barBackgroundColor,
       child: Pad(
         top: extraTopPadding,
-        bottom: context.safe.bottom + extraBottomPadding,
+        bottom: MediaQuery.viewPaddingOf(context).bottom + extraBottomPadding,
         child: MediaQuery.removePadding(
           context: context,
           removeBottom: true,

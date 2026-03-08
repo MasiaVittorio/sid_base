@@ -98,7 +98,7 @@ class ListSection extends StatelessWidget {
           ),
         ],
         ChildrenDisplayMode.grouped => children.groupedCards(
-          overrideLastPadding: bottom,
+          lastPadding: bottom,
         ),
       },
     ];

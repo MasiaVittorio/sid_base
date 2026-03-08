@@ -13,6 +13,7 @@ abstract class ValueEditView<T> extends StatefulWidget {
   final ValueChanged<T> onSave;
   final bool resizeOnKeyboard;
 
+  // TODO: localize or provide edit capabilities
   String get discardDialogTitle => "Scarta modifiche?";
   String get discardDialogContent =>
       "Se esci ora, le modifiche non saranno salvate.";
@@ -64,7 +65,6 @@ abstract class ValueEditViewState<T, A extends ValueEditView<T>>
               final bool? response = await showDialog<bool>(
                 context: context,
                 builder: (context) {
-                  // TODO: localize or provide edit capabilitini
                   return ConfirmDialog(
                     title: widget.discardDialogTitle,
                     content: widget.discardDialogContent,
