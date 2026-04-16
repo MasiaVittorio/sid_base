@@ -143,6 +143,35 @@ class Reactive<T> extends ChangeNotifier {
     });
   }
 
+  static Widget build5<A, B, C, D, E>(
+    Reactive<A> a,
+    Reactive<B> b,
+    Reactive<C> c,
+    Reactive<D> d,
+    Reactive<E> e, {
+    required Widget Function(
+      BuildContext context,
+      A aVal,
+      B bVal,
+      C cVal,
+      D dVal,
+      E eVal,
+    )
+    builder,
+  }) {
+    return a.build((context, aV) {
+      return b.build((context, bV) {
+        return c.build((context, cV) {
+          return d.build((context, dV) {
+            return e.build((context, eV) {
+              return builder(context, aV, bV, cV, dV, eV);
+            });
+          });
+        });
+      });
+    });
+  }
+
   static Reactive<T> modal<T>({
     required T initVal,
     String? key,

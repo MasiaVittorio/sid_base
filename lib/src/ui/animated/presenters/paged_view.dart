@@ -194,7 +194,10 @@ class _AnimatedPageState extends State<AnimatedPage>
         animation: opacityController,
         child: widget.child,
         builder: (context, child) {
-          return Opacity(opacity: opacityController.value, child: child);
+          return IgnorePointer(
+            ignoring: opacityController.value < 0.5,
+            child: Opacity(opacity: opacityController.value, child: child),
+          );
         },
       ),
       builder: (context, child) {
