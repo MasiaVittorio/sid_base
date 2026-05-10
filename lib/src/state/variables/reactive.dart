@@ -79,15 +79,15 @@ class Reactive<T> extends ChangeNotifier {
 
   // So that the child is not rebuilt every time
   Widget buildWithStaticChild({
-    required Widget Function(BuildContext context, T value, Widget child)
+    required Widget Function(BuildContext context, T value, Widget? child)
     builder,
-    required Widget child,
+    required Widget? child,
   }) {
     return AnimatedBuilder(
       animation: this,
       child: child,
       builder: (BuildContext context, Widget? c) {
-        return builder(context, value, c!);
+        return builder(context, value, c);
       },
     );
   }
@@ -181,21 +181,20 @@ class Reactive<T> extends ChangeNotifier {
     void Function(T)? readCallback,
     bool Function(T, T)? equals,
     // T Function(T)? copier,
-  }) =>
-      key != null
-          ? PersistentReactive<T>(
-            initVal,
-            key: key,
-            fromJsonDecoded: fromJsonDecoded,
-            toJsonEncodable: toJsonEncodable,
-            afterReading: readCallback,
-            readCount: readCount,
-            // copier: copier,
-            equality: equals,
-          )
-          : Reactive<T>(
-            initVal,
-            // copier: copier,
-            equality: equals,
-          );
+  }) => key != null
+      ? PersistentReactive<T>(
+          initVal,
+          key: key,
+          fromJsonDecoded: fromJsonDecoded,
+          toJsonEncodable: toJsonEncodable,
+          afterReading: readCallback,
+          readCount: readCount,
+          // copier: copier,
+          equality: equals,
+        )
+      : Reactive<T>(
+          initVal,
+          // copier: copier,
+          equality: equals,
+        );
 }

@@ -27,7 +27,6 @@ class AnimatedPagedView<T> extends StatelessWidget {
         for (int i = 0; i < pages.length; i++)
           if (pages[i] case ViewPage<T> page)
             AnimatedPage(
-              index: i,
               state: switch (i - index) {
                 < 0 => AnimatedPageState.early,
                 > 0 => AnimatedPageState.late,
@@ -51,10 +50,8 @@ class AnimatedPage extends StatefulWidget {
     this.fractionalOffset = 0.9,
     this.opacityOverlap = 0.1,
     this.durationMultiplier = 1,
-    required this.index,
   });
 
-  final int index;
   final Widget child;
   final Axis direction;
   final AnimatedPageState state;
@@ -142,17 +139,15 @@ class _AnimatedPageState extends State<AnimatedPage>
     final int exitOpacityZeroOverlap =
         exitSlide * enterSlide ~/ (exitSlide + enterSlide);
 
-    final int exitOpacity =
-        widget.opacityOverlap
-            .rangeMap(from: (0, 1), to: (exitOpacityZeroOverlap, exitSlide))
-            .round();
+    final int exitOpacity = widget.opacityOverlap
+        .rangeMap(from: (0, 1), to: (exitOpacityZeroOverlap, exitSlide))
+        .round();
 
     final int enterOpacityZeroOverlap = enterSlide - exitOpacityZeroOverlap;
 
-    final int enterOpacity =
-        widget.opacityOverlap
-            .rangeMap(from: (0, 1), to: (enterOpacityZeroOverlap, enterSlide))
-            .round();
+    final int enterOpacity = widget.opacityOverlap
+        .rangeMap(from: (0, 1), to: (enterOpacityZeroOverlap, enterSlide))
+        .round();
     final int currentId = _id + 0;
     if (target == 1) {
       await Future.delayed(Duration(microseconds: enterSlide - enterOpacity));
@@ -163,7 +158,7 @@ class _AnimatedPageState extends State<AnimatedPage>
     }
     if (opacityController.value == target) {
       if (!opacityController.isAnimating) {
-        // could be at zero but nonetheles have an animation that started towards one, in which case we are fucked
+        // could be at zero but nonetheless have an animation that started towards one, in which case we are fucked
         return;
       }
     }
@@ -195,7 +190,7 @@ class _AnimatedPageState extends State<AnimatedPage>
         child: widget.child,
         builder: (context, child) {
           return IgnorePointer(
-            ignoring: opacityController.value < 0.5,
+            ignoring: opacityController.value < 0.9,
             child: Opacity(opacity: opacityController.value, child: child),
           );
         },

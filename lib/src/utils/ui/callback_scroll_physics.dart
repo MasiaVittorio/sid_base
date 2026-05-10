@@ -52,6 +52,7 @@ class CallbackScrollPhysics extends ScrollPhysics {
     this.topBounceCallback,
     this.alwaysScrollable,
     this.neverScrollable,
+    this.onlyFromEdges = true,
   });
 
   /// {OC} you can customize the behavior of the scrollable object to
@@ -82,6 +83,44 @@ class CallbackScrollPhysics extends ScrollPhysics {
   /// this callback by overscrolling the object over the bottom by a given amount of pixels
   final void Function()? bottomBounceCallback;
 
+  /// {OC} if true, callbacks are triggered only from gestures that start at the edges and don't touch middle values
+  final bool onlyFromEdges;
+
+  /// {OC} flags stuff
+  static bool _startedScroll = false;
+  static bool _startedAtTopEdge = false;
+  static bool _startedAtBottomEdge = false;
+  static bool _touchedMiddleValues = false;
+  static void _resetFlags() {
+    _startedScroll = false;
+    _startedAtTopEdge = false;
+    _startedAtBottomEdge = false;
+    _touchedMiddleValues = false;
+  }
+
+  static void _recordPosition(ScrollMetrics position) {
+    if (_startedScroll) {
+      if (position.pixels > position.minScrollExtent &&
+          position.pixels < position.maxScrollExtent) {
+        if (!_touchedMiddleValues) {
+          _touchedMiddleValues = true;
+        }
+      }
+    } else {
+      _startedScroll = true;
+      _startedAtTopEdge = position.pixels <= position.minScrollExtent;
+      _startedAtBottomEdge = position.pixels >= position.maxScrollExtent;
+    }
+  }
+
+  bool _onlyFromTopEdgeUp() {
+    return (!onlyFromEdges) || (_startedAtTopEdge && !_touchedMiddleValues);
+  }
+
+  bool _onlyFromBottomEdgeDown() {
+    return (!onlyFromEdges) || (_startedAtBottomEdge && !_touchedMiddleValues);
+  }
+
   @override
   CallbackScrollPhysics applyTo(ScrollPhysics? ancestor) {
     return CallbackScrollPhysics(
@@ -93,6 +132,7 @@ class CallbackScrollPhysics extends ScrollPhysics {
       callbackCondition: callbackCondition,
       topBounceCallback: topBounceCallback,
       bottomBounceCallback: bottomBounceCallback,
+      onlyFromEdges: onlyFromEdges,
     );
   }
 
@@ -111,6 +151,7 @@ class CallbackScrollPhysics extends ScrollPhysics {
   double applyPhysicsToUserOffset(ScrollMetrics position, double offset) {
     assert(offset != 0.0);
     assert(position.minScrollExtent <= position.maxScrollExtent);
+    _recordPosition(position);
 
     if (!position.outOfRange) return offset;
 
@@ -130,13 +171,12 @@ class CallbackScrollPhysics extends ScrollPhysics {
         (overscrollPastStart > 0.0 && offset < 0.0) ||
         (overscrollPastEnd > 0.0 && offset > 0.0);
 
-    final double friction =
-        easing
-            // Apply less resistance when easing the overscroll vs tensioning.
-            ? frictionFactor(
-              (overscrollPast - offset.abs()) / position.viewportDimension,
-            )
-            : frictionFactor(overscrollPast / position.viewportDimension);
+    final double friction = easing
+        // Apply less resistance when easing the overscroll vs tensioning.
+        ? frictionFactor(
+            (overscrollPast - offset.abs()) / position.viewportDimension,
+          )
+        : frictionFactor(overscrollPast / position.viewportDimension);
     final double direction = offset.sign;
 
     return direction * _applyFriction(overscrollPast, offset.abs(), friction);
@@ -232,15 +272,22 @@ class CallbackScrollPhysics extends ScrollPhysics {
       if (conditionChecker != null) {
         bool checked = conditionChecker(dist, velocity.abs());
         if (checked) {
-          if (overscroll && bottomBounceCallback != null && velocity >= 0) {
+          if (overscroll &&
+              bottomBounceCallback != null &&
+              velocity >= 0 &&
+              _onlyFromBottomEdgeDown()) {
             bottomBounceCallback!();
           }
-          if (underscroll && topBounceCallback != null && velocity <= 0) {
+          if (underscroll &&
+              topBounceCallback != null &&
+              velocity <= 0 &&
+              _onlyFromTopEdgeUp()) {
             topBounceCallback!();
           }
         }
       }
 
+      _resetFlags();
       return BouncingScrollSimulation(
         spring: spring,
         position: position.pixels,
@@ -250,7 +297,9 @@ class CallbackScrollPhysics extends ScrollPhysics {
         tolerance: tolerance,
       );
     }
-    // return null;
+
+    _resetFlags();
+
     if (velocity.abs() < tolerance.velocity) return null;
     if (velocity > 0.0 && position.pixels >= position.maxScrollExtent) {
       return null;

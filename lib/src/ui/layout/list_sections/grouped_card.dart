@@ -10,39 +10,69 @@ class GroupedCard extends StatelessWidget {
     this.horizontalMargin,
     this.lastPadding,
     this.backgroundColor,
+    this.marginAnimationDuration,
+    this.direction = Axis.vertical,
   });
 
   final bool isFirst;
   final bool isLast;
   final Widget child;
+  final Axis direction;
   final double? horizontalMargin;
   final double? lastPadding;
   final Color? backgroundColor;
+
+  final Duration? marginAnimationDuration;
 
   @override
   Widget build(BuildContext context) {
     final layout = context.theme.layout;
     final groupedTheme = GroupedCardTheme.of(context);
+    final material = Material(
+      clipBehavior: Clip.antiAlias,
+      borderRadius: borderRadius(
+        layout,
+        isFirst: isFirst,
+        isLast: isLast,
+        direction: direction,
+      ),
+      color:
+          backgroundColor ??
+          groupedTheme.backgroundColor ??
+          context.theme.colorScheme.surfaceContainerHigh,
+      child: child,
+    );
+
+    // ignore: no_leading_underscores_for_local_identifiers
+    final _horizontalMargin =
+        horizontalMargin ??
+        groupedTheme.horizontalMargin ??
+        layout.margin.medium;
+
+    // ignore: no_leading_underscores_for_local_identifiers
+    final _bottomMargin = bottomMargin(
+      context: context,
+      isLast: isLast,
+      lastPaddingOverride: lastPadding,
+    );
+
+    if (marginAnimationDuration case Duration duration) {
+      return AnimatedPadding(
+        duration: duration,
+        curve: Easings.emphasized,
+        padding: EdgeInsets.only(
+          left: _horizontalMargin,
+          right: _horizontalMargin,
+          bottom: _bottomMargin,
+        ),
+        child: material,
+      );
+    }
 
     return Pad(
-      horizontal:
-          horizontalMargin ??
-          groupedTheme.horizontalMargin ??
-          layout.margin.medium,
-      bottom: bottomMargin(
-        context: context,
-        isLast: isLast,
-        lastPaddingOverride: lastPadding,
-      ),
-      child: Material(
-        clipBehavior: Clip.antiAlias,
-        borderRadius: borderRadius(layout, isFirst: isFirst, isLast: isLast),
-        color:
-            backgroundColor ??
-            groupedTheme.backgroundColor ??
-            context.theme.colorScheme.surfaceContainerHigh,
-        child: child,
-      ),
+      horizontal: _horizontalMargin,
+      bottom: _bottomMargin,
+      child: material,
     );
   }
 
@@ -55,8 +85,8 @@ class GroupedCard extends StatelessWidget {
     final groupedTheme = GroupedCardTheme.of(context);
     return isLast
         ? (lastPaddingOverride ??
-            groupedTheme.lastPadding ??
-            layout.margin.medium)
+              groupedTheme.lastPadding ??
+              layout.margin.medium)
         : layout.spacing.tiny;
   }
 
@@ -64,28 +94,42 @@ class GroupedCard extends StatelessWidget {
     Layout layout, {
     required bool isFirst,
     required bool isLast,
+    Axis direction = Axis.vertical,
   }) {
-    return BorderRadius.vertical(
-      top:
-          isFirst
-              ? Radius.circular(layout.endListRadius.medium)
-              : Radius.circular(layout.innerListRadius.medium),
-      bottom:
-          isLast
-              ? Radius.circular(layout.endListRadius.medium)
-              : Radius.circular(layout.innerListRadius.medium),
-    );
+    return switch (direction) {
+      Axis.vertical => BorderRadius.vertical(
+        top: isFirst
+            ? Radius.circular(layout.endListRadius.medium)
+            : Radius.circular(layout.innerListRadius.medium),
+        bottom: isLast
+            ? Radius.circular(layout.endListRadius.medium)
+            : Radius.circular(layout.innerListRadius.medium),
+      ),
+      Axis.horizontal => BorderRadius.horizontal(
+        left: isFirst
+            ? Radius.circular(layout.endListRadius.medium)
+            : Radius.circular(layout.innerListRadius.medium),
+        right: isLast
+            ? Radius.circular(layout.endListRadius.medium)
+            : Radius.circular(layout.innerListRadius.medium),
+      ),
+    };
   }
 }
 
 extension GroupedCards on List<Widget> {
-  List<Widget> groupedCards({double? lastPadding, Color? backgroundColor}) => [
+  List<Widget> groupedCards({
+    double? lastPadding,
+    Color? backgroundColor,
+    Axis direction = Axis.vertical,
+  }) => [
     for (int i = 0; i < length; i++)
       GroupedCard(
         isFirst: i == 0,
         isLast: i == length - 1,
         lastPadding: lastPadding,
         backgroundColor: backgroundColor,
+        direction: direction,
         child: this[i],
       ),
   ];
@@ -199,8 +243,8 @@ class GroupedCardTheme extends InheritedWidget {
   final GroupedCardThemeData data;
 
   static GroupedCardThemeData of(BuildContext context) {
-    final theme =
-        context.dependOnInheritedWidgetOfExactType<GroupedCardTheme>();
+    final theme = context
+        .dependOnInheritedWidgetOfExactType<GroupedCardTheme>();
     return theme?.data ?? GroupedCardThemeData.empty;
   }
 
