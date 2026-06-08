@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 class TextReactor extends StatelessWidget {
 
   const TextReactor({
-    Key? key,
+    super.key,
     required this.controller,
     this.child,
     required this.builder,
-  }) : super(key: key);
+  });
 
   final TextEditingController controller;
   final Widget? child;

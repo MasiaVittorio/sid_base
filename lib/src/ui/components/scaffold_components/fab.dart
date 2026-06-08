@@ -6,7 +6,7 @@ import 'package:sid_base/sid_base.dart';
 
 class OpenFab extends StatelessWidget {
   const OpenFab({
-    Key? key,
+    super.key,
     this.backgroundColor,
     required this.extended,
     required this.label,
@@ -17,7 +17,7 @@ class OpenFab extends StatelessWidget {
     this.labelSize,
     this.useRootNavigator = false,
     this.margin = const EdgeInsets.all(20),
-  }) : super(key: key);
+  });
 
   final Color? backgroundColor;
   final bool extended;
@@ -50,8 +50,8 @@ class OpenFab extends StatelessWidget {
             transitionType: ContainerTransitionType.fadeThrough,
             transitionDuration: const Duration(milliseconds: 300),
             closedColor: closedColor,
-            middleColor: theme.colorScheme.background,
-            openColor: theme.colorScheme.background,
+            middleColor: theme.colorScheme.surface,
+            openColor: theme.colorScheme.surface,
             closedShape: const RoundedRectangleBorder(
               borderRadius: borderRadius,
             ),
@@ -87,7 +87,7 @@ class OpenFab extends StatelessWidget {
 
 class CustomFab extends StatelessWidget {
   const CustomFab({
-    Key? key,
+    super.key,
     this.backgroundColor,
     this.icon,
     required this.extended,
@@ -95,7 +95,7 @@ class CustomFab extends StatelessWidget {
     required this.onTap,
     this.borderRadius,
     this.labelSize = defaultLabelSize,
-  }) : super(key: key);
+  });
 
   static const double defaultLabelSize = 70.0;
 

@@ -1,12 +1,14 @@
 import 'package:flutter/foundation.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 import '../../base/persitence.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 
 bool get _v => false;
 
 class HivePersistence implements PersistenceProvider {
-  const HivePersistence();
+  const HivePersistence({
+    this.boxName = "Hive Persistence Box",
+  });
 
   static bool _initialized = false;
   Future<void> init() async {
@@ -27,7 +29,7 @@ class HivePersistence implements PersistenceProvider {
   @override
   bool get isStable => true;
 
-  static const String boxName = "Hive Persistence Box";
+  final String boxName;
 
   @override
   Future<String?> readEncodedObject(String objectKey) async {
@@ -48,6 +50,31 @@ class HivePersistence implements PersistenceProvider {
       // ignore: empty_catches
     } catch (e) {}
     return false;
+  }
+
+  @override
+  Future<bool> remove(String objectKey) async {
+    await init();
+    try {
+      if (_v) debugPrint("hive removing key $objectKey");
+      final LazyBox<String> box = await Hive.openLazyBox<String>(boxName);
+      box.delete(objectKey);
+      return true;
+      // ignore: empty_catches
+    } catch (e) {}
+    return false;
+  }
+
+  @override
+  Future<Iterable<dynamic>> getKeys() async {
+    await init();
+    try {
+      if (_v) debugPrint("hive getting keys");
+      final LazyBox<String> box = await Hive.openLazyBox<String>(boxName);
+      return box.keys;
+      // ignore: empty_catches
+    } catch (e) {}
+    return [];
   }
 
   void dispose() async {

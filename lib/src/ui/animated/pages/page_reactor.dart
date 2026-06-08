@@ -1,32 +1,45 @@
 import 'package:flutter/material.dart';
+import 'package:sid_base/src/utils/all.dart';
 
-extension PageControllerSafe on PageController {
-  bool get isSafe => hasClients && position.hasContentDimensions;
-  double get safePage {
-    if (isSafe) {
-      if (page case final double page) {
-        return page;
-      }
-    }
-    return initialPage.toDouble();
-  }
-}
-
-class SmoothPageReactor extends StatelessWidget {
-  const SmoothPageReactor({
-    Key? key,
+/// A widget that reacts to continuous page position changes from a [PageController].
+///
+/// Unlike PageIndexReactor which only updates on whole page index changes,
+/// this widget provides the exact decimal page position (e.g., 1.5 when halfway
+/// between pages 1 and 2) and rebuilds continuously during page transitions.
+///
+/// This is particularly useful for creating smooth animations that respond to
+/// page scrolling in real-time.
+///
+/// Example usage:
+/// ```dart
+/// PageReactor(
+///   controller: _pageController,
+///   builder: (context, child, page) {
+///     return Transform.scale(
+///       scale: 1.0 - (page - page.floor()).abs() * 0.3,
+///       child: child,
+///     );
+///   },
+/// )
+/// ```
+class PageReactor extends StatelessWidget {
+  /// Creates a [PageReactor] widget.
+  ///
+  /// The [controller] is used to track continuous page position changes.
+  /// The [builder] is called with the exact page position whenever it changes.
+  /// An optional [child] widget can be provided that will be passed to the builder
+  /// for more efficient rebuilds.
+  const PageReactor({
     required this.controller,
-    this.child,
     required this.builder,
-  }) : super(key: key);
+    super.key,
+    this.child,
+  });
 
   final PageController controller;
   final Widget? child;
-  final Widget Function(
-    BuildContext context,
-    Widget? child,
-    double page,
-  ) builder;
+  final Widget Function(BuildContext context, Widget? child, double page)
+  builder;
 
   @override
   Widget build(BuildContext context) {
@@ -37,59 +50,5 @@ class SmoothPageReactor extends StatelessWidget {
         return builder(context, child, controller.safePage);
       },
     );
-  }
-}
-
-class IntegerPageReactor extends StatefulWidget {
-  const IntegerPageReactor({
-    Key? key,
-    required this.controller,
-    this.child,
-    required this.builder,
-  }) : super(key: key);
-
-  final PageController controller;
-  final Widget? child;
-  final Widget Function(
-    BuildContext context,
-    Widget? child,
-    int page,
-  ) builder;
-
-  @override
-  State<IntegerPageReactor> createState() => _IntegerPageReactorState();
-}
-
-class _IntegerPageReactorState extends State<IntegerPageReactor> {
-  late int page = widget.controller.safePage.round();
-
-  @override
-  void initState() {
-    super.initState();
-    widget.controller.addListener(listener);
-  }
-
-  @override
-  void dispose() {
-    widget.controller.removeListener(listener);
-    super.dispose();
-  }
-
-  void listener() {
-    handleChange(widget.controller.safePage);
-  }
-
-  void handleChange(double newValue) {
-    final int rounded = newValue.round();
-    if (rounded != page) {
-      setState(() {
-        page = rounded;
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return widget.builder(context, widget.child, page);
   }
 }

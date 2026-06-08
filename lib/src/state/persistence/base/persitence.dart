@@ -1,6 +1,4 @@
-
 abstract interface class PersistenceProvider {
-
   bool get isCache;
   bool get isStable; // should be the opposite of is cache
 
@@ -8,5 +6,7 @@ abstract interface class PersistenceProvider {
 
   Future<String?> readEncodedObject(String objectKey);
 
-}
+  Future<bool> remove(String objectKey);
 
+  Future<Iterable<dynamic>> getKeys();
+}

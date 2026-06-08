@@ -12,9 +12,16 @@ abstract class ValueEditView<T> extends StatefulWidget {
   final T? initial;
   final ValueChanged<T> onSave;
   final bool resizeOnKeyboard;
+
+  // TODO: localize or provide edit capabilities
+  String get discardDialogTitle => "Scarta modifiche?";
+  String get discardDialogContent =>
+      "Se esci ora, le modifiche non saranno salvate.";
+  String get discardDialogConfirmLabel => "Scarta ed esci";
 }
 
-abstract class ValueEditViewState<T, A extends ValueEditView<T>> extends State<A> {
+abstract class ValueEditViewState<T, A extends ValueEditView<T>>
+    extends State<A> {
   T? get current;
   T? get initial => widget.initial;
 
@@ -31,41 +38,56 @@ abstract class ValueEditViewState<T, A extends ValueEditView<T>> extends State<A
     return TextReactor(
       controller: controller,
       child: null,
-      builder: (_, __, ___) => builder(context),
+      builder: (_, _, _) => builder(context),
     );
   }
 
   Widget body(BuildContext context);
 
   bool get isCurrentEmpty => false;
+  bool _isConfirmingPop = false;
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        if (_tryingToSaveNow) return true;
-        if (current == initial) return true;
-        if (initial == null && isCurrentEmpty) return true;
-        bool confirmPop = false;
-        try {
-          final bool? response = await showDialog<bool>(
-            context: context,
-            builder: (context) {
-              // TODO: localize or provide edit capabilitini
-              return ConfirmDialog(
-                title: "Scarta modifiche?",
-                content: "Se esci ora, le modifiche non saranno salvate.",
-                confirmLabel: "Scarta ed esci",
-                confirmColor: context.theme.colorScheme.error,
-                action: () {},
+    return PopScope(
+      canPop:
+          _isConfirmingPop ||
+          _tryingToSaveNow ||
+          current == initial ||
+          initial == null && isCurrentEmpty,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (!didPop) {
+          bool confirmPop = false;
+          if (_isConfirmingPop || _tryingToSaveNow) {
+            confirmPop = true;
+          } else {
+            try {
+              final bool? response = await showDialog<bool>(
+                context: context,
+                builder: (context) {
+                  return ConfirmDialog(
+                    title: widget.discardDialogTitle,
+                    content: widget.discardDialogContent,
+                    confirmLabel: widget.discardDialogConfirmLabel,
+                    dangerous: true,
+                    action: () {},
+                  );
+                },
               );
-            },
-          );
-          confirmPop = response ?? false;
-        } catch (e) {
-          confirmPop = false;
+              confirmPop = response ?? false;
+            } catch (e) {
+              confirmPop = false;
+            }
+          }
+          if (confirmPop) {
+            setState(() {
+              _isConfirmingPop = true;
+            });
+            if (context.mounted) {
+              Navigator.of(context).pop();
+            }
+          }
         }
-        return confirmPop;
       },
       child: Scaffold(
         appBar: appBar,
@@ -82,7 +104,9 @@ abstract class ValueEditViewState<T, A extends ValueEditView<T>> extends State<A
     return () {
       widget.onSave(c);
 
-      _tryingToSaveNow = true;
+      setState(() {
+        _tryingToSaveNow = true;
+      });
       // so it skips the onWillPop stuff that asks if you're sure you want to exit
 
       Navigator.of(context).maybePop();
@@ -90,12 +114,12 @@ abstract class ValueEditViewState<T, A extends ValueEditView<T>> extends State<A
   }
 
   WidgetBuilder get saveButtonBuilder => (context) {
-        final loc = MaterialLocalizations.of(context);
-        return TextButton(
-          onPressed: getSaveAction,
-          child: Text(loc.saveButtonLabel),
-        );
-      };
+    final loc = MaterialLocalizations.of(context);
+    return TextButton(
+      onPressed: getSaveAction,
+      child: Text(loc.saveButtonLabel),
+    );
+  };
 
   AppBar get appBar {
     final init = initial;

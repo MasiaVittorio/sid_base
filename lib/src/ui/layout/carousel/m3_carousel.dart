@@ -1,0 +1,530 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+library;
+
+import 'package:animations/animations.dart';
+import 'package:flutter/material.dart';
+import 'package:sid_base/sid_base.dart';
+import 'package:sid_base/src/all.dart';
+
+import 'transparent_pointer.dart';
+
+part 'carousels/centered_hero/carousel.dart';
+part 'carousels/centered_hero/decorator.dart';
+part 'carousels/centered_hero/item_state.dart';
+part 'carousels/centered_hero/layout.dart';
+part 'carousels/centered_hero/theme.dart';
+part 'carousels/full_screen/carousel.dart';
+part 'carousels/full_screen/decorator.dart';
+part 'carousels/full_screen/item_state.dart';
+part 'carousels/full_screen/layout.dart';
+part 'carousels/full_screen/theme.dart';
+part 'carousels/hero/carousel.dart';
+part 'carousels/hero/decorator.dart';
+part 'carousels/hero/item_state.dart';
+part 'carousels/hero/layout.dart';
+part 'carousels/hero/theme.dart';
+part 'carousels/multi_browse/carousel.dart';
+part 'carousels/multi_browse/decorator.dart';
+part 'carousels/multi_browse/item_state.dart';
+part 'carousels/multi_browse/layout.dart';
+part 'carousels/multi_browse/theme.dart';
+part 'item.dart';
+part 'item_state.dart';
+part 'labels.dart';
+part 'theme/decoration.dart';
+part 'theme/layout.dart';
+part 'theme/theme.dart';
+
+class M3Carousel<T extends CarouselItemState> extends StatelessWidget {
+  // ignore: prefer_const_constructors_in_immutables
+  M3Carousel({
+    super.key,
+    this.initialIndex = 0,
+    this.theme,
+    required this.itemBuilder,
+    this.itemCount,
+    this.loop = false,
+    this.autoFocusOnTap = true,
+    this.openBuilder,
+    this.useSideShades = true,
+    required this.defaultTheme,
+  });
+  M3Carousel.items({
+    super.key,
+    this.initialIndex = 0,
+    this.theme,
+    required List<CarouselItem<T>> items,
+    this.loop = false,
+    this.autoFocusOnTap = true,
+    this.openBuilder,
+    this.useSideShades = true,
+    required this.defaultTheme,
+  }) {
+    itemBuilder = (i) => items[i];
+    itemCount = items.length;
+  }
+
+  final int initialIndex;
+  final M3CarouselTheme<T>? theme;
+
+  late final CarouselItem<T> Function(int itemIndex) itemBuilder;
+
+  late final int? itemCount;
+  final bool loop;
+
+  final Widget Function(
+    BuildContext context,
+    VoidCallback close,
+    int itemIndex,
+    CarouselItem<T> item,
+  )?
+  openBuilder;
+  final bool autoFocusOnTap;
+  final bool useSideShades;
+
+  final M3CarouselTheme<T> defaultTheme;
+  @override
+  Widget build(BuildContext context) {
+    final M3CarouselTheme<T> theme =
+        this.theme ??
+        CleanProvider.of<M3CarouselTheme<T>>(context) ??
+        defaultTheme;
+    return CleanProvider(
+      data: theme,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return ConstrainedBox(
+            constraints: constraints,
+            child: _M3CarouselBody<T>(
+              useSideShades: useSideShades,
+              autoFocusOnTap: autoFocusOnTap,
+              openBuilder: openBuilder,
+              constraints: constraints,
+              itemBuilder: itemBuilder,
+              itemCount: itemCount,
+              loop: loop,
+              initialIndex: initialIndex,
+              theme: theme,
+              layouter: theme.getLayouter(
+                theme.direction.fold(
+                  ifVertifcal: () => constraints.maxHeight,
+                  ifHorizontal: () => constraints.maxWidth,
+                ),
+              ),
+              decorator: theme.getDecorator(),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _M3CarouselBody<T extends CarouselItemState> extends StatefulWidget {
+  const _M3CarouselBody({
+    required this.initialIndex,
+    required this.itemBuilder,
+    required this.itemCount,
+    required this.loop,
+    required this.theme,
+    required this.constraints,
+    required this.layouter,
+    required this.decorator,
+    required this.openBuilder,
+    required this.autoFocusOnTap,
+    required this.useSideShades,
+  });
+
+  final int initialIndex;
+  final CarouselItem<T> Function(int itemIndex) itemBuilder;
+  final int? itemCount;
+  final bool loop;
+  final M3CarouselTheme<T> theme;
+  final BoxConstraints constraints;
+  final M3CarouselLayouter<T> layouter;
+  final M3CarouselItemDecorator decorator;
+  final Widget Function(
+    BuildContext context,
+    VoidCallback close,
+    int itemIndex,
+    CarouselItem<T> item,
+  )?
+  openBuilder;
+  final bool autoFocusOnTap;
+  final bool useSideShades;
+
+  @override
+  State<_M3CarouselBody<T>> createState() => _M3CarouselBodyState<T>();
+}
+
+class _M3CarouselBodyState<T extends CarouselItemState>
+    extends State<_M3CarouselBody<T>> {
+  late PageController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    initController(widget.initialIndex, widget.layouter.viewPortFraction);
+  }
+
+  double? lastViewPortFraction;
+  void initController(int initialPage, double viewPortFraction) {
+    lastViewPortFraction = viewPortFraction;
+    controller = PageController(
+      initialPage: initialPage,
+      viewportFraction: viewPortFraction,
+      keepPage: true,
+    );
+  }
+
+  @override
+  void didUpdateWidget(covariant _M3CarouselBody<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final newViewPortFraction = widget.layouter.viewPortFraction;
+    if (lastViewPortFraction != newViewPortFraction) {
+      final int page = controller.safePage.round();
+      controller.dispose();
+      initController(page, newViewPortFraction);
+    }
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  int? getIndex(int pageIndex) {
+    if (pageIndex < 0) return null;
+    final int? n = widget.itemCount;
+    if (n == null) return pageIndex;
+    if (n > pageIndex) return pageIndex;
+    if (widget.loop) return pageIndex.modLessThan(n);
+    return null;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = widget.theme;
+    final mTheme = context.theme;
+
+    return CleanProvider<M3CarouselTheme<T>>(
+      data: theme,
+      child: Stack(
+        children: [
+          PageView.builder(
+            itemBuilder: (context, index) => const SizedBox(),
+            itemCount: widget.loop ? null : widget.itemCount,
+            controller: controller,
+            scrollDirection: widget.theme.direction,
+            physics: const PageScrollPhysics(),
+          ),
+          Positioned.fill(
+            child: TransparentPointer(
+              child: PageReactor(
+                controller: controller,
+                builder: (context, child, page) {
+                  final range = widget.layouter.visibleRange(page);
+                  return Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      for (int pi = range.$1; pi < range.$2; pi++)
+                        if (widget.layouter.position(pi, page)
+                            case (Positioner, T) result)
+                          if (getIndex(pi) case int itemIndex)
+                            ((() {
+                              final item = widget.itemBuilder(itemIndex);
+                              final state = result.$2;
+                              final positioner = result.$1;
+                              final double future = (pi - page).toDouble();
+                              final openBuilder = widget.openBuilder;
+                              return positioner(
+                                _GesturesDecider<T>(
+                                  isInFocus:
+                                      (future.round() <
+                                          widget.layouter.pagesInFocus) &&
+                                      future > -1.0,
+                                  pagesInFocus: widget.layouter.pagesInFocus,
+                                  carouselTheme: widget.theme,
+                                  borderRadius: theme.borderRadius,
+                                  pageIndex: pi,
+                                  openBuilder:
+                                      openBuilder == null
+                                          ? null
+                                          : (context, close) => openBuilder(
+                                            context,
+                                            close,
+                                            itemIndex,
+                                            item,
+                                          ),
+                                  autoFocus: widget.autoFocusOnTap,
+                                  canBeOpened: state.canBeOpened,
+                                  overrideOnTap: item.overrideOnTap,
+                                  controller: controller,
+                                  builder: (context, round, onTap) {
+                                    return widget.decorator.build(
+                                      context,
+                                      future,
+                                      _LayoutContent(
+                                        contentAlignment: widget.decorator
+                                            .contentAlignment(future),
+                                        content: item.contentBuilder?.call(
+                                          context,
+                                          state,
+                                          pi,
+                                        ),
+                                        gradient: item.gradient,
+                                        direction: theme.direction,
+                                        largeWidth: widget.layouter.largeWidth,
+                                        contentOpacity:
+                                            result.$2.contentOpacity,
+                                        onTap: onTap,
+                                      ),
+                                      item.background,
+                                      round,
+                                    );
+                                  },
+                                ),
+                              );
+                            })()),
+                    ],
+                  );
+                },
+              ),
+            ),
+          ),
+          if (widget.useSideShades) ...[
+            sideShade(theme, mTheme, true),
+            sideShade(theme, mTheme, false),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Positioned sideShade(
+    M3CarouselTheme<T> carouselTheme,
+    ThemeData theme,
+    bool end,
+  ) {
+    final color = theme.colorScheme.surface;
+    final Axis direction = widget.theme.direction;
+    return Positioned(
+      right: direction.fold(
+        ifVertifcal: () => 0,
+        ifHorizontal: () => end ? 0 : null,
+      ),
+      bottom: direction.fold(
+        ifVertifcal: () => end ? 0 : null,
+        ifHorizontal: () => 0,
+      ),
+      left: direction.fold(
+        ifVertifcal: () => 0,
+        ifHorizontal: () => end ? null : 0,
+      ),
+      top: direction.fold(
+        ifVertifcal: () => end ? null : 0,
+        ifHorizontal: () => 0,
+      ),
+      width: direction.fold(
+        ifVertifcal: () => null,
+        ifHorizontal:
+            () => end ? carouselTheme.lastPadding : carouselTheme.firstPadding,
+      ),
+      height: direction.fold(
+        ifHorizontal: () => null,
+        ifVertifcal:
+            () => end ? carouselTheme.lastPadding : carouselTheme.firstPadding,
+      ),
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: CurvedGradient.build(
+            begin: direction.fold(
+              ifVertifcal: () => Alignment.topCenter,
+              ifHorizontal: () => Alignment.centerLeft,
+            ),
+            end: direction.fold(
+              ifVertifcal: () => Alignment.bottomCenter,
+              ifHorizontal: () => Alignment.centerRight,
+            ),
+            from: color.withValues(alpha: !end ? 1 : 0),
+            to: color.withValues(alpha: end ? 1 : 0),
+            curve:
+                !end
+                    ? Easings.emphasizedDecelerate
+                    : Easings.emphasizedAccelerate,
+            padStart: end ? 0.0 : 0.1,
+            padEnd: !end ? 0.0 : 0.1,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _LayoutContent<T extends CarouselItemState> extends StatelessWidget {
+  const _LayoutContent({
+    super.key,
+    required this.content,
+    required this.gradient,
+    required this.direction,
+    required this.largeWidth,
+    required this.contentOpacity,
+    required this.onTap,
+    required this.contentAlignment,
+  });
+
+  final AlignmentGeometry contentAlignment;
+  final Widget? content;
+  final Gradient? gradient;
+  final Axis direction;
+  final double largeWidth;
+  final double contentOpacity;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      type: MaterialType.transparency,
+      child: Container(
+        decoration: BoxDecoration(gradient: content == null ? null : gradient),
+        child: InkWell(
+          onTap: onTap,
+          child:
+              content == null
+                  ? const SizedBox.expand()
+                  : Stack(
+                    alignment: contentAlignment,
+                    children: [
+                      Positioned(
+                        left: direction.fold(
+                          ifVertifcal: () => 0,
+                          ifHorizontal: () => null,
+                        ),
+                        right: direction.fold(
+                          ifVertifcal: () => 0,
+                          ifHorizontal: () => null,
+                        ),
+                        width: direction.fold(
+                          ifVertifcal: () => null,
+                          ifHorizontal: () => largeWidth,
+                        ),
+                        height: direction.fold(
+                          ifVertifcal: () => largeWidth,
+                          ifHorizontal: () => null,
+                        ),
+                        bottom: direction.fold(
+                          ifVertifcal: () => null,
+                          ifHorizontal: () => 0,
+                        ),
+                        top: direction.fold(
+                          ifVertifcal: () => null,
+                          ifHorizontal: () => 0,
+                        ),
+                        child: Opacity(opacity: contentOpacity, child: content),
+                      ),
+                    ],
+                  ),
+        ),
+      ),
+    );
+  }
+}
+
+class _GesturesDecider<T extends CarouselItemState> extends StatelessWidget {
+  const _GesturesDecider({
+    required this.borderRadius,
+    required this.pageIndex,
+    required this.autoFocus,
+    required this.canBeOpened,
+    required this.overrideOnTap,
+    required this.builder,
+    required this.controller,
+    required this.carouselTheme,
+    required this.openBuilder,
+    required this.pagesInFocus,
+    required this.isInFocus,
+  });
+
+  final M3CarouselTheme<T> carouselTheme;
+  final BorderRadius borderRadius;
+  final int pageIndex;
+  final int pagesInFocus;
+  final bool autoFocus;
+  final bool isInFocus;
+  final bool canBeOpened;
+  bool get canBeFocused => !canBeOpened;
+  final VoidCallback? overrideOnTap;
+  final Widget Function(BuildContext context, bool round, VoidCallback? onTap)
+  builder;
+
+  final PageController controller;
+  final Widget Function(BuildContext context, VoidCallback close)? openBuilder;
+
+  void focus() => controller.animateToPage(
+    pageIndex + 1 - pagesInFocus,
+    duration: Durations.medium3,
+    curve: Easing.emphasizedDecelerate,
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = context.theme;
+    final background =
+        carouselTheme.getDecorator().defaultBackgroundColor ??
+        theme.colorScheme.secondaryContainer;
+    return switch ((overrideOnTap, openBuilder)) {
+      (VoidCallback ot, _) => builder(context, true, ot),
+      (_, null) => builder(
+        context,
+        true,
+        canBeFocused && autoFocus && (!isInFocus) ? focus : null,
+      ),
+      (_, Widget Function(BuildContext, VoidCallback) openBuilder) =>
+        OpenContainer(
+          openShape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.zero,
+          ),
+          closedShape: RoundedRectangleBorder(borderRadius: borderRadius),
+          tappable: false,
+          clipBehavior: Clip.antiAlias,
+          closedColor: background,
+          middleColor: background,
+          openColor: background,
+          closedBuilder: (context, open) {
+            return CleanProvider<M3CarouselTheme<T>>(
+              data: carouselTheme,
+              child: builder(context, false, switch (canBeOpened) {
+                true => open,
+                false => autoFocus ? focus : null,
+              }),
+            );
+          },
+          openBuilder: openBuilder,
+        ),
+    };
+  }
+}
+
+class CurvedGradient {
+  static LinearGradient build({
+    required Color from,
+    required Color to,
+    required Curve curve,
+    AlignmentGeometry begin = Alignment.centerLeft,
+    AlignmentGeometry end = Alignment.centerRight,
+    int granularity = 20,
+    double padStart = 0,
+    double padEnd = 0,
+  }) {
+    final stops = [
+      for (int i = 0; i <= granularity; i++)
+        (i / granularity).rangeMap(to: (padStart, 1 - padEnd)),
+    ];
+    final colors = [
+      for (int i = 0; i <= granularity; i++)
+        Color.lerp(from, to, curve.transform(i / granularity))!,
+    ];
+    return LinearGradient(colors: colors, stops: stops, begin: begin, end: end);
+  }
+}

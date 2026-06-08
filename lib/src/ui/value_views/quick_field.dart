@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:sid_base/sid_base.dart';
 
 
 class QuickField extends StatelessWidget {
   const QuickField({
-    Key? key,
+    super.key,
     required this.controller,
     required this.label,
     this.isDense,
@@ -14,7 +15,7 @@ class QuickField extends StatelessWidget {
     this.textInputAction = TextInputAction.done,
     this.textCapitalization = TextCapitalization.sentences,
     this.onChanged,
-  }) : super(key: key);
+  });
 
   final TextEditingController controller;
   final String label;
@@ -38,6 +39,7 @@ class QuickField extends StatelessWidget {
         textInputAction: textInputAction,
         onSubmitted: onSubmitted,
         onEditingComplete: onEditingComplete,
+        onTapOutside: (_) => context.unfocus(),
         decoration: InputDecoration(
           isDense: isDense,
           label: Text(label),

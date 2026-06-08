@@ -33,13 +33,13 @@ class NavBarItem {
 
 class MD3NavBar extends StatelessWidget {
   const MD3NavBar({
-    Key? key,
+    super.key,
     required this.items,
     required this.currentIndex,
     required this.onTap,
     this.overrideBackgroundColor,
     this.elevation = 2,
-  }) : super(key: key);
+  });
 
   final List<NavBarItem> items;
   final int currentIndex;
@@ -84,14 +84,13 @@ class MD3NavBar extends StatelessWidget {
 
 class _Tab extends StatelessWidget {
   const _Tab({
-    Key? key,
     required this.icon,
     required this.activeIcon,
     required this.active,
     required this.label,
     required this.onTap,
     required this.chipRestElevation,
-  }) : super(key: key);
+  });
 
   final IconData icon;
   final IconData? activeIcon;
@@ -140,12 +139,11 @@ class _Tab extends StatelessWidget {
 
 class _NavChip extends StatelessWidget {
   const _NavChip({
-    Key? key,
     required this.icon,
     required this.activeIcon,
     required this.expanded,
     required this.elevation,
-  }) : super(key: key);
+  });
 
   final IconData icon;
   final IconData? activeIcon;

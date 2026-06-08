@@ -4,7 +4,7 @@ import 'package:sid_base/sid_base.dart';
 class ExpandableAppBar extends StatelessWidget {
 
   const ExpandableAppBar({
-    Key? key,
+    super.key,
     required this.expanded,
     required this.title,
     this.close,
@@ -20,7 +20,7 @@ class ExpandableAppBar extends StatelessWidget {
     this.collapsedColor,
     this.expandedBottomRadius,
     this.expandedBackgroundWidget,
-  }) : super(key: key);
+  });
 
   bool get scrolled => !expanded;
   final bool expanded;
@@ -107,7 +107,7 @@ class ExpandableAppBar extends StatelessWidget {
       height: double.infinity,
       color: scrolled 
         ? collapsedColor ?? theme.elevatedSurface(2)
-        : expandedColor ?? theme.colorScheme.background,
+        : expandedColor ?? theme.colorScheme.surface,
       child: child,
     );
   }

@@ -12,12 +12,11 @@ class ExpandableAppBarList extends StatelessWidget {
     this.automaticallyImplyLeading = true,
     this.threshold = 12,
     this.actions = const [],
+    this.transparentExpanded = false,
   });
 
-  final Widget Function(
-    BuildContext _,
-    ScrollDirection? userDirection,
-  )? userDirectionOverlay;
+  final Widget Function(BuildContext _, ScrollDirection? userDirection)?
+  userDirectionOverlay;
 
   final String title;
   final List<Widget> children;
@@ -26,6 +25,7 @@ class ExpandableAppBarList extends StatelessWidget {
   final Widget? leading;
   final double threshold;
   final List<Widget> actions;
+  final bool transparentExpanded;
 
   bool get _verbose => false;
 
@@ -40,11 +40,12 @@ class ExpandableAppBarList extends StatelessWidget {
     final topDelta = topExpanded - topCollapsed;
     assert(topDelta > 0);
 
-    double topPadding(bool overThreshold, bool? atEnd, _, __) {
+    double topPadding(bool overThreshold, bool? atEnd, _, _) {
       if (atEnd == null) {
         if (_verbose) {
           debugPrint(
-              "top 1.1: at end null (equal to not scrollable): topExpanded");
+            "top 1.1: at end null (equal to not scrollable): topExpanded",
+          );
         }
         return topExpanded;
       }
@@ -75,7 +76,11 @@ class ExpandableAppBarList extends StatelessWidget {
     }
 
     double bottomPadding(
-        bool overThreshold, bool? atEnd, _, double? initialMaxScrollExtent) {
+      bool overThreshold,
+      bool? atEnd,
+      _,
+      double? initialMaxScrollExtent,
+    ) {
       if (atEnd == null) {
         if (_verbose) {
           debugPrint("bottom 2: at end null (not scrollable): bottomExpanded");
@@ -97,7 +102,8 @@ class ExpandableAppBarList extends StatelessWidget {
       }
       if (_verbose) {
         debugPrint(
-            "bottom 5: initial max scroll extent $initialMaxScrollExtent");
+          "bottom 5: initial max scroll extent $initialMaxScrollExtent",
+        );
       }
       if (upBy > initialMaxScrollExtent) {
         if (_verbose) {
@@ -117,19 +123,25 @@ class ExpandableAppBarList extends StatelessWidget {
       topPadding: topPadding,
       bottomPadding: bottomPadding,
       userDirectionOverlay: userDirectionOverlay,
-      thresholdOverlay: (_, overThreshold) => Align(
-        alignment: Alignment.topCenter,
-        child: ExpandableAppBar(
-          expandedHeight: ExpandableAppBar.expandedHeightLarge,
-          expanded: forceExpandAppBar ?? !overThreshold,
-          title: title,
-          automaticallyImplyLeading: automaticallyImplyLeading,
-          leading: leading,
-          centered: true,
-          actions: actions,
-          expandedColor: context.theme.scaffoldBackgroundColor,
-        ),
-      ),
+      thresholdOverlay:
+          (_, overThreshold) => Align(
+            alignment: Alignment.topCenter,
+            child: ExpandableAppBar(
+              expandedHeight: ExpandableAppBar.expandedHeightLarge,
+              expanded: forceExpandAppBar ?? !overThreshold,
+              title: title,
+              automaticallyImplyLeading: automaticallyImplyLeading,
+              leading: leading,
+              centered: true,
+              actions: actions,
+              expandedColor: switch (transparentExpanded) {
+                false => context.theme.scaffoldBackgroundColor,
+                true => context.theme.scaffoldBackgroundColor.withValues(
+                  alpha: 0.0,
+                ),
+              },
+            ),
+          ),
       children: children,
     );
   }

@@ -2,18 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:sid_base/sid_base.dart';
 
 class AnimatedListed extends ImplicitlyAnimatedWidget {
-  const AnimatedListed({super.key, 
+  const AnimatedListed({
+    super.key,
     required this.listed,
     this.axis = Axis.vertical,
     this.axisAlignment = -1,
     this.child,
     Curve? curve,
-    Duration duration = const Duration(milliseconds: 250),
+    super.duration = const Duration(milliseconds: 250),
     this.overlapSizeAndOpacity = 0.0,
-  })  : super(
-    curve: curve ?? Curves.ease, 
-    duration: duration,
-  );
+  }) : super(curve: curve ?? Curves.ease);
 
   final double axisAlignment;
   final Axis axis;
@@ -21,7 +19,8 @@ class AnimatedListed extends ImplicitlyAnimatedWidget {
   final Widget? child;
   final double overlapSizeAndOpacity;
   @override
-  AnimatedWidgetBaseState<AnimatedListed> createState() => _DivisionAnimateState();
+  AnimatedWidgetBaseState<AnimatedListed> createState() =>
+      _DivisionAnimateState();
 }
 
 class _DivisionAnimateState extends AnimatedWidgetBaseState<AnimatedListed> {
@@ -29,40 +28,107 @@ class _DivisionAnimateState extends AnimatedWidgetBaseState<AnimatedListed> {
 
   @override
   void forEachTween(TweenVisitor<dynamic> visitor) {
-    _tween = visitor(
-      _tween, 
-      widget.listed ? 1.0 : 0.0,
-      (dynamic value) 
-        => Tween<double>(begin: value)
-    ) as Tween<double>;
+    _tween =
+        visitor(
+              _tween,
+              widget.listed ? 1.0 : 0.0,
+              (dynamic value) => Tween<double>(begin: value),
+            )
+            as Tween<double>;
   }
 
   @override
   Widget build(BuildContext context) {
-    final double overlap = widget.overlapSizeAndOpacity.clamp(0.0, 1.0);
     final double val = _tween!.evaluate(animation);
 
-    final double maxSizeVal = 1/2 + overlap/2;
+    return FractionallyListed(
+      value: val,
+      axis: widget.axis,
+      axisAlignment: widget.axisAlignment,
+      overlapSizeAndOpacity: widget.overlapSizeAndOpacity,
+      child: widget.child,
+    );
+  }
+}
 
-    final double sizeFactor = val.mapToRange(0, 1, fromMin: 0.0, fromMax: maxSizeVal);
+class FractionallyListed extends StatelessWidget {
+  const FractionallyListed({
+    super.key,
+    required this.value,
+    required this.child,
+    this.axis = Axis.vertical,
+    this.axisAlignment = -1,
+    this.overlapSizeAndOpacity = 0.0,
+  });
 
-    final double minOpacityVal = 1/2 - overlap/2;
+  final double axisAlignment;
+  final Axis axis;
+  final Widget? child;
+  final double overlapSizeAndOpacity;
+  final double value;
 
-    final double opacity = val.mapToRange(0.0, 1.0, fromMin: minOpacityVal, fromMax: 1.0);
+  @override
+  Widget build(BuildContext context) {
+    final value = this.value.clamp(0, 1);
+    final double overlap = overlapSizeAndOpacity.clamp(0.0, 1.0);
 
+    final double maxSizeVal = 1 / 2 + overlap / 2;
+
+    final double sizeFactor = value.rangeMap(from: (0, maxSizeVal));
+
+    final double minOpacityVal = 1 / 2 - overlap / 2;
+
+    final double opacity = value.rangeMap(from: (minOpacityVal, 1));
 
     return ClipRect(
       child: Align(
         alignment: Alignment(
-          widget.axis == Axis.horizontal ? widget.axisAlignment : 0.0,
-          widget.axis == Axis.vertical ? widget.axisAlignment : 0.0,
+          axis == Axis.horizontal ? axisAlignment : 0.0,
+          axis == Axis.vertical ? axisAlignment : 0.0,
         ),
-        widthFactor: widget.axis == Axis.horizontal ? sizeFactor : 1.0,
-        heightFactor: widget.axis == Axis.vertical ? sizeFactor : 1.0,
-        child: Opacity(
-          opacity: opacity,
-          child: widget.child
+        widthFactor: axis == Axis.horizontal ? sizeFactor : 1.0,
+        heightFactor: axis == Axis.vertical ? sizeFactor : 1.0,
+        child: Opacity(opacity: opacity, child: child),
+      ),
+    );
+  }
+}
+
+class CustomFractionallyListed extends StatelessWidget {
+  const CustomFractionallyListed({
+    super.key,
+    required this.value,
+    required this.child,
+    this.axis = Axis.vertical,
+    this.axisAlignment = -1,
+    this.maxSizeVal = 1,
+    this.minOpacityVal = 1 / 2,
+  });
+
+  final double axisAlignment;
+  final Axis axis;
+  final Widget? child;
+  final double value;
+  final double maxSizeVal;
+  final double minOpacityVal;
+
+  @override
+  Widget build(BuildContext context) {
+    final value = this.value.clamp(0, 1);
+
+    final double sizeFactor = value.rangeMap(from: (0, maxSizeVal));
+
+    final double opacity = value.rangeMap(from: (minOpacityVal, 1));
+
+    return ClipRect(
+      child: Align(
+        alignment: Alignment(
+          axis == Axis.horizontal ? axisAlignment : 0.0,
+          axis == Axis.vertical ? axisAlignment : 0.0,
         ),
+        widthFactor: axis == Axis.horizontal ? sizeFactor : 1.0,
+        heightFactor: axis == Axis.vertical ? sizeFactor : 1.0,
+        child: Opacity(opacity: opacity, child: child),
       ),
     );
   }

@@ -1,4 +1,5 @@
 import 'package:example/logic/theme_logic.dart';
+import 'package:example/widgets/multi_browse_carousel_home.dart';
 import 'package:flutter/material.dart';
 import 'package:sid_base/sid_base.dart';
 
@@ -17,12 +18,18 @@ class HomeExample extends StatelessWidget {
           Expanded(
             child: ListView(
               children: [
-                themeLogic.dark.build((context, value) => SwitchListTile(
-                      value: value,
-                      onChanged: (_) => themeLogic.toggleBrightness(),
-                      title: const Text("Dark mode:"),
-                      secondary: Icon(MdiIcons.weatherNight),
-                    )),
+                themeLogic.dark.build(
+                  (context, value) => SwitchListTile(
+                    value: value,
+                    onChanged: (_) => themeLogic.toggleBrightness(),
+                    title: const Text("Dark mode:"),
+                    secondary: Icon(MdiIcons.weatherNight),
+                  ),
+                ),
+                ListTile(
+                  title: const Text("Carousel example"),
+                  onTap: () => context.pushPage(const MultiBrowseCarouselHome()),
+                ),
               ],
             ),
           ),
