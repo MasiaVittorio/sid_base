@@ -198,3 +198,47 @@ class Reactive<T> extends ChangeNotifier {
           equality: equals,
         );
 }
+
+extension AutoBuild2<A, B> on (Reactive<A> first, Reactive<B> second) {
+  Widget build(Widget Function(BuildContext context, A a, B b) builder) {
+    return Reactive.build2($1, $2, builder: builder);
+  }
+}
+
+extension AutoBuild3<A, B, C>
+    on (Reactive<A> first, Reactive<B> second, Reactive<C> third) {
+  Widget build(Widget Function(BuildContext context, A a, B b, C c) builder) {
+    return Reactive.build3($1, $2, $3, builder: builder);
+  }
+}
+
+extension AutoBuild4<A, B, C, D>
+    on
+        (
+          Reactive<A> first,
+          Reactive<B> second,
+          Reactive<C> third,
+          Reactive<D> fourth,
+        ) {
+  Widget build(
+    Widget Function(BuildContext context, A a, B b, C c, D d) builder,
+  ) {
+    return Reactive.build4($1, $2, $3, $4, builder: builder);
+  }
+}
+
+extension AutoBuild5<A, B, C, D, E>
+    on
+        (
+          Reactive<A> first,
+          Reactive<B> second,
+          Reactive<C> third,
+          Reactive<D> fourth,
+          Reactive<E> fifth,
+        ) {
+  Widget build(
+    Widget Function(BuildContext context, A a, B b, C c, D d, E e) builder,
+  ) {
+    return Reactive.build5($1, $2, $3, $4, $5, builder: builder);
+  }
+}

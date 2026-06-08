@@ -12,6 +12,19 @@ class GroupedCard extends StatelessWidget {
     this.backgroundColor,
     this.marginAnimationDuration,
     this.direction = Axis.vertical,
+    this.borderSide = BorderSide.none,
+  });
+  const GroupedCard.single({
+    super.key,
+    required this.child,
+    this.isFirst = true,
+    this.isLast = true,
+    this.horizontalMargin,
+    this.lastPadding,
+    this.backgroundColor,
+    this.marginAnimationDuration,
+    this.direction = Axis.vertical,
+    this.borderSide = BorderSide.none,
   });
 
   final bool isFirst;
@@ -21,6 +34,7 @@ class GroupedCard extends StatelessWidget {
   final double? horizontalMargin;
   final double? lastPadding;
   final Color? backgroundColor;
+  final BorderSide borderSide;
 
   final Duration? marginAnimationDuration;
 
@@ -30,11 +44,14 @@ class GroupedCard extends StatelessWidget {
     final groupedTheme = GroupedCardTheme.of(context);
     final material = Material(
       clipBehavior: Clip.antiAlias,
-      borderRadius: borderRadius(
-        layout,
-        isFirst: isFirst,
-        isLast: isLast,
-        direction: direction,
+      shape: RoundedRectangleBorder(
+        borderRadius: borderRadius(
+          layout,
+          isFirst: isFirst,
+          isLast: isLast,
+          direction: direction,
+        ),
+        side: borderSide,
       ),
       color:
           backgroundColor ??
