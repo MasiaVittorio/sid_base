@@ -5,23 +5,23 @@ sealed class CenteredHeroItemState extends CarouselItemState {
 
   @override
   bool get canBeOpened => switch (this) {
-        CenteredHeroFutureSmallItem(smallToHero: double v) => v > 0.95,
-        CenteredHeroCenterItem(heroToSmall: double v) => v <= 0.05,
-        _ => false,
-      };
+    CenteredHeroFutureSmallItem(smallToHero: double v) => v > 0.95,
+    CenteredHeroCenterItem(heroToSmall: double v) => v <= 0.05,
+    _ => false,
+  };
 
   @override
   double get contentOpacity => fold(
-        futureThin: () => 0.0,
-        futureThinToSmall: (v) => 0.0,
-        futureSmall: () => 0.0,
-        futureSmallToHero: (v) => v.mapToRangeFrom((0, 1), (0.5, 0.95)),
-        hero: () => 1.0,
-        heroToSmall: (v) => v.mapToRangeFrom((1, 0), (0.05, 0.5)),
-        pastSmall: () => 0.0,
-        pastSmallToThin: (v) => 0.0,
-        pastThin: () => 0.0,
-      );
+    futureThin: () => 0.0,
+    futureThinToSmall: (v) => 0.0,
+    futureSmall: () => 0.0,
+    futureSmallToHero: (v) => v.rangeMap(to: (0, 1), from: (0.5, 0.95)),
+    hero: () => 1.0,
+    heroToSmall: (v) => v.rangeMap(to: (1, 0), from: (0.05, 0.5)),
+    pastSmall: () => 0.0,
+    pastSmallToThin: (v) => 0.0,
+    pastThin: () => 0.0,
+  );
 
   T fold<T>({
     required T Function() futureThin,
@@ -33,22 +33,21 @@ sealed class CenteredHeroItemState extends CarouselItemState {
     required T Function() pastSmall,
     required T Function(double v) pastSmallToThin,
     required T Function() pastThin,
-  }) =>
-      switch (this) {
-        CenteredHeroFutureThinItem(thinToSmall: 0) => futureThin(),
-        CenteredHeroFutureThinItem(thinToSmall: 1) => futureSmall(),
-        CenteredHeroFutureSmallItem(smallToHero: 0) => futureSmall(),
-        CenteredHeroFutureSmallItem(smallToHero: 1) => hero(),
-        CenteredHeroCenterItem(heroToSmall: 0) => hero(),
-        CenteredHeroCenterItem(heroToSmall: 1) => pastSmall(),
-        CenteredHeroPastSmallItem(smallToThin: 0) => pastSmall(),
-        CenteredHeroPastSmallItem(smallToThin: 1) => pastThin(),
-        CenteredHeroPastThinItem() => pastThin(),
-        CenteredHeroFutureThinItem(thinToSmall: double v) => futureThinToSmall(v),
-        CenteredHeroFutureSmallItem(smallToHero: double v) => futureSmallToHero(v),
-        CenteredHeroCenterItem(heroToSmall: double v) => heroToSmall(v),
-        CenteredHeroPastSmallItem(smallToThin: double v) => pastSmallToThin(v),
-      };
+  }) => switch (this) {
+    CenteredHeroFutureThinItem(thinToSmall: 0) => futureThin(),
+    CenteredHeroFutureThinItem(thinToSmall: 1) => futureSmall(),
+    CenteredHeroFutureSmallItem(smallToHero: 0) => futureSmall(),
+    CenteredHeroFutureSmallItem(smallToHero: 1) => hero(),
+    CenteredHeroCenterItem(heroToSmall: 0) => hero(),
+    CenteredHeroCenterItem(heroToSmall: 1) => pastSmall(),
+    CenteredHeroPastSmallItem(smallToThin: 0) => pastSmall(),
+    CenteredHeroPastSmallItem(smallToThin: 1) => pastThin(),
+    CenteredHeroPastThinItem() => pastThin(),
+    CenteredHeroFutureThinItem(thinToSmall: double v) => futureThinToSmall(v),
+    CenteredHeroFutureSmallItem(smallToHero: double v) => futureSmallToHero(v),
+    CenteredHeroCenterItem(heroToSmall: double v) => heroToSmall(v),
+    CenteredHeroPastSmallItem(smallToThin: double v) => pastSmallToThin(v),
+  };
 
   double get _v {
     return switch (this) {

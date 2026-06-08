@@ -108,15 +108,11 @@ class _FullSliderState extends State<FullSlider>
     }
   }
 
-  double widgetToAnimation(double widgetValue) => widgetValue.mapToRange(
-    0.0,
-    1.0,
-    fromMin: widget.min,
-    fromMax: widget.max,
-  );
+  double widgetToAnimation(double widgetValue) =>
+      widgetValue.rangeMap(from: (widget.min, widget.max));
 
   double animationToWidget(double animationValue) =>
-      animationValue.mapToRange(widget.min, widget.max);
+      animationValue.rangeMap(to: (widget.min, widget.max));
 
   EdgeInsets get margin => EdgeInsets.symmetric(
     horizontal: horizontal ? widget.mainAxisMargin : widget.crossAxisMargin,
@@ -130,7 +126,7 @@ class _FullSliderState extends State<FullSlider>
 
   Widget buildAnimated(Widget Function(double)? builder) => AnimatedBuilder(
     animation: controller!,
-    builder: (_, __) => builder!(animationToWidget(controller!.value)),
+    builder: (_, _) => builder!(animationToWidget(controller!.value)),
   );
 
   bool get withTitle => widget.title != null || widget.titleBuilder != null;
@@ -303,22 +299,26 @@ class _FullSliderState extends State<FullSlider>
                           borderRadius: BorderRadius.circular(widget.radius),
                           child: AnimatedBuilder(
                             animation: controller!,
-                            builder: (_, __) {
+                            builder: (_, _) {
                               final double val = controller!.value;
                               return Align(
                                 alignment: aligment,
                                 widthFactor:
                                     horizontal
-                                        ? val.mapToRange(
-                                          widget.crossAxisSize / delta,
-                                          1.0,
+                                        ? val.rangeMap(
+                                          to: (
+                                            widget.crossAxisSize / delta,
+                                            1.0,
+                                          ),
                                         )
                                         : null,
                                 heightFactor:
                                     vertical
-                                        ? val.mapToRange(
-                                          widget.crossAxisSize / delta,
-                                          1.0,
+                                        ? val.rangeMap(
+                                          to: (
+                                            widget.crossAxisSize / delta,
+                                            1.0,
+                                          ),
                                         )
                                         : null,
                                 child: topContent,

@@ -79,15 +79,15 @@ class Reactive<T> extends ChangeNotifier {
 
   // So that the child is not rebuilt every time
   Widget buildWithStaticChild({
-    required Widget Function(BuildContext context, T value, Widget child)
+    required Widget Function(BuildContext context, T value, Widget? child)
     builder,
-    required Widget child,
+    required Widget? child,
   }) {
     return AnimatedBuilder(
       animation: this,
       child: child,
       builder: (BuildContext context, Widget? c) {
-        return builder(context, value, c!);
+        return builder(context, value, c);
       },
     );
   }
@@ -143,6 +143,35 @@ class Reactive<T> extends ChangeNotifier {
     });
   }
 
+  static Widget build5<A, B, C, D, E>(
+    Reactive<A> a,
+    Reactive<B> b,
+    Reactive<C> c,
+    Reactive<D> d,
+    Reactive<E> e, {
+    required Widget Function(
+      BuildContext context,
+      A aVal,
+      B bVal,
+      C cVal,
+      D dVal,
+      E eVal,
+    )
+    builder,
+  }) {
+    return a.build((context, aV) {
+      return b.build((context, bV) {
+        return c.build((context, cV) {
+          return d.build((context, dV) {
+            return e.build((context, eV) {
+              return builder(context, aV, bV, cV, dV, eV);
+            });
+          });
+        });
+      });
+    });
+  }
+
   static Reactive<T> modal<T>({
     required T initVal,
     String? key,
@@ -152,21 +181,64 @@ class Reactive<T> extends ChangeNotifier {
     void Function(T)? readCallback,
     bool Function(T, T)? equals,
     // T Function(T)? copier,
-  }) =>
-      key != null
-          ? PersistentReactive<T>(
-            initVal,
-            key: key,
-            fromJsonDecoded: fromJsonDecoded,
-            toJsonEncodable: toJsonEncodable,
-            afterReading: readCallback,
-            readCount: readCount,
-            // copier: copier,
-            equality: equals,
-          )
-          : Reactive<T>(
-            initVal,
-            // copier: copier,
-            equality: equals,
-          );
+  }) => key != null
+      ? PersistentReactive<T>(
+          initVal,
+          key: key,
+          fromJsonDecoded: fromJsonDecoded,
+          toJsonEncodable: toJsonEncodable,
+          afterReading: readCallback,
+          readCount: readCount,
+          // copier: copier,
+          equality: equals,
+        )
+      : Reactive<T>(
+          initVal,
+          // copier: copier,
+          equality: equals,
+        );
+}
+
+extension AutoBuild2<A, B> on (Reactive<A> first, Reactive<B> second) {
+  Widget build(Widget Function(BuildContext context, A a, B b) builder) {
+    return Reactive.build2($1, $2, builder: builder);
+  }
+}
+
+extension AutoBuild3<A, B, C>
+    on (Reactive<A> first, Reactive<B> second, Reactive<C> third) {
+  Widget build(Widget Function(BuildContext context, A a, B b, C c) builder) {
+    return Reactive.build3($1, $2, $3, builder: builder);
+  }
+}
+
+extension AutoBuild4<A, B, C, D>
+    on
+        (
+          Reactive<A> first,
+          Reactive<B> second,
+          Reactive<C> third,
+          Reactive<D> fourth,
+        ) {
+  Widget build(
+    Widget Function(BuildContext context, A a, B b, C c, D d) builder,
+  ) {
+    return Reactive.build4($1, $2, $3, $4, builder: builder);
+  }
+}
+
+extension AutoBuild5<A, B, C, D, E>
+    on
+        (
+          Reactive<A> first,
+          Reactive<B> second,
+          Reactive<C> third,
+          Reactive<D> fourth,
+          Reactive<E> fifth,
+        ) {
+  Widget build(
+    Widget Function(BuildContext context, A a, B b, C c, D d, E e) builder,
+  ) {
+    return Reactive.build5($1, $2, $3, $4, $5, builder: builder);
+  }
 }

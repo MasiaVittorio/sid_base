@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 abstract class LogicBase {
+  LogicBase();
   @mustCallSuper
   void dispose() {
     _mounted = false;

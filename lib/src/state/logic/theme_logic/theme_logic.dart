@@ -5,6 +5,14 @@ import 'package:sid_base/sid_base.dart';
 
 export 'custom_scheme.dart';
 
+extension ThemeModeIcons on ThemeMode {
+  IconData get icon => switch (this) {
+    ThemeMode.system => MdiIcons.android,
+    ThemeMode.light => MdiIcons.weatherSunny,
+    ThemeMode.dark => MdiIcons.weatherNight,
+  };
+}
+
 abstract class ThemeLogicBase extends LogicBase {
   @mustCallSuper
   @override
@@ -71,12 +79,11 @@ abstract class ThemeLogicBase extends LogicBase {
       ThemeData.from(
         colorScheme: scheme,
         useMaterial3: true,
-        textTheme:
-            ThemeData(
-              fontFamily: defaultFontFamily,
-              colorScheme: scheme,
-              useMaterial3: true,
-            ).textTheme,
+        textTheme: ThemeData(
+          fontFamily: defaultFontFamily,
+          colorScheme: scheme,
+          useMaterial3: true,
+        ).textTheme,
       ),
     );
   }
@@ -119,8 +126,9 @@ abstract class ThemeLogicBase extends LogicBase {
               _applyFamilies(
                 _baseThemeFromCustom(
                   customSchemeValue.copyWith(
-                    seedColor:
-                        dynamic && dynamicSeed != null ? dynamicSeed : null,
+                    seedColor: dynamic && dynamicSeed != null
+                        ? dynamicSeed
+                        : null,
                   ),
                   Brightness.light,
                 ),
@@ -130,8 +138,9 @@ abstract class ThemeLogicBase extends LogicBase {
               _applyFamilies(
                 _baseThemeFromCustom(
                   customSchemeValue.copyWith(
-                    seedColor:
-                        dynamic && dynamicSeed != null ? dynamicSeed : null,
+                    seedColor: dynamic && dynamicSeed != null
+                        ? dynamicSeed
+                        : null,
                   ),
                   Brightness.dark,
                 ),
@@ -146,6 +155,22 @@ abstract class ThemeLogicBase extends LogicBase {
       },
     );
   }
+
+  ThemeData computeThemeData({
+    required CustomScheme customScheme,
+    required bool useDynamic,
+    required Brightness brightness,
+    required Color? dynamicSeed,
+  }) => applyAppCustomizations(
+    _applyFamilies(
+      _baseThemeFromCustom(
+        customScheme.copyWith(
+          seedColor: useDynamic && dynamicSeed != null ? dynamicSeed : null,
+        ),
+        brightness,
+      ),
+    ),
+  );
 
   /// override this to apply yout theme extensions and such,
   /// this is the last edit that is made to the theme before being passed to the builder

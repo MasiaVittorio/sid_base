@@ -3,13 +3,9 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:sid_base/sid_base.dart';
 
-enum OverlayShapeType {
-  circle,
-  rrect,
-}
+enum OverlayShapeType { circle, rrect }
 
 class OverlayShape {
-
   final OverlayShapeType type;
   final Radius radius;
   final bool circleRadiusFromCorners;
@@ -22,20 +18,17 @@ class OverlayShape {
     this.padding = 0,
   });
 
-  double calcCircleRadius(Size size){
+  double calcCircleRadius(Size size) {
     final w = size.width;
     final h = size.height;
     return (circleRadiusFromCorners
-      ? sqrt(w*w/4 + h*h/4)
-      : max(w, h) / 2)
-        + padding;
+            ? sqrt(w * w / 4 + h * h / 4)
+            : max(w, h) / 2) +
+        padding;
   }
-
 }
 
-
 class OverlayPainter extends CustomPainter {
-
   OverlayPainter({
     required this.shape,
     required this.fraction,
@@ -47,7 +40,7 @@ class OverlayPainter extends CustomPainter {
 
   final OverlayShape shape;
   final double fraction;
-  
+
   final Color color;
 
   final Offset center;
@@ -74,42 +67,35 @@ class OverlayPainter extends CustomPainter {
         final half = max(top, max(bottom, max(left, right)));
 
         final initialRrect = RRect.fromRectAndRadius(
-          Rect.fromCenter(
-            center: center, 
-            width: half * 2, 
-            height: half * 2,
-          ), 
+          Rect.fromCenter(center: center, width: half * 2, height: half * 2),
           Radius.zero,
         );
 
         final finalRrect = RRect.fromRectAndRadius(
           Rect.fromCenter(
-            center: center, 
-            width: childSize.width, 
+            center: center,
+            width: childSize.width,
             height: childSize.height,
-          ), 
+          ),
           shape.radius,
         );
-        
-        difference = Path()
-          ..addRRect(RRect.lerp(
-            finalRrect, 
-            initialRrect, 
-            fraction,
-          )!);
+
+        difference =
+            Path()..addRRect(RRect.lerp(finalRrect, initialRrect, fraction)!);
         break;
 
       case OverlayShapeType.circle:
-        final tl = (center - const Offset(0,0)).distance;
-        final tr = (center - Offset(0,w)).distance;
-        final br = (center - Offset(h,w)).distance;
-        final bl = (center - Offset(h,0)).distance;
+        final tl = (center - const Offset(0, 0)).distance;
+        final tr = (center - Offset(0, w)).distance;
+        final br = (center - Offset(h, w)).distance;
+        final bl = (center - Offset(h, 0)).distance;
         final maxR = max(bl, max(br, max(tl, tr)));
-        final d = 2 * fraction.mapToRangeLoose(circleRadius, maxR);
+        final d = 2 * fraction.rangeMapLoose(to: (circleRadius, maxR));
 
-        difference = Path()
-          ..addOval(Rect.fromCenter(center: center, width: d, height: d))
-          ..close();
+        difference =
+            Path()
+              ..addOval(Rect.fromCenter(center: center, width: d, height: d))
+              ..close();
         break;
     }
 
@@ -125,8 +111,6 @@ class OverlayPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(OverlayPainter oldDelegate) 
-    => oldDelegate.fraction != fraction
-    || oldDelegate.color != color;
-
+  bool shouldRepaint(OverlayPainter oldDelegate) =>
+      oldDelegate.fraction != fraction || oldDelegate.color != color;
 }

@@ -507,7 +507,7 @@ class _GesturesDecider<T extends CarouselItemState> extends StatelessWidget {
 }
 
 class CurvedGradient {
-  static build({
+  static LinearGradient build({
     required Color from,
     required Color to,
     required Curve curve,
@@ -519,7 +519,7 @@ class CurvedGradient {
   }) {
     final stops = [
       for (int i = 0; i <= granularity; i++)
-        (i / granularity).mapToRange(padStart, 1 - padEnd),
+        (i / granularity).rangeMap(to: (padStart, 1 - padEnd)),
     ];
     final colors = [
       for (int i = 0; i <= granularity; i++)

@@ -5,23 +5,23 @@ sealed class MultiBrowseItemState extends CarouselItemState {
 
   @override
   bool get canBeOpened => switch (this) {
-        MultiBrowseMediumItem(mediumToLarge: double v) => v >= 0.95,
-        MultiBrowseLargeItem(largeToThin: double v) => v < 0.05,
-        _ => false,
-      };
+    MultiBrowseMediumItem(mediumToLarge: double v) => v >= 0.95,
+    MultiBrowseLargeItem(largeToThin: double v) => v < 0.05,
+    _ => false,
+  };
 
   @override
   double get contentOpacity => fold(
-        futureThin: () => 0.0,
-        futureThinToSmall: (v) => 0.0,
-        small: () => 0.0,
-        smallToMedium: (v) => v.mapToRangeFrom((0, 0.5), (0.7, 1.0)),
-        medium: () => 0.5,
-        mediumToLarge: (v) => v.mapToRange(0.5, 1.0),
-        large: () => 1.0,
-        largeToThin: (v) => v.mapToRangeFrom((1, 0), (0.1, 0.7)),
-        pastThin: () => 0.0,
-      );
+    futureThin: () => 0.0,
+    futureThinToSmall: (v) => 0.0,
+    small: () => 0.0,
+    smallToMedium: (v) => v.rangeMap(to: (0, 0.5), from: (0.7, 1.0)),
+    medium: () => 0.5,
+    mediumToLarge: (v) => v.rangeMap(to: (0.5, 1.0)),
+    large: () => 1.0,
+    largeToThin: (v) => v.rangeMap(to: (1, 0), from: (0.1, 0.7)),
+    pastThin: () => 0.0,
+  );
 
   T fold<T>({
     required T Function() futureThin,
@@ -33,22 +33,21 @@ sealed class MultiBrowseItemState extends CarouselItemState {
     required T Function() large,
     required T Function(double v) largeToThin,
     required T Function() pastThin,
-  }) =>
-      switch (this) {
-        MultiBrowseFutureThinItem(thinToSmall: 0) => futureThin(),
-        MultiBrowseFutureThinItem(thinToSmall: 1) => small(),
-        MultiBrowseSmallItem(smallToMedium: 0) => small(),
-        MultiBrowseSmallItem(smallToMedium: 1) => medium(),
-        MultiBrowseMediumItem(mediumToLarge: 0) => medium(),
-        MultiBrowseMediumItem(mediumToLarge: 1) => large(),
-        MultiBrowseLargeItem(largeToThin: 0) => large(),
-        MultiBrowseLargeItem(largeToThin: 1) => pastThin(),
-        MultiBrowsePastThinItem() => pastThin(),
-        MultiBrowseFutureThinItem(thinToSmall: double v) => futureThinToSmall(v),
-        MultiBrowseSmallItem(smallToMedium: double v) => smallToMedium(v),
-        MultiBrowseMediumItem(mediumToLarge: double v) => mediumToLarge(v),
-        MultiBrowseLargeItem(largeToThin: double v) => largeToThin(v),
-      };
+  }) => switch (this) {
+    MultiBrowseFutureThinItem(thinToSmall: 0) => futureThin(),
+    MultiBrowseFutureThinItem(thinToSmall: 1) => small(),
+    MultiBrowseSmallItem(smallToMedium: 0) => small(),
+    MultiBrowseSmallItem(smallToMedium: 1) => medium(),
+    MultiBrowseMediumItem(mediumToLarge: 0) => medium(),
+    MultiBrowseMediumItem(mediumToLarge: 1) => large(),
+    MultiBrowseLargeItem(largeToThin: 0) => large(),
+    MultiBrowseLargeItem(largeToThin: 1) => pastThin(),
+    MultiBrowsePastThinItem() => pastThin(),
+    MultiBrowseFutureThinItem(thinToSmall: double v) => futureThinToSmall(v),
+    MultiBrowseSmallItem(smallToMedium: double v) => smallToMedium(v),
+    MultiBrowseMediumItem(mediumToLarge: double v) => mediumToLarge(v),
+    MultiBrowseLargeItem(largeToThin: double v) => largeToThin(v),
+  };
 
   double get _v {
     return switch (this) {

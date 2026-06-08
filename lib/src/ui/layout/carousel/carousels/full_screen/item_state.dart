@@ -8,12 +8,12 @@ sealed class FullScreenItemState extends CarouselItemState {
 
   @override
   double get contentOpacity => fold(
-        future: () => 0.0,
-        futureToCenter: (v) => v.mapFromRangeTo((0.45, 0.85), (0, 1)),
-        center: () => 1.0,
-        centerToPast: (v) => v.mapFromRangeTo((0.15, 0.55), (1, 0)),
-        past: () => 0.0,
-      );
+    future: () => 0.0,
+    futureToCenter: (v) => v.rangeMap(from: (0.45, 0.85)),
+    center: () => 1.0,
+    centerToPast: (v) => v.rangeMap(from: (0.15, 0.55), to: (1, 0)),
+    past: () => 0.0,
+  );
 
   T fold<T>({
     required T Function() future,
@@ -21,22 +21,21 @@ sealed class FullScreenItemState extends CarouselItemState {
     required T Function() center,
     required T Function(double v) centerToPast,
     required T Function() past,
-  }) =>
-      switch (this) {
-        FullScreenFutureItem(futureToCenter: 0) => future(),
-        FullScreenFutureItem(futureToCenter: 1) => center(),
-        FullScreenCenterItem(centerToPast: 0) => center(),
-        FullScreenCenterItem(centerToPast: 1) => past(),
-        FullScreenPastItem() => past(),
-        FullScreenFutureItem(futureToCenter: double v) => futureToCenter(v),
-        FullScreenCenterItem(centerToPast: double v) => centerToPast(v),
-      };
+  }) => switch (this) {
+    FullScreenFutureItem(futureToCenter: 0) => future(),
+    FullScreenFutureItem(futureToCenter: 1) => center(),
+    FullScreenCenterItem(centerToPast: 0) => center(),
+    FullScreenCenterItem(centerToPast: 1) => past(),
+    FullScreenPastItem() => past(),
+    FullScreenFutureItem(futureToCenter: double v) => futureToCenter(v),
+    FullScreenCenterItem(centerToPast: double v) => centerToPast(v),
+  };
 
   double get _v => switch (this) {
-        FullScreenFutureItem(futureToCenter: double v) => v,
-        FullScreenCenterItem(centerToPast: double v) => 1 + v,
-        FullScreenPastItem() => 2,
-      };
+    FullScreenFutureItem(futureToCenter: double v) => v,
+    FullScreenCenterItem(centerToPast: double v) => 1 + v,
+    FullScreenPastItem() => 2,
+  };
 
   bool before(FullScreenItemState other) => _v < other._v;
 
