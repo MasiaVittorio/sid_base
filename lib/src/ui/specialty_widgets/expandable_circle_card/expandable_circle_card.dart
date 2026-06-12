@@ -72,20 +72,22 @@ class ExpandableCircleCard extends StatelessWidget {
       _collapsedCircleDiameter +
       (max(circleHorizontalPadding, _circleBorderWidth)) * 2;
 
-  TextStyle _titleStyle(ThemeData theme) => (theme.textTheme.titleMedium ??
-          const TextStyle(
-            fontSize: 16,
-            height: 24 / 16,
-            fontWeight: FontWeight.w500,
-          ))
-      .copyWith(color: _oppositeColor(theme), height: 1);
-  TextStyle _bodyStyle(ThemeData theme) => (theme.textTheme.bodyMedium ??
-          const TextStyle(
-            fontSize: 14,
-            height: 20 / 14,
-            fontWeight: FontWeight.w400,
-          ))
-      .copyWith(color: _oppositeColor(theme));
+  TextStyle _titleStyle(ThemeData theme) =>
+      (theme.textTheme.titleMedium ??
+              const TextStyle(
+                fontSize: 16,
+                height: 24 / 16,
+                fontWeight: FontWeight.w500,
+              ))
+          .copyWith(color: _oppositeColor(theme), height: 1);
+  TextStyle _bodyStyle(ThemeData theme) =>
+      (theme.textTheme.bodyMedium ??
+              const TextStyle(
+                fontSize: 14,
+                height: 20 / 14,
+                fontWeight: FontWeight.w400,
+              ))
+          .copyWith(color: _oppositeColor(theme));
 
   final bool showDivider;
   final double dividerWidth;
@@ -166,7 +168,7 @@ class ExpandableCircleCard extends StatelessWidget {
             },
           ),
           AnimatedListed(
-            overlapSizeAndOpacity: 1,
+            fadeFirstFraction: 0,
             listed: expanded,
             duration: Durations.long4,
             curve: Easings.emphasizedDecelerate,
@@ -243,10 +245,9 @@ class ExpandableCircleCard extends StatelessWidget {
           Center(
             child: GenericAnimatedBuilder(
               duration: expanded ? Durations.short4 : Durations.long3,
-              curve:
-                  expanded
-                      ? Easings.emphasizedDecelerate
-                      : Easings.emphasizedDecelerate,
+              curve: expanded
+                  ? Easings.emphasizedDecelerate
+                  : Easings.emphasizedDecelerate,
               value: expanded ? 1.0 : 0.0,
               child: _expandedCircle(theme),
               builder: (context, value, child) {

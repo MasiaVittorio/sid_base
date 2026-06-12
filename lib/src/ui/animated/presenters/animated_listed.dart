@@ -5,32 +5,42 @@ class AnimatedListed extends ImplicitlyAnimatedWidget {
   const AnimatedListed({
     super.key,
     required this.listed,
-    this.axis = Axis.vertical,
-    this.axisAlignment = -1,
-    this.child,
-    Curve? curve,
-    super.duration = const Duration(milliseconds: 250),
-    this.overlapSizeAndOpacity = 0.0,
-  }) : super(curve: curve ?? Curves.ease);
+    required this.child,
+    super.curve = Easings.emphasized,
+    super.duration = Durations.long2,
+    this.fadeFirstFraction = 0.0,
+    this.direction = Axis.vertical,
+    this.axisAlignment = 1.0,
+    this.unlistedFraction = 0,
+  });
 
-  final double axisAlignment;
-  final Axis axis;
   final bool listed;
   final Widget? child;
-  final double overlapSizeAndOpacity;
+
+  /// 1.0: the child has completely faded out at 50% of the animation
+  /// (cannot be seen along other simililarly animated children)
+  /// 0.0: the child has fades out during the whole animation
+  /// (shares the visibility with any other children fading in-out the same way)
+  final double fadeFirstFraction;
+
+  final Axis direction;
+  final double axisAlignment;
+
+  final double unlistedFraction;
+
   @override
   AnimatedWidgetBaseState<AnimatedListed> createState() =>
-      _DivisionAnimateState();
+      _AnimatedListedState();
 }
 
-class _DivisionAnimateState extends AnimatedWidgetBaseState<AnimatedListed> {
-  Tween<double>? _tween;
+class _AnimatedListedState extends AnimatedWidgetBaseState<AnimatedListed> {
+  Tween<double>? _presented;
 
   @override
   void forEachTween(TweenVisitor<dynamic> visitor) {
-    _tween =
+    _presented =
         visitor(
-              _tween,
+              _presented,
               widget.listed ? 1.0 : 0.0,
               (dynamic value) => Tween<double>(begin: value),
             )
@@ -39,14 +49,33 @@ class _DivisionAnimateState extends AnimatedWidgetBaseState<AnimatedListed> {
 
   @override
   Widget build(BuildContext context) {
-    final double val = _tween!.evaluate(animation);
+    final double val = _presented!.evaluate(animation);
+    final factor = val.rangeMap(to: (widget.unlistedFraction, 1));
 
-    return FractionallyListed(
-      value: val,
-      axis: widget.axis,
-      axisAlignment: widget.axisAlignment,
-      overlapSizeAndOpacity: widget.overlapSizeAndOpacity,
-      child: widget.child,
+    return IgnorePointer(
+      ignoring: !widget.listed,
+      child: ClipRect(
+        child: Align(
+          alignment: switch (widget.direction) {
+            Axis.horizontal => Alignment(widget.axisAlignment, 0),
+            Axis.vertical => Alignment(0, widget.axisAlignment),
+          },
+          widthFactor: switch (widget.direction) {
+            Axis.horizontal => factor,
+            Axis.vertical => 1.0,
+          },
+          heightFactor: switch (widget.direction) {
+            Axis.horizontal => 1.0,
+            Axis.vertical => factor,
+          },
+          child: Opacity(
+            opacity: val.rangeMap(
+              from: (widget.fadeFirstFraction.rangeMap(to: (0, .5)), 1),
+            ),
+            child: widget.child,
+          ),
+        ),
+      ),
     );
   }
 }

@@ -3,7 +3,6 @@ import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:sid_base/sid_base.dart';
 
-
 class OpenFab extends StatelessWidget {
   const OpenFab({
     super.key,
@@ -73,11 +72,10 @@ class OpenFab extends StatelessWidget {
               },
               labelSize: labelSize ?? CustomFab.defaultLabelSize,
             ),
-            openBuilder: openBuilder ??
-                ((_, close) => InkWell(
-                      onTap: close,
-                      child: const SizedBox.expand(),
-                    )),
+            openBuilder:
+                openBuilder ??
+                ((_, close) =>
+                    InkWell(onTap: close, child: const SizedBox.expand())),
           ),
         ],
       ),
@@ -134,7 +132,11 @@ class CustomFab extends StatelessWidget {
     return onlyLabel(theme, defaultTextStyle);
   }
 
-  Row iconAndLabel(Widget icon, ThemeData theme, DefaultTextStyle defaultTextStyle) {
+  Row iconAndLabel(
+    Widget icon,
+    ThemeData theme,
+    DefaultTextStyle defaultTextStyle,
+  ) {
     return Row(
       children: [
         SizedBox.square(
@@ -145,7 +147,7 @@ class CustomFab extends StatelessWidget {
           listed: extended,
           duration: const Duration(milliseconds: 300),
           curve: Curves.ease,
-          axis: Axis.horizontal,
+          direction: Axis.horizontal,
           child: SizedBox(
             width: labelSize,
             child: Padding(
@@ -158,7 +160,10 @@ class CustomFab extends StatelessWidget {
     );
   }
 
-  DefaultTextStyle buildLabel(ThemeData theme, DefaultTextStyle defaultTextStyle) {
+  DefaultTextStyle buildLabel(
+    ThemeData theme,
+    DefaultTextStyle defaultTextStyle,
+  ) {
     return DefaultTextStyle(
       style: theme.textTheme.labelLarge ?? defaultTextStyle.style,
       child: label,
@@ -169,9 +174,7 @@ class CustomFab extends StatelessWidget {
     return SizedBox(
       height: fabSize,
       width: fabSize + labelSize,
-      child: Center(
-        child: buildLabel(theme, defaultTextStyle),
-      ),
+      child: Center(child: buildLabel(theme, defaultTextStyle)),
     );
   }
 }
