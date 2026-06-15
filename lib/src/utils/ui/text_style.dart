@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
 extension FontWeightSidIncrement on FontWeight {
-
-  static const incrementMap = {
+  static final incrementMap = {
     FontWeight.w100: FontWeight.w200,
     FontWeight.w200: FontWeight.w300,
     FontWeight.w300: FontWeight.w400,
@@ -16,7 +15,7 @@ extension FontWeightSidIncrement on FontWeight {
 
   FontWeight get increment => incrementMap[this]!;
 
-  static const decrementMap = {
+  static final decrementMap = {
     FontWeight.w100: FontWeight.w100,
     FontWeight.w200: FontWeight.w100,
     FontWeight.w300: FontWeight.w200,
@@ -29,5 +28,4 @@ extension FontWeightSidIncrement on FontWeight {
   };
 
   FontWeight get decrement => decrementMap[this]!;
-
 }
