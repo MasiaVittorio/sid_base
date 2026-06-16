@@ -13,10 +13,20 @@ class AnimatedPagedView<T> extends StatelessWidget {
     super.key,
     required this.value,
     required this.pages,
+    this.direction = Axis.horizontal,
+    this.fractionalOffset = 0.9,
+    this.opacityOverlap = 0.1,
+    this.durationMultiplier = 1,
   });
 
   final T value;
   final List<ViewPage<T>> pages;
+  final Axis direction;
+  final double fractionalOffset;
+  final double opacityOverlap;
+
+  // durations are different for enter and exit animations, and decided internally to be Durations.medium4 and Durations.short4, but this multiplier can be used to make both of them faster or slower while keeping the same ratio between them
+  final double durationMultiplier;
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +37,10 @@ class AnimatedPagedView<T> extends StatelessWidget {
         for (int i = 0; i < pages.length; i++)
           if (pages[i] case ViewPage<T> page)
             AnimatedPage(
+              direction: direction,
+              fractionalOffset: fractionalOffset,
+              opacityOverlap: opacityOverlap,
+              durationMultiplier: durationMultiplier,
               state: switch (i - index) {
                 < 0 => AnimatedPageState.early,
                 > 0 => AnimatedPageState.late,
