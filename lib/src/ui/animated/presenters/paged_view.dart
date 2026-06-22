@@ -37,6 +37,7 @@ class AnimatedPagedView<T> extends StatelessWidget {
         for (int i = 0; i < pages.length; i++)
           if (pages[i] case ViewPage<T> page)
             AnimatedPage(
+              key: ValueKey(page.value),
               direction: direction,
               fractionalOffset: fractionalOffset,
               opacityOverlap: opacityOverlap,
