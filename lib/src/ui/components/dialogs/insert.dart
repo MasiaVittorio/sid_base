@@ -43,13 +43,17 @@ class _InsertDialogState extends State<InsertDialog> {
   @override
   void initState() {
     super.initState();
-    controller = TextEditingController(text: widget.initial);
-    if (widget.initial != null && (widget.initial ?? '').isNotEmpty) {
-      controller.selection = TextSelection(
-        baseOffset: 0,
-        extentOffset: controller.text.length,
-      );
-    }
+    controller = TextEditingController.fromValue(
+      TextEditingValue(
+        text: widget.initial ?? '',
+        selection: widget.autoSelectInitialValue
+            ? TextSelection(
+                baseOffset: 0,
+                extentOffset: widget.initial?.length ?? 0,
+              )
+            : const TextSelection.collapsed(offset: -1),
+      ),
+    );
   }
 
   @override
