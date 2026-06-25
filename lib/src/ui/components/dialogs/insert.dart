@@ -16,6 +16,7 @@ class InsertDialog extends StatefulWidget {
     this.keyboardType,
     this.maxLines = 1,
     this.canInsertEmptyText = false,
+    this.autoSelectInitialValue = true,
   });
 
   final ValueChanged<String> onInsert;
@@ -30,6 +31,7 @@ class InsertDialog extends StatefulWidget {
   final int? maxLines;
   final TextInputType? keyboardType;
   final bool canInsertEmptyText;
+  final bool autoSelectInitialValue;
 
   @override
   State<InsertDialog> createState() => _InsertDialogState();
@@ -42,6 +44,12 @@ class _InsertDialogState extends State<InsertDialog> {
   void initState() {
     super.initState();
     controller = TextEditingController(text: widget.initial);
+    if (widget.initial != null && (widget.initial ?? '').isNotEmpty) {
+      controller.selection = TextSelection(
+        baseOffset: 0,
+        extentOffset: controller.text.length,
+      );
+    }
   }
 
   @override
@@ -81,18 +89,16 @@ class _InsertDialogState extends State<InsertDialog> {
         TextReactor(
           controller: controller,
           child: Text(widget.confirmLabel),
-          builder:
-              (_, child, string) => TextButton(
-                onPressed:
-                    (string.isEmpty && !widget.canInsertEmptyText)
-                        ? null
-                        : () {
-                          final string = controller.text;
-                          Navigator.pop(context);
-                          widget.onInsert(string);
-                        },
-                child: child!,
-              ),
+          builder: (_, child, string) => TextButton(
+            onPressed: (string.isEmpty && !widget.canInsertEmptyText)
+                ? null
+                : () {
+                    final string = controller.text;
+                    Navigator.pop(context);
+                    widget.onInsert(string);
+                  },
+            child: child!,
+          ),
         ),
       ],
     );
