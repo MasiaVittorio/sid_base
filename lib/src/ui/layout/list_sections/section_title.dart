@@ -42,8 +42,9 @@ class SectionTitle extends StatelessWidget {
       top: topMargin ?? (layout.margin.medium - layout.margin.tiny),
       left: horizontalMargin ?? context.theme.layout.margin.large,
       right:
-          (horizontalMargin ?? context.theme.layout.margin.large) -
-          (trailing is ButtonStyleButton ? 8 : 0).clamp(0, double.infinity),
+          ((horizontalMargin ?? context.theme.layout.margin.large) -
+                  (trailing is ButtonStyleButton ? 8 : 0))
+              .clamp(0, double.infinity),
       bottom: leading != null || trailing != null ? layout.spacing.small : 0,
       child: Row(
         mainAxisSize: expand ? MainAxisSize.max : MainAxisSize.min,
