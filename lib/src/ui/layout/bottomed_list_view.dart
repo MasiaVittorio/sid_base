@@ -8,17 +8,23 @@ class BottomedListView extends StatelessWidget {
     required this.bottom,
     this.useSafeArea = true,
     this.physics,
+    this.reverse = false,
+    this.scrollDirection = Axis.vertical,
   });
 
   final List<Widget> children;
   final Widget bottom;
   final bool useSafeArea;
   final ScrollPhysics? physics;
+  final bool reverse;
+  final Axis scrollDirection;
 
   @override
   Widget build(BuildContext context) {
     return CustomScrollView(
       physics: physics,
+      reverse: reverse,
+      scrollDirection: scrollDirection,
       slivers: [
         SliverList(delegate: SliverChildListDelegate(children)),
         SliverFillRemaining(
