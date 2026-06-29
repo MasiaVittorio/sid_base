@@ -138,6 +138,7 @@ extension GroupedCards on List<Widget> {
   List<Widget> groupedCards({
     double? lastPadding,
     Color? backgroundColor,
+    double? horizontalMargin,
     Axis direction = Axis.vertical,
   }) => [
     for (int i = 0; i < length; i++)
@@ -147,23 +148,33 @@ extension GroupedCards on List<Widget> {
         lastPadding: lastPadding,
         backgroundColor: backgroundColor,
         direction: direction,
+        horizontalMargin: horizontalMargin,
         child: this[i],
       ),
   ];
 }
 
 extension GroupedCardsGroups on List<List<Widget>> {
-  List<Widget> groupedCards({double? lastPadding, Color? backgroundColor}) => [
+  List<Widget> groupedCards({
+    double? lastPadding,
+    Color? backgroundColor,
+    double? horizontalMargin,
+  }) => [
     for (int i = 0; i < length; i++)
       ...this[i].groupedCards(
         lastPadding: lastPadding,
         backgroundColor: backgroundColor,
+        horizontalMargin: horizontalMargin,
       ),
   ];
 }
 
 extension NamedGroupedCardsGroups on Map<String, List<Widget>> {
-  List<Widget> groupedCards({double? lastPadding, Color? backgroundColor}) => [
+  List<Widget> groupedCards({
+    double? lastPadding,
+    Color? backgroundColor,
+    double? horizontalMargin,
+  }) => [
     for (final entry in entries)
       Builder(
         builder: (context) {
@@ -172,6 +183,7 @@ extension NamedGroupedCardsGroups on Map<String, List<Widget>> {
             children: entry.value.groupedCards(
               lastPadding: lastPadding ?? context.theme.layout.margin.small,
               backgroundColor: backgroundColor,
+              horizontalMargin: horizontalMargin,
             ),
           );
         },
@@ -186,17 +198,20 @@ extension NamedLeadingGroupedCardsGroups on Map<CardsGroup, List<Widget>> {
     double? lastPadding,
     Color? backgroundColor,
     double? topMargin,
+    double? horizontalMargin,
   }) => [
     for (final entry in entries)
       Builder(
         builder: (context) {
           return ListSection(
+            horizontalMargin: horizontalMargin,
             topMargin: topMargin,
             title: Text(entry.key.title),
             leading: entry.key.leading,
             children: entry.value.groupedCards(
               lastPadding: lastPadding ?? context.theme.layout.margin.small,
               backgroundColor: backgroundColor,
+              horizontalMargin: horizontalMargin,
             ),
           );
         },
@@ -208,16 +223,19 @@ extension NamedGroupedCardsGroupsBuilder<T> on Map<T, List<Widget>> {
   List<Widget> groupedCardsBuilder({
     double? lastPadding = 0,
     Color? backgroundColor,
+    double? horizontalMargin,
     required Widget Function(T key) titleBuilder,
   }) => [
     for (final entry in entries)
       Builder(
         builder: (context) {
           return ListSection(
+            horizontalMargin: horizontalMargin,
             title: titleBuilder(entry.key),
             children: entry.value.groupedCards(
               lastPadding: lastPadding ?? context.theme.layout.margin.small,
               backgroundColor: backgroundColor,
+              horizontalMargin: horizontalMargin,
             ),
           );
         },
